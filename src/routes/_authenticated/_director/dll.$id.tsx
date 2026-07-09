@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { reviewDllFn } from "@/lib/dlls.functions";
 
 export const Route = createFileRoute("/_authenticated/_director/dll/$id")({
   head: () => ({ meta: [{ title: "Review DLL — AttendCloud" }] }),
@@ -39,22 +41,20 @@ function DllReviewDetail() {
     if (dllQ.data?.feedback) setFeedback(dllQ.data.feedback);
   }, [dllQ.data]);
 
+  const reviewDll = useServerFn(reviewDllFn);
+
   async function review(kind: "approve" | "return") {
     if (!user) return;
     setError(null);
     setSaving(kind);
-    const { error: upErr } = await supabase
-      .from("dlls")
-      .update({
-        status: kind === "approve" ? "approved" : "returned",
-        reviewed_by: user.id,
-        reviewed_at: new Date().toISOString(),
-        feedback: feedback || null,
-      })
-      .eq("id", id);
-    setSaving(null);
-    if (upErr) { setError(upErr.message); return; }
-    navigate({ to: "/dll" });
+    try {
+      await reviewDll({ data: { id, decision: kind, feedback } });
+      navigate({ to: "/dll" });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to review");
+    } finally {
+      setSaving(null);
+    }
   }
 
   if (dllQ.isLoading) return <AppShell><p className="text-tertiary">Loading…</p></AppShell>;

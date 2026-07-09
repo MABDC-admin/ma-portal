@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
+import { createDllFn } from "@/lib/dlls.functions";
 
 export const Route = createFileRoute("/_authenticated/_teacher/dll/new")({
   head: () => ({ meta: [{ title: "New DLL Entry — AttendCloud" }] }),
@@ -33,26 +35,31 @@ function NewDllEntry() {
     },
   });
 
+  const createDll = useServerFn(createDllFn);
+
   async function save(kind: "draft" | "submit") {
     if (!user) return;
     setError(null);
     setSaving(kind);
-    const payload = {
-      teacher_id: user.id,
-      section_id: sectionId || null,
-      subject,
-      lesson_date: lessonDate,
-      objectives,
-      content,
-      procedures,
-      assessment,
-      status: (kind === "draft" ? "draft" : "submitted") as "draft" | "submitted",
-      submitted_at: kind === "submit" ? new Date().toISOString() : null,
-    };
-    const { error: insErr } = await supabase.from("dlls").insert(payload);
-    setSaving(null);
-    if (insErr) { setError(insErr.message); return; }
-    navigate({ to: "/" });
+    try {
+      await createDll({
+        data: {
+          section_id: sectionId || null,
+          subject,
+          lesson_date: lessonDate,
+          objectives,
+          content,
+          procedures,
+          assessment,
+          submit: kind === "submit",
+        },
+      });
+      navigate({ to: "/" });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to save");
+    } finally {
+      setSaving(null);
+    }
   }
 
   return (
