@@ -266,24 +266,24 @@ function KioskPage() {
       onClick={() => wake()}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-8 pt-4 sm:pt-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md ring-1 ring-white/20">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:px-8 pt-4 sm:pt-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md ring-1 ring-white/20">
             <Icon name="face_retouching_natural" filled className="text-white" />
           </div>
-          <div>
-            <p className="font-display text-lg sm:text-xl font-extrabold tracking-tight">Attendance Kiosk</p>
-            <p className="text-xs text-white/60">
+          <div className="min-w-0">
+            <p className="truncate font-display text-base sm:text-xl font-extrabold tracking-tight">Attendance Kiosk</p>
+            <p className="truncate text-[11px] sm:text-xs text-white/60">
               {timeLabel} · {dateLabel}
             </p>
           </div>
         </div>
         <Link
           to="/"
-          className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-md ring-1 ring-white/20 hover:bg-white/20"
+          className="flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white/90 backdrop-blur-md ring-1 ring-white/20 hover:bg-white/20"
           onClick={(e) => e.stopPropagation()}
         >
-          <Icon name="close" size={18} /> Exit kiosk
+          <Icon name="close" size={18} /> <span className="hidden sm:inline">Exit kiosk</span><span className="sm:hidden">Exit</span>
         </Link>
       </div>
 
