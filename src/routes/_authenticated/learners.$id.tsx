@@ -304,81 +304,63 @@ function LearnerProfilePage() {
           {/* LEFT COL (Graphs & Logs) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             
-            {/* ATTENDANCE TRENDS (Mock Chart) */}
+            {/* ATTENDANCE TRENDS — real data */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold font-heading">Attendance Trends</h3>
-                <div className="flex bg-surface-container border border-outline-variant/30 rounded-lg p-1">
-                  <button className="px-3 py-1 text-xs font-bold bg-white text-primary rounded-md shadow-sm">30 Days</button>
-                  <button className="px-3 py-1 text-xs font-bold text-tertiary hover:text-foreground transition">90 Days</button>
+                <span className="text-xs text-tertiary">Last 30 records</span>
+              </div>
+              {attendance && attendance.length > 0 ? (
+                <div className="h-48 flex items-end justify-between gap-2">
+                  {attendance.slice(0, 30).reverse().map((a, i) => {
+                    const h = a.status === "present" ? 100 : a.status === "late" ? 60 : a.status === "excused" ? 80 : 20;
+                    const color = a.status === "absent" ? "bg-status-absent" : a.status === "late" ? "bg-status-late" : "bg-primary";
+                    return (
+                      <div key={i} className="w-full relative group flex flex-col justify-end h-full">
+                        <div className={`w-full rounded-t-sm transition-all ${color}`} style={{ height: `${h}%` }} />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">
+                          {a.date} · {a.status}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-              <div className="h-48 flex items-end justify-between gap-2">
-                {/* Mock bars for the chart */}
-                {[80, 90, 100, 40, 100, 100, 95, 85, 90, 100, 40, 90, 100].map((h, i) => (
-                  <div key={i} className="w-full relative group flex flex-col justify-end h-full">
-                    <div 
-                      className={`w-full rounded-t-sm transition-all duration-300 ${h < 50 ? 'bg-status-absent' : h === 100 ? 'bg-primary' : 'bg-status-present/60'}`} 
-                      style={{ height: `${h}%` }}
-                    />
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                      {h}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between text-[10px] text-tertiary mt-2 font-bold uppercase tracking-wider">
-                <span>Nov 01</span>
-                <span>Nov 15</span>
-                <span>Nov 30</span>
-              </div>
+              ) : (
+                <div className="h-48 flex items-center justify-center text-sm text-tertiary">No attendance recorded yet.</div>
+              )}
             </Card>
 
-            {/* ATTENDANCE LOG (Mock Calendar) */}
+            {/* ATTENDANCE LOG — real records */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold font-heading">Attendance Log: November</h3>
+                <h3 className="text-lg font-bold font-heading">Attendance Log</h3>
                 <div className="flex gap-3 text-xs font-semibold text-tertiary">
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-present" /> Present</span>
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-late" /> Late</span>
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-absent" /> Absent</span>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-7 gap-2">
-                {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
-                  <div key={d} className="text-[10px] font-bold text-center text-tertiary py-2">{d}</div>
-                ))}
-                
-                {/* Mock Days */}
-                {Array.from({ length: 28 }).map((_, i) => {
-                  const day = i + 1;
-                  const isWeekend = i % 7 === 5 || i % 7 === 6;
-                  const isSelected = day === 9;
-                  
-                  let status: string | null = "present";
-                  if (day === 5 || day === 12) status = "absent";
-                  if (day === 8 || day === 17) status = "late";
-                  if (isWeekend) status = null;
-
-                  return (
-                    <div 
-                      key={i} 
-                      className={`
-                        flex flex-col items-center justify-center p-2 rounded-xl border h-16
-                        ${isWeekend ? 'border-transparent bg-transparent opacity-30' : 'border-outline-variant/30 bg-surface/30'}
-                        ${isSelected ? 'border-primary shadow-sm bg-primary/5' : ''}
-                      `}
-                    >
-                      <span className={`text-sm font-semibold mb-2 ${isSelected ? 'text-primary' : 'text-foreground'}`}>{day}</span>
-                      {status && (
-                        <div className={`w-1.5 h-1.5 rounded-full ${status === 'present' ? 'bg-status-present' : status === 'absent' ? 'bg-status-absent' : 'bg-status-late'}`} />
-                      )}
+              {attendance && attendance.length > 0 ? (
+                <div className="divide-y divide-outline-variant/20">
+                  {attendance.slice(0, 20).map(a => (
+                    <div key={a.id} className="flex items-center justify-between py-2.5 text-sm">
+                      <span className="font-mono text-xs text-tertiary">{a.date}</span>
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold capitalize ${
+                        a.status === "present" ? "bg-status-present/10 text-status-present" :
+                        a.status === "late" ? "bg-status-late/10 text-status-late" :
+                        a.status === "absent" ? "bg-status-absent/10 text-status-absent" :
+                        "bg-slate-100 text-slate-600"
+                      }`}>
+                        {a.status}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-tertiary text-center py-8">No attendance records yet.</p>
+              )}
             </Card>
+
 
             {/* ENROLLED CLASSES */}
             <div className="mt-2">
