@@ -23,12 +23,14 @@ const roleLanding: Record<string, string> = {
 
 function AuthPage() {
   const { isAuthenticated, profile } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
-  if (isAuthenticated && profile) {
-    const target = roleLanding[profile.role] ?? "/";
-    throw redirect({ to: target as any, replace: true });
-  }
+  useEffect(() => {
+    if (isAuthenticated && profile) {
+      const target = roleLanding[profile.role] ?? "/";
+      void navigate({ to: target as any, replace: true });
+    }
+  }, [isAuthenticated, profile, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
