@@ -23,7 +23,7 @@ function LearnerProfilePage() {
       const { data, error } = await supabase
         .from("students")
         .select(`
-          user_id, student_number, status, photo_url,
+          user_id, student_number, status, photo_url, created_at,
           profiles!students_user_id_profiles_fkey(full_name, email),
           sections(name, grade_level, academic_year)
         `)
@@ -199,11 +199,11 @@ function LearnerProfilePage() {
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Date of Birth</p>
-                <p className="text-sm font-semibold">{record?.birthdate || "May 14, 2007"}</p>
+                <p className="text-sm font-semibold">{record?.birthdate || "—"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Gender</p>
-                <p className="text-sm font-semibold capitalize">{record?.gender || "Male"}</p>
+                <p className="text-sm font-semibold capitalize">{record?.gender || "—"}</p>
               </div>
             </div>
 
@@ -220,11 +220,13 @@ function LearnerProfilePage() {
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Date Enrolled</p>
-                <p className="text-sm font-semibold">August 15, 2022</p>
+                <p className="text-sm font-semibold">
+                  {student.created_at ? new Date(student.created_at).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : "—"}
+                </p>
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Advisor</p>
-                <p className="text-sm font-semibold">Dr. Arthur Vance</p>
+                <p className="text-sm font-semibold">—</p>
               </div>
             </div>
 
@@ -233,19 +235,19 @@ function LearnerProfilePage() {
               <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Emergency Contact</h3>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Guardian Name</p>
-                <p className="text-sm font-semibold">{record?.mother_name || record?.father_name || "Li Wei Chen"}</p>
+                <p className="text-sm font-semibold">{record?.mother_name || record?.father_name || "—"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Relationship</p>
-                <p className="text-sm font-semibold">{record?.mother_name ? "Mother" : record?.father_name ? "Father" : "Father"}</p>
+                <p className="text-sm font-semibold">{record?.mother_name ? "Mother" : record?.father_name ? "Father" : "—"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Contact Number</p>
-                <p className="text-sm font-semibold">{record?.mother_contact || record?.father_contact || "+1 (555) 012-3456"}</p>
+                <p className="text-sm font-semibold">{record?.mother_contact || record?.father_contact || "—"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Email</p>
-                <p className="text-sm font-semibold">{student.profiles?.email || "l.chen@email.com"}</p>
+                <p className="text-sm font-semibold">{student.profiles?.email || "—"}</p>
               </div>
             </div>
           </div>
