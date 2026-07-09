@@ -469,18 +469,18 @@ function SessionBanner({
   secondsUntilNext: number;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-white/5 px-5 py-3 ring-1 ring-white/10">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-2xl bg-white/5 px-4 sm:px-5 py-3 ring-1 ring-white/10">
+      <div className="flex min-w-0 items-center gap-3">
         <span
-          className={`h-2.5 w-2.5 rounded-full ${currentLabel ? "bg-emerald-400 animate-pulse" : "bg-white/30"}`}
+          className={`h-2.5 w-2.5 shrink-0 rounded-full ${currentLabel ? "bg-emerald-400 animate-pulse" : "bg-white/30"}`}
         />
-        <p className="text-sm">
+        <p className="truncate text-sm">
           <span className="font-semibold text-white">
-            {currentLabel ? `Active session: ${currentLabel}` : "Outside session windows"}
+            {currentLabel ? `Active: ${currentLabel}` : "Outside session windows"}
           </span>
         </p>
       </div>
-      <p className="text-xs text-white/60">
+      <p className="text-[11px] sm:text-xs text-white/60">
         Next: <span className="font-semibold text-white/80">{nextLabel}</span> in{" "}
         <span className="num">{formatCountdown(secondsUntilNext)}</span>
       </p>
