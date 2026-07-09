@@ -90,7 +90,7 @@ function DirectorAnecdotalPage() {
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
           <div className="glass-panel rounded-xl p-5 flex items-center gap-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
               <Icon name="trending_up" size={24} />

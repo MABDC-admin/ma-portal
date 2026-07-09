@@ -131,7 +131,7 @@ function TeacherDashboard() {
     <AppShell>
       <div className="flex flex-col gap-6 pb-20 animate-fade-in pt-2 max-w-[1400px] mx-auto">
         {/* KPI Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div className="glass-panel rounded-2xl p-5 relative overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 mb-6">
               <Icon name="verified_user" size={18} />

@@ -104,41 +104,41 @@ function LearnerProfilePage() {
 
   return (
     <AppShell>
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto pb-12">
+      <div className="flex flex-col gap-4 sm:gap-6 max-w-7xl mx-auto pb-8 sm:pb-12">
         <div className="flex items-center gap-3">
           <Link to="/learners" className="flex items-center justify-center h-10 w-10 -ml-2 rounded-full hover:bg-surface-container transition-colors text-tertiary hover:text-foreground">
             <Icon name="arrow_back" size={24} />
           </Link>
-          <h1 className="font-display text-2xl font-extrabold tracking-tight text-foreground">
+          <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
             Learner Profile
           </h1>
         </div>
         
         {/* TOP HEADER */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-surface-container-low/50 backdrop-blur-md border border-outline-variant/30 p-6 rounded-3xl shadow-sm">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-surface-container-low/50 backdrop-blur-md border border-outline-variant/30 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm">
+          <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto">
             <div className="relative">
-              <div className="h-20 w-20 rounded-2xl overflow-hidden bg-primary/10 flex items-center justify-center shadow-inner border border-outline-variant/20">
+              <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl overflow-hidden bg-primary/10 flex items-center justify-center shadow-inner border border-outline-variant/20">
                 {student.photo_url ? (
                   <img src={student.photo_url} alt="Profile" className="h-full w-full object-cover" />
                 ) : (
-                  <Icon name="person" size={40} className="text-primary/50" />
+                  <Icon name="person" size={28} className="text-primary/50" />
                 )}
               </div>
               <div className="absolute -bottom-2 -right-2 h-6 w-6 bg-status-present rounded-full border-2 border-surface flex items-center justify-center">
                 <Icon name="check" size={14} className="text-white" />
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-2xl font-bold font-heading text-foreground">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                <h1 className="text-lg sm:text-2xl font-bold font-heading text-foreground truncate">
                   {student.profiles?.full_name || "Unknown Student"}
                 </h1>
                 <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md text-xs font-bold font-mono">
                   #{student.student_number}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-tertiary mb-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-tertiary mb-3">
                 <div className="flex items-center gap-1.5">
                   <Icon name="school" size={16} />
                   <span>
@@ -150,13 +150,13 @@ function LearnerProfilePage() {
                   <span>{student.profiles?.email || "No email"}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <StatusPill tone="present">Active Student</StatusPill>
                 {isAtRisk && <StatusPill tone="absent">At Risk (Attendance)</StatusPill>}
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2 w-full md:w-auto">
+          <div className="flex flex-row sm:flex-col gap-2 w-full md:w-auto">
             <button className="flex items-center justify-center gap-2 bg-primary text-white px-6 py-2.5 rounded-xl font-bold shadow-sm hover:brightness-110 transition">
               <Icon name="mail" size={18} />
               Message Parent
@@ -169,13 +169,13 @@ function LearnerProfilePage() {
         </div>
 
         {/* STUDENT INFORMATION DROPDOWN */}
-        <details className="group bg-surface-container-low/50 border border-outline-variant/30 rounded-3xl shadow-sm overflow-hidden open:bg-surface-container-low transition-all duration-300">
-          <summary className="flex items-center justify-between p-6 cursor-pointer list-none select-none">
+        <details className="group bg-surface-container-low/50 border border-outline-variant/30 rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden open:bg-surface-container-low transition-all duration-300">
+          <summary className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-6 cursor-pointer list-none select-none">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-bold font-heading text-foreground">Student Information</h2>
+              <h2 className="text-lg sm:text-xl font-bold font-heading text-foreground">Student Information</h2>
               <Icon name="expand_more" size={24} className="text-tertiary group-open:rotate-180 transition-transform duration-300" />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <span className="flex items-center gap-1 bg-status-present/10 text-status-present px-3 py-1 rounded-full text-xs font-bold border border-status-present/20">
                 <Icon name="verified_user" size={14} /> Face ID Registered
               </span>
@@ -185,7 +185,7 @@ function LearnerProfilePage() {
             </div>
           </summary>
           
-          <div className="p-6 pt-2 border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-4 sm:p-6 pt-2 border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* PERSONAL INFORMATION */}
             <div className="flex flex-col gap-4">
               <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Personal Information</h3>
@@ -254,7 +254,7 @@ function LearnerProfilePage() {
         </details>
 
         {/* KPI CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card className="p-5 border-l-4 border-l-status-absent">
             <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Overall Attendance</p>
             <div className="flex items-end gap-2 mb-3">
@@ -311,7 +311,7 @@ function LearnerProfilePage() {
                 <span className="text-xs text-tertiary">Last 30 records</span>
               </div>
               {attendance && attendance.length > 0 ? (
-                <div className="h-48 flex items-end justify-between gap-2">
+                <div className="h-48 flex items-end justify-between gap-1 sm:gap-2 overflow-x-auto">
                   {attendance.slice(0, 30).reverse().map((a, i) => {
                     const h = a.status === "present" ? 100 : a.status === "late" ? 60 : a.status === "excused" ? 80 : 20;
                     const color = a.status === "absent" ? "bg-status-absent" : a.status === "late" ? "bg-status-late" : "bg-primary";
@@ -332,7 +332,7 @@ function LearnerProfilePage() {
 
             {/* ATTENDANCE LOG — real records */}
             <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
                 <h3 className="text-lg font-bold font-heading">Attendance Log</h3>
                 <div className="flex gap-3 text-xs font-semibold text-tertiary">
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-present" /> Present</span>
@@ -388,7 +388,7 @@ function LearnerProfilePage() {
             </div>
 
             {/* BEHAVIORAL RECORDS */}
-            <Card className="flex flex-col h-[500px]">
+            <Card className="flex flex-col h-auto max-h-[500px]">
               <div className="flex items-center justify-between p-5 border-b border-outline-variant/30">
                 <h3 className="font-bold font-heading">Behavioral Records</h3>
                 <button className="text-xs font-bold text-primary hover:underline">View All</button>

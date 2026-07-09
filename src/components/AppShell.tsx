@@ -54,6 +54,7 @@ export function AppShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { profile, logout, hasAnyRole } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const visibleNav = nav.filter((item) => hasAnyRole(item.roles));
   const role = profile?.role ?? "student";
@@ -62,17 +63,26 @@ export function AppShell({
   const userInitials = initials(displayName);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[240px] flex-col border-r border-outline-variant bg-surface md:flex">
+    <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden" 
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed left-0 top-0 z-40 h-screen w-[240px] flex-col border-r border-outline-variant bg-surface transition-transform duration-300 ease-in-out md:translate-x-0 md:flex ${mobileMenuOpen ? "translate-x-0 flex shadow-2xl" : "-translate-x-full hidden md:flex"}`}>
         <div className="flex items-center gap-3 px-5 py-5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Icon name="school" filled weight={600} />
           </div>
-          <div>
-            <h2 className="font-display text-lg font-extrabold leading-tight text-foreground">
+          <div className="min-w-0">
+            <h2 className="font-display text-lg font-extrabold leading-tight text-foreground truncate">
               AttendCloud
             </h2>
-            <p className="text-xs text-muted-foreground">Horizon Academy</p>
+            <p className="text-xs text-muted-foreground truncate">Horizon Academy</p>
           </div>
         </div>
 
@@ -80,6 +90,7 @@ export function AppShell({
           <div className="px-4 pb-2">
             <Link
               to="/dll/new"
+              onClick={() => setMobileMenuOpen(false)}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
             >
               <Icon name="add_circle" size={18} />
@@ -98,6 +109,7 @@ export function AppShell({
               <Link
                 key={item.to}
                 to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
                 className={
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition " +
                   (active
@@ -114,7 +126,7 @@ export function AppShell({
 
         <div className="border-t border-outline-variant/60 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
@@ -129,8 +141,16 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="md:ml-[240px]">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-outline-variant bg-surface/80 px-6 backdrop-blur-md">
+      <div className="flex-1 flex flex-col min-w-0 md:ml-[240px] h-screen overflow-y-auto">
+        <header className="sticky top-0 z-20 shrink-0 flex h-16 items-center gap-2 sm:gap-4 border-b border-outline-variant bg-surface/80 px-4 md:px-6 backdrop-blur-md">
+          <button 
+            className="md:hidden p-2 -ml-2 rounded-lg text-tertiary hover:bg-surface-container shrink-0 transition"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <Icon name="menu" size={24} />
+          </button>
+
           <div className="relative w-full max-w-md">
             <Icon
               name="search"
@@ -138,7 +158,7 @@ export function AppShell({
               size={18}
             />
             <input
-              placeholder="Search students, teachers, logs…"
+              placeholder="Search students, teachers…"
               className="h-10 w-full rounded-lg border border-outline-variant bg-surface pl-10 pr-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -189,10 +209,10 @@ export function AppShell({
         </header>
 
         {(title || actions) && (
-          <div className="flex flex-col gap-4 border-b border-outline-variant/50 bg-background px-6 pb-6 pt-8 sm:flex-row sm:items-end sm:justify-between md:px-10">
+          <div className="flex flex-col gap-4 border-b border-outline-variant/50 bg-background px-4 pb-4 pt-6 sm:flex-row sm:items-end sm:justify-between sm:px-6 md:px-10 md:pb-6 md:pt-8">
             <div>
               {title && (
-                <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
+                <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                   {title}
                 </h1>
               )}
@@ -202,7 +222,7 @@ export function AppShell({
           </div>
         )}
 
-        <main className="px-6 py-8 md:px-10">{children}</main>
+        <main className="px-4 py-6 sm:px-6 md:px-10 md:py-8">{children}</main>
       </div>
     </div>
   );

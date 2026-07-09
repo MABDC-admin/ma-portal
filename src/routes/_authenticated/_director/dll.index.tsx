@@ -93,13 +93,13 @@ function DllPortal() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">DLL Review Portal</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">DLL Review Portal</h1>
             <p className="text-[13px] text-slate-500 mt-1">Monitoring Daily Lesson Log compliance across all departments.</p>
           </div>
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           <KpiCard
             icon="description" iconBg="bg-blue-50 text-primary"
             title="TOTAL SUBMISSIONS" value={kpiQ.data?.total ?? 0}

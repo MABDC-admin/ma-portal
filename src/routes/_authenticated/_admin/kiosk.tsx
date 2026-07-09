@@ -266,13 +266,13 @@ function KioskPage() {
       onClick={() => wake()}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-8 pt-6">
+      <div className="flex items-center justify-between px-4 sm:px-8 pt-4 sm:pt-6">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md ring-1 ring-white/20">
             <Icon name="face_retouching_natural" filled className="text-white" />
           </div>
           <div>
-            <p className="font-display text-xl font-extrabold tracking-tight">Attendance Kiosk</p>
+            <p className="font-display text-lg sm:text-xl font-extrabold tracking-tight">Attendance Kiosk</p>
             <p className="text-xs text-white/60">
               {timeLabel} · {dateLabel}
             </p>
@@ -287,7 +287,7 @@ function KioskPage() {
         </Link>
       </div>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-8 py-8 md:grid-cols-[1fr_320px]">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:gap-8 px-4 sm:px-8 py-6 sm:py-8 md:grid-cols-[1fr_320px]">
         {/* Camera stage */}
         <div className="space-y-4">
           <SessionBanner

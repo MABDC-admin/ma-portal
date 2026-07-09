@@ -137,22 +137,22 @@ function LearnersPage() {
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-surface-container-low/80 backdrop-blur-md sticky top-0 z-10 border-b border-outline-variant">
                 <tr>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     LRN
                   </th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Name
                   </th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Email
                   </th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Grade
                   </th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Section
                   </th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Status
                   </th>
                   <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary text-right">
@@ -166,16 +166,16 @@ function LearnersPage() {
                     key={l.user_id}
                     className="hover:bg-surface-container-low/30 transition-colors"
                   >
-                    <td className="px-6 py-4 font-mono text-xs text-tertiary">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono text-xs text-tertiary">
                       {l.student_number}
                     </td>
-                    <td className="px-6 py-4 font-semibold text-foreground">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-foreground">
                       {l.profiles?.full_name ?? "—"}
                     </td>
-                    <td className="px-6 py-4 text-xs text-tertiary">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs text-tertiary">
                       {l.profiles?.email ?? "—"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
                       {l.sections ? (
                         <span className="inline-flex items-center rounded-md bg-primary-container/30 px-2 py-1 text-xs font-semibold text-primary">
                           {gradeLabel(l.sections.grade_level)}
@@ -184,9 +184,9 @@ function LearnersPage() {
                         <span className="text-xs text-tertiary">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-xs">{l.sections?.name ?? "—"}</td>
-                    <td className="px-6 py-4 text-xs capitalize">{l.status}</td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs">{l.sections?.name ?? "—"}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs capitalize">{l.status}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <Link
                         to="/learners/$id"
                         params={{ id: l.user_id }}
