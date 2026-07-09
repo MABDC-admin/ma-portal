@@ -1,66 +1,45 @@
-# Teacher Portal Expansion + Attendance Kiosk
+## Goal
 
-## Scope confirmed
-- All 4 teacher-portal additions
-- Anecdotal notifications → **Academic Director** only
-- Attendance = **daily bulk grid** (one row per student per day)
-- New: **Attendance Kiosk** with front-camera face recognition for student self check-in
+Provision 16 real accounts from the pasted roster into the app:
+- **15 teachers**
+- **Glorie Ann I. Espinosa** as **academic_director**
 
----
+Each account gets: auth user (email + password) → `profiles` → `user_roles` → `teachers` row (teachers only).
 
-## 1. Teacher — My DLLs
-- Route `src/routes/_authenticated/_teacher/dll.index.tsx`
-- Server fn `listMyDllsFn` (RLS-scoped by `teacher_id = auth.uid()`)
-- Filter chips: All / Draft / Submitted / Approved / Returned
-- Card list → click opens teacher detail
+## Decisions (locked in)
 
-## 2. Teacher — DLL Detail (read-only + duplicate)
-- Route `src/routes/_authenticated/_teacher/dll.$id.tsx`
-- Shows lesson content + director feedback banner (color-coded by status)
-- "Duplicate as new draft" action for `returned` entries → prefills `/dll/new`
+- **Passwords**: use the exact codes provided (option A). `auth.admin.createUser` bypasses HIBP, so seeding succeeds; users will only hit HIBP when they later change their own password.
+- **Department**: left blank (`''`) — editable per teacher later on the Teachers page.
+- **Subjects**: left empty (`{}`) — editable later.
+- **Employee IDs**: auto-assigned sequentially `EMP-2001 … EMP-2015` in the order pasted (Glorie Ann is the academic director, so no `teachers` row / no employee ID for her).
 
-## 3. Teacher — My Sections → Roster + Attendance
-- Route `src/routes/_authenticated/_teacher/sections.$id.tsx` — roster + today's summary
-- Route `src/routes/_authenticated/_teacher/sections.$id.attendance.tsx` — daily bulk grid
-  - Date picker (defaults today), single row per student per day
-  - Bulk toolbar: "Mark all present", per-row toggle (Present / Absent / Late / Excused), notes field
-  - Save = upsert on `(student_id, date)`
-- Server fns: `listSectionRosterFn`, `getSectionAttendanceFn(date)`, `upsertAttendanceFn` (teacher must advise the section)
+If any of the three defaults above is wrong, tell me before I run it.
 
-## 4. Teacher — Anecdotal Entries
-- **New table `anecdotal_entries`**: `student_id`, `teacher_id`, `category` (enum: academic / behavioral / social / achievement), `note` (text), `occurred_on` (date)
-- Route `src/routes/_authenticated/_teacher/students.$id.anecdotal.tsx` — list + create form
-- Server fn `createAnecdotalFn` → inserts row + emails **all Academic Directors** via `sendMabdcEmail` with student name, teacher, category, note excerpt, link to student profile
-- Directors get a read-only surface too: `src/routes/_authenticated/_director/anecdotal.tsx` (list, filter by student/teacher)
+## Implementation
 
-## 5. Attendance Kiosk (public, per-section)
-- Route `src/routes/_authenticated/_teacher/sections.$id.kiosk.tsx` (teacher launches it on a shared device; stays authenticated as the teacher)
-- Fullscreen UI: live front-camera video, subtle scanning animation, big status area
-- Uses **face-api.js** (browser, WASM/tiny models) — TinyFaceDetector + FaceLandmark68Net + FaceRecognitionNet
-- Flow:
-  1. On mount, load descriptors for all students in the section (from `students.face_descriptor`)
-  2. Video loop → detect face → compute descriptor → nearest neighbor (euclidean < 0.5)
-  3. Match → call `kioskCheckInFn({ studentId, sectionId })` → server verifies teacher advises section, upserts today's attendance as `present`, returns student name + time
-  4. Show greeting card: photo/initials, "Welcome, {name} — 7:42 AM ✓", 3-second cooldown per student to prevent double-scan
-  5. No match after N frames → "Face not recognized — please see your teacher"
-- **Enrollment**: on `sections.$id.tsx` roster, each student row gets an "Enroll face" button that opens a modal, captures 3 samples, averages the descriptor, saves to `students.face_descriptor` (float[])
+1. **`src/lib/admin-seed.functions.ts`** — new server function `seedFacultyFn`:
+   - `createServerFn({ method: "POST" })` + `.middleware([requireSupabaseAuth])`
+   - Verifies caller has role `admin` via `has_role` RPC (rejects otherwise)
+   - Dynamic-imports `supabaseAdmin` inside the handler (per server-fn rules)
+   - Hardcoded roster array (16 rows: `full_name`, `email`, `password`, `role`)
+   - For each row:
+     - `supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name } })`
+     - If email already exists → skip and record
+     - Upsert `profiles` (`id`, `email`, `full_name`, `role`)
+     - Upsert `user_roles` (`user_id`, `role`)
+     - If `role === 'teacher'` → upsert `teachers` (`user_id`, `employee_id`, `department=''`, `subjects='{}'`)
+   - Returns `{ created: [...], skipped: [...], errors: [...] }`
 
-## Database migration
-1. `students`: add `face_descriptor float8[]`, `photo_url text` (nullable)
-2. `anecdotal_entries` table (CREATE → GRANT authenticated + service_role → RLS → policies):
-   - Teacher can insert own; teacher can read own; academic_director can read all
-3. `attendance`: ensure unique `(student_id, date)` for upsert; teacher policies scoped via `sections.adviser_id = auth.uid()`
+2. **`src/routes/_authenticated/_admin/seed-faculty.tsx`** — one-button admin page:
+   - Shows the 16-row roster preview
+   - "Seed Faculty" button calls `seedFacultyFn` via `useServerFn`
+   - Renders per-row status (created / skipped / error) after run
+   - Idempotent — safe to re-click
 
-## Navigation
-- Extend `AppShell` teacher menu: Dashboard · My DLLs · New DLL · My Sections
-- Section detail page has action buttons: **Take Attendance**, **Launch Kiosk**, **Enroll Faces**
-- Director menu gains: **Anecdotal Log**
+3. Add a "Seed Faculty" link in the admin nav (removable after use).
 
-## Dependencies
-- `face-api.js` (bun add) + copy model weights to `/public/models/` (tiny_face_detector, face_landmark_68, face_recognition)
+## After the seed
 
-## Tech notes
-- All new writes go through `createServerFn` + `requireSupabaseAuth`; kiosk check-in verifies caller is section adviser server-side
-- Face descriptors stay in DB (float[128]); matching happens client-side in kiosk (avoids uploading video)
-- Email helper reused from `src/lib/mail.server.ts`; anecdotal notification queries `profiles` for role=`academic_director`
-- Design: kiosk uses dark gradient bg, large rounded video frame, animated scan ring, MABDC brand tokens
+- Confirm in `/teachers` that all 15 appear.
+- Confirm Glorie Ann shows up in the Academic Director surfaces (Faculty Directory, DLL review queue).
+- Share the credentials with each teacher via your own channel.
