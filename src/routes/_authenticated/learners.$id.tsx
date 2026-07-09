@@ -419,41 +419,6 @@ function LearnerProfilePage() {
                 ) : (
                   <div className="text-center text-sm text-tertiary py-8">No records found.</div>
                 )}
-                
-                {/* MOCK EXTRA CARDS FOR VISUAL PURPOSES IF NO DATA */}
-                {(!anecdotals || anecdotals.length === 0) && (
-                  <>
-                    <div className="bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-status-absent/10 text-status-absent">
-                          URGENT
-                        </span>
-                        <span className="text-[10px] font-semibold text-tertiary">Nov 29, 2023</span>
-                      </div>
-                      <h4 className="text-sm font-bold mb-1">Repeated Unexcused Absence</h4>
-                      <p className="text-xs text-tertiary line-clamp-2 mb-3">Marcus missed the Physics lab for the 3rd time this month without providing a doctor's note...</p>
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-tertiary bg-surface-container/50 self-start px-2 py-1 rounded w-fit">
-                        <Icon name="person" size={12} />
-                        Reported by Dr. Vance
-                      </div>
-                    </div>
-                    
-                    <div className="bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-tertiary/10 text-tertiary">
-                          MONITOR
-                        </span>
-                        <span className="text-[10px] font-semibold text-tertiary">Nov 22, 2023</span>
-                      </div>
-                      <h4 className="text-sm font-bold mb-1">Late to Morning Assembly</h4>
-                      <p className="text-xs text-tertiary line-clamp-2 mb-3">Arrived 20 minutes late citing transportation issues. This is the fourth instance this term.</p>
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-tertiary bg-surface-container/50 self-start px-2 py-1 rounded w-fit">
-                        <Icon name="person" size={12} />
-                        Reported by Mr. Sarah
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
               <button className="flex items-center justify-center gap-2 py-4 border-t border-outline-variant/30 text-xs font-bold text-tertiary hover:bg-surface-container-low/50 transition mt-auto">
                 <Icon name="history" size={16} />
@@ -461,23 +426,6 @@ function LearnerProfilePage() {
               </button>
             </Card>
 
-            {/* RESIDENTIAL ZONE (Map Placeholder) */}
-            <Card className="overflow-hidden">
-              <div className="p-4 border-b border-outline-variant/30">
-                <h3 className="text-sm font-bold font-heading">Residential Zone</h3>
-              </div>
-              <div className="h-32 bg-primary/10 relative flex flex-col items-center justify-center border-b border-outline-variant/30">
-                 {/* Decorative map illustration */}
-                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0wIDIwaDQwTTIwIDB2NDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9Ii4wNSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+PC9zdmc+')", backgroundSize: '20px' }} />
-                 <div className="w-8 h-8 bg-primary rounded-full border-4 border-white shadow-md z-10 flex items-center justify-center animate-bounce">
-                    <Icon name="home" size={14} className="text-white" />
-                 </div>
-              </div>
-              <div className="p-4">
-                <p className="text-[10px] font-bold text-tertiary uppercase tracking-wider mb-1">Registered Address</p>
-                <p className="text-sm font-semibold">822 Oakwood Heights, North Wing</p>
-              </div>
-            </Card>
             
           </div>
         </div>
