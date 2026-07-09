@@ -24,7 +24,7 @@ export const logKioskAttendanceFn = createServerFn({ method: "POST" })
     const { data: student, error: sErr } = await supabase
       .from("students")
       .select(
-        "user_id, section_id, photo_url, profiles!students_user_id_fkey(full_name, email, avatar_url)",
+        "user_id, section_id, photo_url, profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
       )
       .eq("user_id", data.studentId)
       .single();
@@ -74,7 +74,8 @@ export const logKioskAttendanceFn = createServerFn({ method: "POST" })
 
     const { error: upErr } = await supabase
       .from("attendance")
-      .upsert(payload, { onConflict: "student_id,date" });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .upsert(payload as any, { onConflict: "student_id,date" });
     if (upErr) throw new Error(upErr.message);
 
     return {
@@ -104,7 +105,7 @@ export const listEnrolledLearnersFn = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("students")
       .select(
-        "user_id, section_id, photo_url, face_descriptor, sections:section_id(name, grade_level), profiles!students_user_id_fkey(full_name, email, avatar_url)",
+        "user_id, section_id, photo_url, face_descriptor, sections:section_id(name, grade_level), profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
       )
       .not("face_descriptor", "is", null);
     if (error) throw new Error(error.message);
