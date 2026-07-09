@@ -137,7 +137,16 @@ function FaceRegistrationPage() {
                           </div>
                         )}
                         <div>
-                          <p className="font-semibold">{l.full_name || l.email || "Learner"}</p>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActive(l);
+                            }}
+                            className="text-left font-semibold text-foreground hover:text-primary hover:underline"
+                          >
+                            {l.full_name || l.email || "Learner"}
+                          </button>
                           {l.email && (
                             <p className="text-xs text-tertiary">{l.email}</p>
                           )}
