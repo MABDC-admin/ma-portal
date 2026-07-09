@@ -72,9 +72,20 @@ function DllPortal() {
     },
   });
 
-  // Mocking departments for the filter dropdown
-  const departments = ["All Departments", "Science", "History", "Math", "English"];
+  const deptsQ = useQuery({
+    queryKey: ["dll-departments"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("teachers").select("department");
+      if (error) throw error;
+      const set = new Set<string>();
+      for (const r of data ?? []) if (r.department) set.add(r.department);
+      return ["All Departments", ...Array.from(set).sort()];
+    },
+  });
+
+  const departments = deptsQ.data ?? ["All Departments"];
   const statuses = ["All Status", "Submitted", "Approved", "Returned"];
+
 
   return (
     <AppShell>
