@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 
-export const Route = createFileRoute("/faculty")({
+export const Route = createFileRoute("/_authenticated/_director/faculty")({
   head: () => ({
     meta: [
       { title: "Faculty Directory — Horizon Academy" },

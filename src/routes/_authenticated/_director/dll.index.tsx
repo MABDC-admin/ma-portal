@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 
-export const Route = createFileRoute("/dll/")({
+export const Route = createFileRoute("/_authenticated/_director/dll/")({
   head: () => ({
     meta: [
       { title: "DLL Review Portal — AttendCloud" },

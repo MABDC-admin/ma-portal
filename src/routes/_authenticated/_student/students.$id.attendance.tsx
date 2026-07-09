@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 
-export const Route = createFileRoute("/students/$id/attendance")({
+export const Route = createFileRoute("/_authenticated/_student/students/$id/attendance")({
   head: () => ({
     meta: [
       { title: "Attendance Profile — AttendCloud" },

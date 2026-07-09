@@ -3,7 +3,7 @@ import { AppShell, Card } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useState } from "react";
 
-export const Route = createFileRoute("/dll/new")({
+export const Route = createFileRoute("/_authenticated/_teacher/dll/new")({
   head: () => ({
     meta: [
       { title: "New DLL Entry — AttendCloud" },
