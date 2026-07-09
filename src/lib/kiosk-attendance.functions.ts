@@ -113,3 +113,35 @@ export const listEnrolledLearnersFn = createServerFn({ method: "GET" })
       (s) => Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128,
     );
   });
+
+// List every learner (admin only) for face registration.
+export const listLearnersForEnrollmentFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Only admins can register faces");
+
+    const { data, error } = await supabase
+      .from("students")
+      .select(
+        "user_id, student_number, section_id, photo_url, face_descriptor, sections:section_id(name, grade_level), profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
+      )
+      .order("student_number");
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((s) => ({
+      user_id: s.user_id,
+      student_number: s.student_number,
+      photo_url: s.photo_url,
+      section_name: s.sections?.name ?? null,
+      grade_level: s.sections?.grade_level ?? null,
+      full_name: s.profiles?.full_name ?? null,
+      email: s.profiles?.email ?? null,
+      avatar_url: s.profiles?.avatar_url ?? null,
+      has_face:
+        Array.isArray(s.face_descriptor) && (s.face_descriptor as number[]).length === 128,
+    }));
+  });
