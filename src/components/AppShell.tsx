@@ -30,6 +30,7 @@ const nav: NavItem[] = [
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
   { to: "/import-learners", label: "Import Learners", icon: "cloud_upload", roles: ["admin"] },
   { to: "/kiosk", label: "Attendance Kiosk", icon: "face_retouching_natural", roles: ["admin"] },
+  { to: "/face-registration", label: "Face Registration", icon: "face", roles: ["admin"] },
 ];
 
 const roleBadge: Record<AppRole, { label: string; tone: string }> = {
