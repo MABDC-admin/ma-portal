@@ -1,16 +1,27 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Icon } from "./Icon";
+import { useAuth } from "@/hooks/use-auth";
+import type { AppRole } from "@/lib/auth.functions";
 
-const nav = [
-  { to: "/", label: "Live Attendance", icon: "dashboard" },
-  { to: "/teachers", label: "Teachers", icon: "school" },
-  { to: "/faculty", label: "Faculty Directory", icon: "badge" },
-  { to: "/students/alex-chen", label: "Student Profile", icon: "group" },
-  { to: "/students/eleanor-shellstrop/attendance", label: "Attendance Profile", icon: "fact_check" },
-  { to: "/dll", label: "DLL Review", icon: "description" },
-  { to: "/dll/new", label: "New DLL Entry", icon: "note_add" },
-] as const;
+type NavItem = { to: string; label: string; icon: string; roles: AppRole[] };
+
+const nav: NavItem[] = [
+  { to: "/", label: "Live Attendance", icon: "dashboard", roles: ["admin", "teacher"] },
+  { to: "/teachers", label: "Teachers", icon: "school", roles: ["admin"] },
+  { to: "/faculty", label: "Faculty Directory", icon: "badge", roles: ["admin", "academic_director"] },
+  { to: "/dll", label: "DLL Review", icon: "description", roles: ["admin", "academic_director"] },
+  { to: "/dll/new", label: "New DLL Entry", icon: "note_add", roles: ["admin", "teacher"] },
+  { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
+  { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
+];
+
+const roleBadge: Record<AppRole, { label: string; tone: string }> = {
+  admin: { label: "Admin", tone: "bg-status-absent/10 text-status-absent" },
+  academic_director: { label: "Director", tone: "bg-status-late/15 text-status-late" },
+  teacher: { label: "Teacher", tone: "bg-primary-container/40 text-primary" },
+  student: { label: "Student", tone: "bg-status-present/10 text-status-present" },
+};
 
 export function AppShell({
   children,
@@ -24,6 +35,14 @@ export function AppShell({
   actions?: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { profile, logout, hasAnyRole } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const visibleNav = nav.filter((item) => hasAnyRole(item.roles));
+  const role = profile?.role ?? "student";
+  const badge = roleBadge[role];
+  const displayName = profile?.full_name || profile?.email || "User";
+  const userInitials = initials(displayName);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -38,18 +57,20 @@ export function AppShell({
           </div>
         </div>
 
-        <div className="px-4 pb-2">
-          <Link
-            to="/dll/new"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
-          >
-            <Icon name="add_circle" size={18} />
-            <span>New DLL Entry</span>
-          </Link>
-        </div>
+        {hasAnyRole(["admin", "teacher"]) && (
+          <div className="px-4 pb-2">
+            <Link
+              to="/dll/new"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
+            >
+              <Icon name="add_circle" size={18} />
+              <span>New DLL Entry</span>
+            </Link>
+          </div>
+        )}
 
         <nav className="mt-2 flex-1 space-y-1 overflow-y-auto px-3">
-          {nav.map((item) => {
+          {visibleNav.map((item) => {
             const active =
               item.to === "/"
                 ? pathname === "/"
@@ -75,11 +96,13 @@ export function AppShell({
         <div className="border-t border-outline-variant/60 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary">
-              JR
+              {userInitials}
             </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Dr. Julian Rivers</p>
-              <p className="truncate text-xs text-muted-foreground">Academic Director</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{displayName}</p>
+              <span className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-bold ${badge.tone}`}>
+                {badge.label}
+              </span>
             </div>
           </div>
         </div>
@@ -101,6 +124,39 @@ export function AppShell({
             <button className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground" aria-label="Help">
               <Icon name="help" size={20} />
             </button>
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary transition hover:brightness-95"
+                aria-label="Account menu"
+              >
+                {userInitials}
+              </button>
+              {menuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-30"
+                    onClick={() => setMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-11 z-40 w-56 rounded-2xl border border-outline-variant bg-surface p-2 shadow-xl">
+                    <div className="border-b border-outline-variant/50 px-3 py-2">
+                      <p className="truncate text-sm font-semibold">{displayName}</p>
+                      <p className="truncate text-xs text-tertiary">{profile?.email}</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        setMenuOpen(false);
+                        await logout();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-status-absent transition hover:bg-surface-container"
+                    >
+                      <Icon name="logout" size={18} />
+                      Sign Out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 
@@ -120,6 +176,15 @@ export function AppShell({
       </div>
     </div>
   );
+}
+
+function initials(name: string) {
+  return name
+    .split(/[\s@._-]+/)
+    .map((n) => n[0]?.toUpperCase())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
 }
 
 export function StatusPill({
@@ -147,7 +212,5 @@ export function StatusPill({
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`glass-card rounded-2xl ${className}`}>{children}</div>
-  );
+  return <div className={`glass-card rounded-2xl ${className}`}>{children}</div>;
 }

@@ -1,83 +1,109 @@
-## AttendCloud — build plan
+# Role-Based Auth Plan for AttendCloud
 
-A directors-and-teachers portal for tracking student attendance and reviewing Daily Lesson Logs (DLLs). Port the 8 provided HTML screens as pixel-faithfully as reasonable into the existing TanStack Start template, with a shared sidebar shell, client-side routing, and static mock data (no backend).
+## Goal
+Add email/password authentication and four role-based portals: **Admin**, **Academic Director**, **Teacher**, and **Student**. Admin assigns roles manually. Existing screens will be gated by role.
 
-### Screens & routes
+## Roles & Portal Mapping
 
-| # | Route | Screen (from HTML) |
-|---|---|---|
-| 1 | `/` (index) | **Live Attendance** — real-time class check-in board with weekly summary and activity feed (file 8) |
-| 2 | `/teachers` | **Teacher Management** — searchable/filterable teacher roster with role, subjects, status (file 5) |
-| 3 | `/faculty` | **Faculty Directory** (Horizon Academy) — richer directory view with headline stats (file 12) |
-| 4 | `/students/:id` | **Student Profile** — Alex Chen overview: 30-day trend, subject breakdown, activity log (file 6) |
-| 5 | `/students/:id/attendance` | **Student Attendance Profile** — Eleanor Shellstrop: trends, current month calendar, detailed log (file 7) |
-| 6 | `/dll/new` | **New DLL Entry** — multi-section form: Lesson Identity, Curriculum Delivery, Reflection & Action Plan (file 9) |
-| 7 | `/dll` | **DLL Review Portal** — director dashboard with submissions queue, trends chart, memo (file 10) |
-| 8 | `/dll/:id` | **DLL Review Detail** — single submission review with feedback + history logs (file 11) |
+| Role | Screens / Access |
+|------|------------------|
+| **Admin** | Teacher Management, Faculty Directory, User Management (assign roles), all read access |
+| **Academic Director** | DLL Review Portal, DLL Review Detail, Faculty Directory (read), DLL approval/feedback |
+| **Teacher** | Live Attendance, New DLL Entry, own Teacher/Faculty view, submit lesson logs |
+| **Student** | Student Profile, Student Attendance (own records only) |
 
-Home (`/`) is Live Attendance so a first-time visitor lands on something concrete.
+## Database Schema
 
-### Design system
+1. **Enum**: `app_role` (`admin`, `academic_director`, `teacher`, `student`).
+2. **Table**: `public.profiles`
+   - `id uuid` (PK, refs `auth.users` on delete cascade)
+   - `email text`
+   - `full_name text`
+   - `avatar_url text` (optional)
+   - `role app_role` (default `student` until admin changes)
+   - `created_at`, `updated_at` timestamps
+   - GRANTs + RLS: users read own profile; admins read all; admins update role.
+3. **Table**: `public.user_roles`
+   - `id uuid` PK
+   - `user_id uuid` (refs `auth.users`)
+   - `role app_role`
+   - unique `(user_id, role)`
+   - GRANTs + RLS: authenticated select; service_role all.
+4. **Function**: `public.has_role(_user_id uuid, _role app_role)` — security definer for RLS/policy checks.
+5. **Trigger**: auto-create `profiles` row on `auth.users` insert with default role `student`.
 
-Pulled straight from the mockups so all 8 screens feel like one product:
+## Auth Flow
 
-- **Fonts:** Manrope (600/700/800) for headings, Inter (400/500/600/700) for body, JetBrains Mono (500) for numeric/kpi values. Load via `@fontsource` packages, imported once in `src/router.tsx` (client entry). Wire into Tailwind v4 via `--font-*` tokens in `src/styles.css`.
-- **Icons:** Material Symbols Outlined via Google Fonts `<link>` in `src/routes/__root.tsx` head (per template rule — no CSS `@import` for remote fonts).
-- **Palette:** neutral canvas with a single brand accent. Semantic tokens in `src/styles.css` (`--background`, `--foreground`, `--primary`, `--muted`, `--card`, `--border`, `--accent`, plus status colors `--success`, `--warning`, `--destructive`). Values sampled from the mockups (soft off-white background, deep ink foreground, indigo/blue primary, mint success, amber warning, coral destructive). No hardcoded hex in components.
-- **Radii & spacing:** `--radius: 0.75rem`; cards use `rounded-2xl`, chips `rounded-full`.
-- **Charts:** Recharts (already OK for TanStack) for the 30-day trend, subject breakdown, submission trends, weekly summary sparklines.
+1. **Sign-up / Sign-in page** at `/auth`
+   - Tabs for login and register.
+   - Uses `supabase.auth.signInWithPassword` and `supabase.auth.signUp`.
+   - Email confirmation required (no auto-confirm unless requested).
+2. **Reset password page** at `/reset-password`
+   - Handles `type=recovery` hash param.
+   - Calls `supabase.auth.updateUser({ password })`.
+3. **Protected layout** `src/routes/_authenticated/route.tsx`
+   - Integration-managed, `ssr: false`, redirects to `/auth` if no session.
+4. **Role-gated pathless layouts**
+   - `/_authenticated/_admin`
+   - `/_authenticated/_director`
+   - `/_authenticated/_teacher`
+   - `/_authenticated/_student`
+   - Each uses `beforeLoad` + `hasRole` check, redirecting to `/unauthorized` if role mismatch.
+5. **Sign-out affordance**
+   - Update `AppShell` header to show user avatar/menu with sign-out when authenticated.
+   - Sign-out clears TanStack Query cache, calls `supabase.auth.signOut()`, then navigates to `/auth`.
 
-### Shared shell
+## Server Functions
 
-`src/components/AppShell.tsx` renders:
-- Left sidebar: AttendCloud wordmark, nav items (Live, Teachers, Faculty, Students, DLL, Review), user chip.
-- Top bar: page title slot, search, notifications, avatar.
-- `<Outlet />` content area with consistent max-width and padding.
+Create `src/lib/auth.functions.ts` (client-safe path):
 
-Applied via a pathless layout route `src/routes/_app.tsx` so every screen except a future login inherits it. Every leaf route sets its own `head()` (title + description + og text).
+- `getCurrentUser()` — returns current `profiles` row + roles; uses `requireSupabaseAuth`.
+- `listUsers()` — admin only; returns all profiles with roles.
+- `assignRole({ userId, role })` — admin only; updates `profiles.role` and upserts `user_roles`.
+- `updateProfile({ fullName, avatarUrl })` — own profile only.
 
-### Data
+Admin-only functions verify caller via `context.supabase.rpc('has_role', ...)` before using `supabaseAdmin` where needed.
 
-Static mock data in `src/lib/mock/` (teachers, students, dll-submissions, attendance-events). Screens read from these modules synchronously — no loaders, no server functions. Interactive bits (filters, form field state, review actions) use local `useState`; nothing persists across reloads. This keeps the port faithful without introducing Cloud/DB scope the user didn't ask for.
+## UI Additions
 
-### Fidelity approach
+1. **Auth page** (`src/routes/auth.tsx`) — login/register form.
+2. **Reset password page** (`src/routes/reset-password.tsx`).
+3. **User Management page** (`src/routes/_authenticated/_admin/users.tsx`) — table of users, role dropdown per row, save action.
+4. **Unauthorized page** (`src/routes/unauthorized.tsx`) — friendly message + link back.
+5. **Update AppShell**
+   - Replace static header with session-aware user menu.
+   - Show role badge.
+   - Add sign-out button.
 
-For each screen I'll open the source HTML, extract the visual structure (grid, cards, table columns, badge variants, icon choices, copy), and rebuild it in React + Tailwind using the shared tokens. Copy (names, numbers, subject lists, memo text) is preserved verbatim so the ported screen reads the same as the mockup. Charts get realistic-looking generated series matching the shape shown in the HTML.
+## Route Reorganization
 
-### Files to add / change
+Move existing screens under the correct role-gated layouts:
 
-```text
-src/
-  routes/
-    __root.tsx                 (update: add Material Symbols <link>, real title/meta)
-    _app.tsx                   (new: shell layout with <Outlet />)
-    index.tsx                  (replace placeholder → Live Attendance)
-    teachers.tsx
-    faculty.tsx
-    students.$id.tsx
-    students.$id.attendance.tsx
-    dll.tsx                    (review portal list)
-    dll.new.tsx
-    dll.$id.tsx                (review detail)
-  components/
-    AppShell.tsx, Sidebar.tsx, TopBar.tsx
-    ui/  (Card, Badge, Button, Input, Select, Tabs, Table, KpiTile, MiniChart, Avatar, StatusDot)
-    attendance/ (LiveBoard, WeeklySummary, ActivityFeed, MonthCalendar)
-    students/   (ProfileHeader, TrendChart, SubjectBreakdown, ActivityLog)
-    dll/        (DllForm sections, SubmissionsQueue, ReviewPanel, HistoryLogs, DirectorMemo)
-  lib/
-    mock/ (teachers.ts, students.ts, dll.ts, attendance.ts)
-    icons.tsx (small <Icon name="..." /> wrapper over Material Symbols span)
-  styles.css   (update: tokens, font-family vars, base rules)
-```
+- `/` Live Attendance → `/_authenticated/_teacher/`
+- `/teachers` → `/_authenticated/_admin/teachers.tsx`
+- `/faculty` → `/_authenticated/_director/faculty.tsx` (also readable by admin)
+- `/students/:id` → `/_authenticated/_student/students.$id.tsx`
+- `/students/:id/attendance` → `/_authenticated/_student/students.$id.attendance.tsx`
+- `/dll` → `/_authenticated/_director/dll.index.tsx`
+- `/dll/new` → `/_authenticated/_teacher/dll.new.tsx`
+- `/dll/:id` → `/_authenticated/_director/dll.$id.tsx`
 
-### Out of scope (call out)
+Admin routes will also allow director/teacher views where appropriate via `hasAnyRole(['admin', ...])`.
 
-- No auth, no Lovable Cloud, no persistence — pure UI port with mock data.
-- No mobile-specific redesign; layouts follow the desktop HTML mockups and adapt down with sensible stacking.
-- Screens for files 1–4 and 13 (login/dashboard/etc.) are **not** built — you chose to proceed with the 8 available. Nav links only route to what exists.
-- Charts approximate the shapes shown; exact pixel-identical curves aren't guaranteed.
+## Configuration
 
-### Verification
+- Enable email auth in Lovable Cloud.
+- Keep HIBP password protection enabled.
+- Ensure `attachSupabaseAuth` is registered in `src/start.ts` (already present).
+- Update `src/integrations/supabase/types.ts` by regenerating types after schema changes.
 
-After the build I'll run the app in the sandbox with Playwright, screenshot each of the 8 routes at 1280×1800, and compare against the source HTML for layout, typography, and content parity. Fix anything visibly off before handing back.
+## Out of Scope (unless requested)
+
+- Social login (Google/Apple).
+- Auto role assignment by email domain.
+- Email customization / custom auth templates.
+- Profile avatars upload (URL only for now).
+
+## Next Step
+
+Approve this plan and I will implement the schema, auth pages, role gates, and user management screen.
