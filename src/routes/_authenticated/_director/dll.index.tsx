@@ -37,7 +37,7 @@ function DllPortal() {
     queryFn: async () => {
       let q = supabase
         .from("dlls")
-        .select("id, subject, lesson_date, status, submitted_at, teacher_id, section_id, profiles:teacher_id(email, full_name), sections:section_id(name)")
+        .select("id, subject, lesson_date, status, submitted_at, teacher_id, section_id, profiles!dlls_teacher_profile_fkey(email, full_name), sections:section_id(name)")
         .order("submitted_at", { ascending: false, nullsFirst: false });
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;

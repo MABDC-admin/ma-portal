@@ -17,7 +17,7 @@ function StudentProfile() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("students")
-        .select("user_id, student_number, status, section_id, profiles:user_id(email, full_name), sections:section_id(name, grade_level, academic_year)")
+        .select("user_id, student_number, status, section_id, profiles!students_user_id_profiles_fkey(email, full_name), sections:section_id(name, grade_level, academic_year)")
         .eq("user_id", id)
         .maybeSingle();
       if (error) throw error;

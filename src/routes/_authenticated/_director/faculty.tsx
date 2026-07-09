@@ -20,7 +20,7 @@ function FacultyPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("teachers")
-        .select("user_id, employee_id, department, subjects, status, profiles:user_id(email, full_name)")
+        .select("user_id, employee_id, department, subjects, status, profiles!teachers_user_id_profiles_fkey(email, full_name)")
         .order("employee_id");
       if (error) throw error;
       return data ?? [];
