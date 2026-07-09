@@ -112,7 +112,11 @@ function FaceRegistrationPage() {
               </thead>
               <tbody>
                 {filtered.map((l) => (
-                  <tr key={l.user_id} className="border-t border-outline-variant">
+                  <tr
+                    key={l.user_id}
+                    onClick={() => setActive(l)}
+                    className="cursor-pointer border-t border-outline-variant transition hover:bg-surface-container/60"
+                  >
                     <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         {l.photo_url || l.avatar_url ? (
