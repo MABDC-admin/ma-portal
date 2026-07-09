@@ -462,3 +462,49 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
     </div>
   );
 }
+
+type Box = { x: number; y: number; width: number; height: number };
+
+function snapshotFromVideo(video: HTMLVideoElement, box?: Box): string {
+  return snapshotFromSource(video, video.videoWidth, video.videoHeight, box, true);
+}
+
+function snapshotFromImage(img: HTMLImageElement, box?: Box): string {
+  return snapshotFromSource(img, img.naturalWidth, img.naturalHeight, box, false);
+}
+
+function snapshotFromSource(
+  source: CanvasImageSource,
+  sw: number,
+  sh: number,
+  box: Box | undefined,
+  mirror: boolean,
+): string {
+  const size = 160;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+  const pad = 0.4;
+  let sx: number, sy: number, sSize: number;
+  if (box) {
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+    sSize = Math.max(box.width, box.height) * (1 + pad);
+    sx = Math.max(0, cx - sSize / 2);
+    sy = Math.max(0, cy - sSize / 2);
+    sSize = Math.min(sSize, Math.min(sw - sx, sh - sy));
+  } else {
+    sSize = Math.min(sw, sh);
+    sx = (sw - sSize) / 2;
+    sy = (sh - sSize) / 2;
+  }
+  if (mirror) {
+    ctx.translate(size, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(source, sx, sy, sSize, sSize, 0, 0, size, size);
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
