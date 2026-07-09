@@ -231,90 +231,17 @@ function DllPortal() {
             </table>
           </div>
           
-          {/* Pagination Mock */}
-          <div className="px-5 py-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-[12px] text-slate-500 font-medium">Showing 1-10 of {kpiQ.data?.total ?? 0} submissions</span>
-            <div className="flex gap-1">
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50"><Icon name="chevron_left" size={16} /></button>
-              <button className="w-7 h-7 rounded bg-primary text-white text-[12px] font-bold flex items-center justify-center">1</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">2</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">3</button>
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50"><Icon name="chevron_right" size={16} /></button>
-            </div>
+          <div className="px-5 py-4 border-t border-slate-100">
+            <span className="text-[12px] text-slate-500 font-medium">
+              {dllsQ.data?.length ?? 0} of {kpiQ.data?.total ?? 0} submissions
+            </span>
           </div>
         </div>
-
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: '0.25s' }}>
-          
-          <div className="lg:col-span-2 glass-panel rounded-xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-            <h3 className="text-lg font-bold text-slate-800 mb-6">Submission Trends</h3>
-            <div className="bg-[#f8fafc] rounded-xl p-6 h-64 flex items-end justify-between gap-4">
-              {/* Mock Bar Chart */}
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-blue-200 rounded-t-sm h-12"></div>
-                <span className="text-[10px] font-bold text-slate-400">MON</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-blue-300 rounded-t-sm h-20"></div>
-                <span className="text-[10px] font-bold text-slate-400">TUE</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-blue-400 rounded-t-sm h-32"></div>
-                <span className="text-[10px] font-bold text-slate-400">WED</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-blue-100 rounded-t-sm h-16 border-2 border-primary/20 relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-lg border-2 border-primary/30 flex items-center justify-center">
-                      <div className="w-2 h-4 bg-primary/20"></div>
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold text-slate-400">THU</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-blue-500 rounded-t-sm h-40"></div>
-                <span className="text-[10px] font-bold text-slate-400">FRI</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-primary rounded-t-sm h-48"></div>
-                <span className="text-[10px] font-bold text-slate-400">SAT</span>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-full">
-                <div className="w-full bg-primary rounded-t-sm h-44"></div>
-                <span className="text-[10px] font-bold text-slate-400">SUN</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-primary rounded-xl p-6 shadow-md text-white flex flex-col justify-between">
-            <div>
-              <h3 className="text-xl font-bold mb-3">Director's Memo</h3>
-              <p className="text-[13px] leading-relaxed text-blue-50 mb-6">
-                Science department has achieved 100% submission rate for 3 consecutive weeks. Great job, Team!
-              </p>
-              
-              <div className="bg-white/10 border border-white/20 rounded-lg p-4 flex gap-4 items-center backdrop-blur-md">
-                <Icon name="campaign" size={24} className="text-blue-100" />
-                <div>
-                  <p className="text-[12px] font-bold text-white">Next Faculty Meeting</p>
-                  <p className="text-[11px] text-blue-100">Friday, Oct 27 - 3:00 PM</p>
-                </div>
-              </div>
-            </div>
-            
-            <button className="w-full bg-white text-primary rounded-lg py-2.5 text-[13px] font-bold mt-6 shadow-sm hover:bg-slate-50 transition">
-              Broadcast Announcement
-            </button>
-          </div>
-
-        </div>
-
       </div>
     </AppShell>
   );
 }
+
 
 function KpiCard({ icon, iconBg, title, value, badge, badgeColor }: any) {
   return (
