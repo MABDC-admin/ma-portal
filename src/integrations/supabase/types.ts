@@ -215,6 +215,30 @@ export type Database = {
         }
         Relationships: []
       }
+      school_years: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          year: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
       sections: {
         Row: {
           academic_year: string
