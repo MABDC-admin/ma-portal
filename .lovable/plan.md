@@ -1,57 +1,70 @@
+## Goal
 
-# Wire all portals to real data
+Send email notifications through the MABDC mail API (`https://api-mail.mabdc.com/v1/emails`) whenever key workflow events happen: DLL submission, DLL approval, DLL return (with feedback), and anecdotal entry creation.
 
-## Schema (new tables in `public`)
+## Secret handling
 
-- **teachers** — `user_id` (PK/FK auth.users), `employee_id`, `department`, `subjects` text[], `status` (active/inactive)
-- **sections** — `id`, `name` (e.g. "Grade 10 - Rizal"), `grade_level`, `adviser_id` (FK teachers), `academic_year`
-- **students** — `user_id` (PK/FK auth.users), `student_number` (LRN), `section_id`, `status`
-- **attendance** — `id`, `student_id`, `section_id`, `date`, `status` (present/absent/late/excused), `recorded_by` (teacher), unique(student, date)
-- **dlls** — `id`, `teacher_id`, `section_id`, `subject`, `lesson_date`, `objectives`, `content`, `procedures`, `assessment`, `status` (draft/submitted/approved/returned), `submitted_at`, `reviewed_by`, `reviewed_at`, `feedback`
+- Store the API key as a backend secret named `MABDC_MAIL_API_KEY` via the secret tool (never commit it, never expose to the browser).
+- Since the key was pasted in chat, rotate it after setup is confirmed — mention this to the user.
 
-Enums: `attendance_status`, `dll_status`, `teacher_status`.
+## Email sender helper
 
-All tables: `created_at`/`updated_at`, GRANTs to `authenticated`+`service_role`, RLS on.
+Create `src/lib/mail.server.ts` with a single `sendMabdcEmail({ to, subject, html })` function:
 
-## RLS policies
+- Reads `MABDC_MAIL_API_KEY` from `process.env` inside the function (not at module scope).
+- POSTs to `https://api-mail.mabdc.com/v1/emails` with `Authorization: Bearer …` and JSON `{ to, from: "notifications@mabdc.org", subject, html }`.
+- On non-2xx, log the status + body and throw; callers wrap in try/catch so a mail failure never blocks the DB write.
 
-- **teachers**: admin manages all; teacher reads own; director reads all.
-- **sections**: admin manages; teacher/director/student can read.
-- **students**: admin manages; student reads own; teacher reads students in their sections; director reads all.
-- **attendance**: admin all; student reads own; teacher inserts/reads for their section.
-- **dlls**: admin all; teacher CRUD own drafts, read own; director reads all + updates status/feedback.
+A small `renderEmail({ title, intro, bodyHtml, ctaLabel?, ctaUrl? })` helper produces branded HTML (header, body, CTA button, footer) reused across all notification types.
 
-## Seed (one-time, in a migration)
+## Notification triggers
 
-- 3 demo auth users are already created; add 2 more teachers, 8 students, 2 sections, ~2 weeks of attendance, 6 DLLs across statuses. Idempotent — only inserts if the email exists in `profiles`.
+All triggers live inside existing server functions (or new ones) so RLS + auth are enforced. Each fires **after** the DB mutation succeeds and is best-effort.
 
-## Server functions (`src/lib/*.functions.ts`)
+1. **DLL submitted** (teacher → directors)
+   - Trigger: DLL status transitions `draft → submitted`.
+   - Recipients: all users with role `academic_director` (query `profiles` by role).
+   - Content: teacher name, subject, section, lesson date, link to `/dll/<id>` (director view).
 
-- `teachers.functions.ts` — list/create/update/deactivate
-- `students.functions.ts` — list, get by id, list-my-section
-- `attendance.functions.ts` — mark bulk, get by student, get by section+date
-- `dlls.functions.ts` — list (filtered by role), get, create draft, submit, review (approve/return with feedback)
-- `faculty.functions.ts` — compliance aggregate: submissions per teacher over date range
+2. **DLL approved** (director → teacher)
+   - Trigger: status → `approved`.
+   - Recipient: the DLL's teacher (`teachers.user_id` → `profiles.email`).
+   - Content: DLL title/subject/date, reviewer name, optional feedback, link to teacher DLL view.
 
-All use `requireSupabaseAuth`; RLS enforces the access.
+3. **DLL returned** (director → teacher)
+   - Trigger: status → `returned`.
+   - Recipient: teacher owner.
+   - Content: reviewer name, **required feedback text**, link to teacher DLL edit view.
 
-## UI rewiring (existing files, keep design)
+4. **Anecdotal entry created** (teacher → student's guardians/self and section adviser)
+   - Trigger: new row in the anecdotal table (need to confirm existence — see Open questions).
+   - Recipients: the student's profile email (if present) + section adviser.
+   - Content: entry date, category/severity if present, short excerpt, link to student profile.
 
-- **Admin → Teachers** — replace mock with `listTeachers()` + create dialog (creates auth user + profile + role + teacher row via admin fn).
-- **Teacher → Home (index)** — today's schedule = sections adviser-of, quick "Mark attendance" + "New DLL" using real sections.
-- **Teacher → New DLL** — dropdowns from real sections; save as draft or submit.
-- **Director → DLL index / DLL detail** — real list filtered by status; approve/return with feedback.
-- **Director → Faculty compliance** — real aggregate.
-- **Student → Me / Profile / Attendance** — real profile + attendance history.
+## Server-function changes
 
-## Out of scope this turn
+Files to touch (add try/catch mail dispatch after the successful update/insert):
 
-- Bulk import, notifications, calendar UI beyond a simple date picker, exports.
+- `src/lib/dlls.functions.ts` (or wherever `submitDll` / `reviewDll` live — will confirm during build).
+- The anecdotal server function (to confirm).
+- New `src/lib/mail.server.ts`.
 
-## Sequencing (one turn each, in order)
+Each dispatch fetches the minimal recipient data with `context.supabase` (RLS-safe), builds the HTML via `renderEmail`, and calls `sendMabdcEmail`. Failures are logged and swallowed.
 
-1. Schema migration (tables + enums + RLS + grants).
-2. Seed migration.
-3. Server functions + UI rewiring.
+## Frontend
 
-Step 1 posts a migration for your approval first.
+No UI changes required. Existing buttons (Submit, Approve, Return, Save anecdotal) already call the server functions; adding email inside those functions is transparent to the client.
+
+## Verification
+
+After build:
+1. Sign in as a teacher, submit a DLL → confirm directors receive email.
+2. Sign in as director, approve + return → confirm teacher receives both.
+3. Create an anecdotal entry → confirm recipient list gets email.
+4. Check server-function logs for any non-2xx responses from the mail API.
+
+## Open questions (need answers before build)
+
+1. **Anecdotal entries** — I don't see an anecdotal table in the current schema (only `attendance`, `dlls`, etc.). Should I add an `anecdotal_entries` table (student_id, teacher_id, date, category, notes, severity) as part of this change, or does it already exist under another name?
+2. **Sender identity** — OK to use `notifications@mabdc.org` as the `from` address, or do you want a specific mailbox (e.g. `no-reply@mabdc.org`, `dll@mabdc.org`)?
+3. **Base URL for links** — should email CTA links use the published domain (once known) or the current preview URL for now? I'll default to a `PUBLIC_APP_URL` env var, falling back to the request origin.
