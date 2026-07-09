@@ -538,14 +538,45 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         </div>
 
         {mode === "camera" ? (
-          <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="h-full w-full object-cover [transform:scaleX(-1)]"
-            />
+          <div className="space-y-2">
+            <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="h-full w-full object-cover [transform:scaleX(-1)]"
+              />
+              <canvas
+                ref={overlayRef}
+                className="pointer-events-none absolute inset-0 h-full w-full"
+              />
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 px-3 py-2 text-center text-xs font-semibold text-white ${liveOk ? "bg-emerald-600/80" : "bg-black/60"}`}
+              >
+                <Icon
+                  name={liveOk ? "check_circle" : "info"}
+                  size={14}
+                  filled
+                />
+                {liveHint}
+              </div>
+              <div className="pointer-events-none absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-bold text-white">
+                {samples.length} / {TARGET_SAMPLES}
+              </div>
+            </div>
+            <label className="flex cursor-pointer items-center justify-between rounded-lg bg-surface-container px-3 py-2 text-xs font-semibold">
+              <span className="flex items-center gap-2">
+                <Icon name="bolt" size={16} filled />
+                Auto-capture quality samples
+              </span>
+              <input
+                type="checkbox"
+                checked={autoCapture}
+                onChange={(e) => setAutoCapture(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+            </label>
           </div>
         ) : (
           <label className="flex aspect-video cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container text-tertiary hover:border-primary hover:text-primary">
