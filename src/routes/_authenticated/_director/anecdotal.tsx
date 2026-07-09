@@ -41,6 +41,8 @@ function getCategoryPill(cat: string) {
 function DirectorAnecdotalPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
 
+  const q = useQuery({
+    queryKey: ["director-anecdotals"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("anecdotal_entries")
@@ -52,7 +54,7 @@ function DirectorAnecdotalPage() {
           )
         `)
         .order("occurred_on", { ascending: false });
-        
+
       if (error) throw error;
       return (data ?? []) as unknown as AnecdotalRow[];
     },
@@ -63,16 +65,13 @@ function DirectorAnecdotalPage() {
     if (categoryFilter !== "All Categories") {
       all = all.filter(r => r.category.toLowerCase() === categoryFilter.toLowerCase());
     }
-    if (concernFilter !== "All Levels") {
-      all = all.filter(r => getMockConcernLevel(r.id).label === concernFilter);
-    }
     return all;
-  }, [q.data, categoryFilter, concernFilter]);
+  }, [q.data, categoryFilter]);
 
-  // Aggregate mock metrics
   const totalEntries = q.data?.length ?? 0;
-  const urgentConcerns = q.data?.filter(r => getMockConcernLevel(r.id).label === "Urgent").length ?? 0;
-  const pendingRes = q.data?.filter(r => getMockStatus(r.id).label === "Open").length ?? 0;
+  const behavioralCount = q.data?.filter(r => r.category.toLowerCase() === "behavioral").length ?? 0;
+  const academicCount = q.data?.filter(r => r.category.toLowerCase() === "academic").length ?? 0;
+
 
   return (
     <AppShell>
