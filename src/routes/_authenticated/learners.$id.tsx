@@ -362,60 +362,7 @@ function LearnerProfilePage() {
             </Card>
 
 
-            {/* ENROLLED CLASSES */}
-            <div className="mt-2">
-              <h3 className="text-lg font-bold font-heading mb-4 px-2">Enrolled Classes</h3>
-              <Card className="overflow-hidden">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-surface-container/50 border-b border-outline-variant/30">
-                    <tr>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Class Name</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Instructor</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Attendance</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20">
-                    <tr>
-                      <td className="px-4 py-4">
-                        <p className="font-bold">Physics Honors</p>
-                        <p className="text-[10px] text-tertiary mt-0.5">PHY-A</p>
-                      </td>
-                      <td className="px-4 py-4 text-tertiary">Dr. Arthur Vance</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-status-absent w-8">64%</span>
-                          <div className="h-1.5 w-16 bg-outline-variant/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-status-absent rounded-full w-[64%]" />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="bg-status-absent/10 text-status-absent text-[10px] font-bold px-2 py-1 rounded-md">WARNING</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4">
-                        <p className="font-bold">Calculus II</p>
-                        <p className="text-[10px] text-tertiary mt-0.5">MA22-C</p>
-                      </td>
-                      <td className="px-4 py-4 text-tertiary">Ms. Clara Smith</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-primary w-8">88%</span>
-                          <div className="h-1.5 w-16 bg-outline-variant/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full w-[88%]" />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-md">STABLE</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </Card>
-            </div>
+
           </div>
 
           {/* RIGHT COL (Sidebars) */}
