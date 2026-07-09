@@ -163,9 +163,7 @@ function DirectorAnecdotalPage() {
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">STUDENT</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">DATE</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">CATEGORY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">CONCERN LEVEL</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">OBSERVATION SUMMARY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">STATUS</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">ACTIONS</th>
                 </tr>
               </thead>
@@ -174,14 +172,8 @@ function DirectorAnecdotalPage() {
                   const s = r.student?.profiles;
                   const studentName = s?.full_name || s?.email || "Unknown Student";
                   const initial = studentName.charAt(0).toUpperCase();
-                  
-                  const concern = getMockConcernLevel(r.id);
-                  const status = getMockStatus(r.id);
-                  
-                  // For the sake of matching the screenshot perfectly, we'll map category strings to those exact terms if possible, or just use DB category
-                  let displayCategory = r.category.toUpperCase();
-                  if (displayCategory === 'BEHAVIORAL') displayCategory = 'DISCIPLINE'; // Mock mapping to match screenshot style
-                  
+                  const displayCategory = r.category.toUpperCase();
+
                   return (
                     <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
@@ -195,7 +187,7 @@ function DirectorAnecdotalPage() {
                           )}
                           <div>
                             <p className="text-[13px] font-bold text-slate-800">{studentName}</p>
-                            <p className="text-[11px] font-medium text-slate-400">ID: #{r.student?.student_number || "0000"}</p>
+                            <p className="text-[11px] font-medium text-slate-400">ID: #{r.student?.student_number || "—"}</p>
                           </div>
                         </div>
                       </td>
@@ -210,41 +202,22 @@ function DirectorAnecdotalPage() {
                           {displayCategory}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${concern.tone}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${concern.dot}`} />
-                          {concern.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 max-w-[250px]">
+                      <td className="px-6 py-4 max-w-[350px]">
                         <p className="text-[12px] text-slate-500 leading-snug truncate" title={r.note}>
-                          {r.note.length > 60 ? r.note.substring(0, 60) + '...' : r.note}
+                          {r.note.length > 80 ? r.note.substring(0, 80) + '...' : r.note}
                         </p>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded text-[11px] font-bold border ${status.tone}`}>
-                          {status.label}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition" aria-label="Edit">
-                            <Icon name="edit" size={16} />
-                          </button>
-                          <button className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition" aria-label="Document">
-                            <Icon name="save" size={16} />
-                          </button>
-                          <button className="w-7 h-7 rounded-full bg-[#e8f1fc] text-[#3575da] flex items-center justify-center hover:bg-blue-100 transition" aria-label="View">
-                            <Icon name="visibility" size={16} />
-                          </button>
-                        </div>
+                        <button className="w-7 h-7 rounded-full bg-[#e8f1fc] text-[#3575da] flex items-center justify-center hover:bg-blue-100 transition" aria-label="View">
+                          <Icon name="visibility" size={16} />
+                        </button>
                       </td>
                     </tr>
                   )
                 })}
                 {!q.isLoading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
                       No anecdotal entries found.
                     </td>
                   </tr>
@@ -252,19 +225,12 @@ function DirectorAnecdotalPage() {
               </tbody>
             </table>
           </div>
-          
-          {/* Pagination */}
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-[12px] text-slate-500 font-medium">Showing <strong className="text-slate-700 font-bold">1 - {Math.min(4, rows.length)}</strong> of <strong className="text-slate-700 font-bold">{totalEntries}</strong> entries</span>
-            <div className="flex gap-1.5">
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50"><Icon name="chevron_left" size={16} /></button>
-              <button className="w-7 h-7 rounded bg-[#0e52db] text-white text-[12px] font-bold flex items-center justify-center">1</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">2</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">3</button>
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50"><Icon name="chevron_right" size={16} /></button>
-            </div>
+
+          <div className="px-6 py-4 border-t border-slate-100">
+            <span className="text-[12px] text-slate-500 font-medium">{rows.length} of {totalEntries} entries</span>
           </div>
         </div>
+
 
       </div>
     </AppShell>
