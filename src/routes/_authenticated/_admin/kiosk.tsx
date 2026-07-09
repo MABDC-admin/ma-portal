@@ -403,11 +403,11 @@ function KioskPage() {
 
         {/* Side panel */}
         <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
-          <div className="rounded-3xl bg-white/5 p-6 backdrop-blur-md ring-1 ring-white/10">
+          <div className="rounded-3xl bg-white/5 p-5 sm:p-6 backdrop-blur-md ring-1 ring-white/10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
               Enrolled learners
             </p>
-            <p className="mt-2 font-display text-5xl font-extrabold num">{enrolled.length}</p>
+            <p className="mt-2 font-display text-4xl sm:text-5xl font-extrabold num">{enrolled.length}</p>
             <p className="mt-1 text-sm text-white/60">
               {rosterQ.isLoading ? "Loading…" : "with face profiles"}
             </p>
