@@ -16,6 +16,7 @@ const nav: NavItem[] = [
   { to: "/anecdotal", label: "Anecdotal Log", icon: "sticky_note_2", roles: ["admin", "academic_director"] },
   { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
+  { to: "/seed-faculty", label: "Seed Faculty", icon: "cloud_upload", roles: ["admin"] },
 ];
 
 const roleBadge: Record<AppRole, { label: string; tone: string }> = {
