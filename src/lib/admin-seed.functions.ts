@@ -111,9 +111,7 @@ export const seedFacultyFn = createServerFn({ method: "POST" })
         }
 
         // Also remove default student role from user_roles (created by handle_new_user trigger)
-        if (row.role !== "student") {
-          await supabaseAdmin.from("user_roles").delete().eq("user_id", userId).eq("role", "student");
-        }
+        await supabaseAdmin.from("user_roles").delete().eq("user_id", userId).eq("role", "student");
 
         // Upsert teacher record if applicable
         if (row.role === "teacher" && row.employee_id) {
