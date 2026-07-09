@@ -392,6 +392,38 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
 
         <p className="mt-3 text-sm text-tertiary">{error ?? status}</p>
 
+        {snapshots.length > 0 && (
+          <div className="mt-3">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-tertiary">
+              Captured face samples
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {snapshots.map((src, i) => (
+                <div
+                  key={i}
+                  className="relative h-20 w-20 overflow-hidden rounded-lg border border-outline-variant bg-surface-container"
+                >
+                  <img src={src} alt={`Sample ${i + 1}`} className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSamples((prev) => prev.filter((_, idx) => idx !== i));
+                      setSnapshots((prev) => prev.filter((_, idx) => idx !== i));
+                    }}
+                    className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black/80"
+                    aria-label={`Remove sample ${i + 1}`}
+                  >
+                    <Icon name="close" size={12} />
+                  </button>
+                  <span className="absolute bottom-0.5 left-0.5 rounded bg-black/60 px-1 text-[10px] font-bold text-white">
+                    {i + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-3 flex items-center justify-between">
           <p className="text-sm">
             Samples captured:{" "}
@@ -408,6 +440,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
             </button>
           )}
         </div>
+
 
         <div className="mt-5 flex justify-end gap-2">
           <button
