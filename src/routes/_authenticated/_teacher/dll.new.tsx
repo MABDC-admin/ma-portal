@@ -46,7 +46,7 @@ function NewDllEntry() {
       content,
       procedures,
       assessment,
-      status: kind === "draft" ? "draft" : "submitted",
+      status: (kind === "draft" ? "draft" : "submitted") as "draft" | "submitted",
       submitted_at: kind === "submit" ? new Date().toISOString() : null,
     };
     const { error: insErr } = await supabase.from("dlls").insert(payload);
