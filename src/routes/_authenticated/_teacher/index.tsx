@@ -90,15 +90,20 @@ function TeacherHome() {
         )}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sectionsQ.data?.map((s) => (
-            <Card key={s.id} className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-display text-lg font-bold">{s.name}</p>
-                  <p className="text-xs text-tertiary">Grade {s.grade_level} · SY {s.academic_year}</p>
+            <Link key={s.id} to="/sections/$id" params={{ id: s.id }} className="block">
+              <Card className="p-5 transition hover:shadow-md hover:ring-1 hover:ring-primary/30">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-display text-lg font-bold">{s.name}</p>
+                    <p className="text-xs text-tertiary">Grade {s.grade_level} · SY {s.academic_year}</p>
+                  </div>
+                  <Icon name="groups" filled className="text-primary" />
                 </div>
-                <Icon name="groups" filled className="text-primary" />
-              </div>
-            </Card>
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-primary">
+                  Open section <Icon name="arrow_forward" size={14} />
+                </div>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>
@@ -117,9 +122,13 @@ function TeacherHome() {
             <tbody>
               {dllsQ.data?.length === 0 && <tr><td colSpan={3} className="px-4 py-6 text-center text-tertiary">No lesson logs yet.</td></tr>}
               {dllsQ.data?.map((d) => (
-                <tr key={d.id} className="border-b border-outline-variant/40 last:border-0">
-                  <td className="px-4 py-3 num">{d.lesson_date}</td>
-                  <td className="px-4 py-3 font-medium">{d.subject}</td>
+                <tr key={d.id} className="border-b border-outline-variant/40 last:border-0 hover:bg-surface-container-low/40">
+                  <td className="px-4 py-3 num">
+                    <Link to="/my-dlls/$id" params={{ id: d.id }} className="hover:text-primary">{d.lesson_date}</Link>
+                  </td>
+                  <td className="px-4 py-3 font-medium">
+                    <Link to="/my-dlls/$id" params={{ id: d.id }} className="hover:text-primary">{d.subject}</Link>
+                  </td>
                   <td className="px-4 py-3">
                     <DllStatus status={d.status as string} />
                   </td>
@@ -128,6 +137,9 @@ function TeacherHome() {
             </tbody>
           </table>
         </Card>
+        <div className="mt-3 text-right">
+          <Link to="/my-dlls" className="text-sm font-semibold text-primary hover:underline">View all my lesson logs →</Link>
+        </div>
       </section>
     </AppShell>
   );

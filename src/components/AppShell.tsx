@@ -8,10 +8,12 @@ type NavItem = { to: string; label: string; icon: string; roles: AppRole[] };
 
 const nav: NavItem[] = [
   { to: "/", label: "Live Attendance", icon: "dashboard", roles: ["admin", "teacher"] },
+  { to: "/my-dlls", label: "My Lesson Logs", icon: "history_edu", roles: ["teacher"] },
+  { to: "/dll/new", label: "New DLL Entry", icon: "note_add", roles: ["admin", "teacher"] },
   { to: "/teachers", label: "Teachers", icon: "school", roles: ["admin"] },
   { to: "/faculty", label: "Faculty Directory", icon: "badge", roles: ["admin", "academic_director"] },
   { to: "/dll", label: "DLL Review", icon: "description", roles: ["admin", "academic_director"] },
-  { to: "/dll/new", label: "New DLL Entry", icon: "note_add", roles: ["admin", "teacher"] },
+  { to: "/anecdotal", label: "Anecdotal Log", icon: "sticky_note_2", roles: ["admin", "academic_director"] },
   { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
 ];
