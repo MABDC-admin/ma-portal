@@ -28,28 +28,15 @@ type AnecdotalRow = {
   } | null;
 };
 
-// Deterministic mocks based on ID since they don't exist in the DB schema
-function getMockConcernLevel(id: string): { label: string; tone: string; dot: string } {
-  const char = id.charCodeAt(0);
-  if (char % 3 === 0) return { label: "Urgent", tone: "bg-red-50 text-red-600 border-red-100", dot: "bg-red-500" };
-  if (char % 3 === 1) return { label: "Monitor", tone: "bg-yellow-50 text-yellow-700 border-yellow-200", dot: "bg-yellow-500" };
-  return { label: "Normal", tone: "bg-slate-100 text-slate-600 border-slate-200", dot: "bg-slate-400" };
-}
-
-function getMockStatus(id: string): { label: string; tone: string } {
-  const char = id.charCodeAt(id.length - 1);
-  if (char % 2 === 0) return { label: "Open", tone: "bg-white text-slate-600 border-slate-200" };
-  return { label: "Resolved", tone: "bg-emerald-50 text-emerald-600 border-emerald-100" };
-}
-
 function getCategoryPill(cat: string) {
   const c = cat.toLowerCase();
   if (c === "academic") return "bg-blue-100 text-blue-700";
   if (c === "behavioral" || c === "discipline") return "bg-slate-100 text-slate-600";
   if (c === "social") return "bg-slate-100 text-slate-600";
   if (c === "emotional") return "bg-blue-100 text-blue-700";
-  return "bg-slate-100 text-slate-600"; // fallback
+  return "bg-slate-100 text-slate-600";
 }
+
 
 function DirectorAnecdotalPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
