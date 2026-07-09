@@ -221,6 +221,23 @@ function StatCard({
 }
 
 // ---------- Enroll modal ----------
+const TARGET_SAMPLES = 3;
+const MIN_FACE_RATIO = 0.22; // face box vs. min(video w,h)
+const MAX_CENTER_OFFSET = 0.18; // fraction of frame
+const MIN_SHARPNESS = 12; // laplacian variance
+const MIN_DETECTION_SCORE = 0.7;
+const MIN_DESCRIPTOR_DISTANCE = 0.32; // diversity between samples
+const AUTO_CAPTURE_COOLDOWN_MS = 900;
+
+type QualityCheck = {
+  ok: boolean;
+  hint: string;
+  score: number;
+  ratio: number;
+  centerOffset: number;
+  sharpness: number;
+};
+
 function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => void }) {
   const qc = useQueryClient();
   const saveFn = useServerFn(saveFaceDescriptorFn);
@@ -231,11 +248,28 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [autoCapture, setAutoCapture] = useState(true);
+  const [liveHint, setLiveHint] = useState<string>("Position your face in the frame");
+  const [liveOk, setLiveOk] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const faceApiRef = useRef<typeof import("face-api.js") | null>(null);
+  const samplesRef = useRef<Float32Array[]>([]);
+  const lastCaptureRef = useRef<number>(0);
+  const loopRef = useRef<number | null>(null);
+  const autoRef = useRef(autoCapture);
 
+  // keep refs in sync with state for the detection loop
+  useEffect(() => {
+    samplesRef.current = samples;
+  }, [samples]);
+  useEffect(() => {
+    autoRef.current = autoCapture;
+  }, [autoCapture]);
+
+  // camera + models bootstrap
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -251,7 +285,11 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         if (cancelled || mode !== "camera") return;
         setStatus("Starting camera…");
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: 640, height: 480 },
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
         });
         streamRef.current = stream;
         if (cancelled) {
@@ -263,16 +301,133 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
           await videoRef.current.play();
         }
         setReady(true);
-        setStatus("Capture 3 samples for a solid enrollment.");
+        setStatus("Hold still — auto-capturing quality samples");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Setup failed");
+        setError(
+          e instanceof Error
+            ? `Camera error: ${e.message}. Grant camera permission and reload.`
+            : "Setup failed",
+        );
       }
     })();
     return () => {
       cancelled = true;
+      if (loopRef.current) cancelAnimationFrame(loopRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
     };
   }, [mode]);
+
+  // continuous detection loop w/ live overlay + auto-capture
+  useEffect(() => {
+    if (mode !== "camera" || !ready) return;
+    let stopped = false;
+
+    const tick = async () => {
+      if (stopped) return;
+      const faceapi = faceApiRef.current;
+      const video = videoRef.current;
+      const canvas = overlayRef.current;
+      if (!faceapi || !video || !canvas || video.readyState < 2) {
+        loopRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      try {
+        const detection = await faceapi
+          .detectSingleFace(
+            video,
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+          )
+          .withFaceLandmarks();
+
+        // sync overlay size to displayed video
+        const rect = video.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          loopRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!detection) {
+          setLiveHint("No face detected — face the camera");
+          setLiveOk(false);
+          loopRef.current = requestAnimationFrame(tick);
+          return;
+        }
+
+        const box = detection.detection.box;
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        const sx = canvas.width / vw;
+        const sy = canvas.height / vh;
+        // mirror the box because the video is mirrored via CSS
+        const drawX = canvas.width - (box.x + box.width) * sx;
+        const drawY = box.y * sy;
+        const drawW = box.width * sx;
+        const drawH = box.height * sy;
+
+        const quality = evaluateQuality(
+          detection.detection.score,
+          box,
+          vw,
+          vh,
+          video,
+        );
+
+        // draw guide rectangle
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = quality.ok ? "#22c55e" : "#f59e0b";
+        roundRect(ctx, drawX, drawY, drawW, drawH, 12);
+        ctx.stroke();
+
+        setLiveHint(quality.hint);
+        setLiveOk(quality.ok);
+
+        const now = performance.now();
+        const cooled = now - lastCaptureRef.current > AUTO_CAPTURE_COOLDOWN_MS;
+        const needMore = samplesRef.current.length < TARGET_SAMPLES;
+
+        if (autoRef.current && quality.ok && cooled && needMore) {
+          const full = await faceapi
+            .detectSingleFace(
+              video,
+              new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+          if (full) {
+            const diverse = samplesRef.current.every(
+              (s) => descriptorDistance(s, full.descriptor) >= MIN_DESCRIPTOR_DISTANCE,
+            );
+            if (diverse) {
+              lastCaptureRef.current = now;
+              const snap = snapshotFromVideo(video, full.detection.box);
+              setSamples((prev) => [...prev, full.descriptor]);
+              setSnapshots((prev) => [...prev, snap]);
+            } else {
+              setLiveHint("Great — now change angle slightly for a diverse sample");
+            }
+          }
+        }
+      } catch {
+        // swallow transient detection errors
+      }
+      loopRef.current = requestAnimationFrame(tick);
+    };
+
+    loopRef.current = requestAnimationFrame(tick);
+    return () => {
+      stopped = true;
+      if (loopRef.current) cancelAnimationFrame(loopRef.current);
+      const ctx = overlayRef.current?.getContext("2d");
+      if (ctx && overlayRef.current)
+        ctx.clearRect(0, 0, overlayRef.current.width, overlayRef.current.height);
+    };
+  }, [mode, ready]);
 
   async function captureFromCamera() {
     if (!videoRef.current || !faceApiRef.current) return;
@@ -282,7 +437,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const detection = await faceApiRef.current
         .detectSingleFace(
           videoRef.current,
-          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }),
+          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
@@ -293,7 +448,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const snap = snapshotFromVideo(videoRef.current, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
       setSnapshots((prev) => [...prev, snap]);
-      setStatus(`Captured ${samples.length + 1} of 3 recommended samples.`);
+      setStatus(`Captured ${samples.length + 1} of ${TARGET_SAMPLES} recommended samples.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Detection failed");
     }
@@ -311,7 +466,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const detection = await faceApiRef.current
         .detectSingleFace(
           img,
-          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.5 }),
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
@@ -346,6 +501,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       setSaving(false);
     }
   }
+
 
   const name = learner.full_name || learner.email || "Learner";
 
