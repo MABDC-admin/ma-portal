@@ -9,38 +9,147 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TeachersRouteImport } from './routes/teachers'
+import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DllIndexRouteImport } from './routes/dll.index'
+import { Route as DllNewRouteImport } from './routes/dll.new'
+import { Route as DllIdRouteImport } from './routes/dll.$id'
+import { Route as StudentsIdIndexRouteImport } from './routes/students.$id.index'
+import { Route as StudentsIdAttendanceRouteImport } from './routes/students.$id.attendance'
 
+const TeachersRoute = TeachersRouteImport.update({
+  id: '/teachers',
+  path: '/teachers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacultyRoute = FacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DllIndexRoute = DllIndexRouteImport.update({
+  id: '/dll/',
+  path: '/dll/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DllNewRoute = DllNewRouteImport.update({
+  id: '/dll/new',
+  path: '/dll/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DllIdRoute = DllIdRouteImport.update({
+  id: '/dll/$id',
+  path: '/dll/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentsIdIndexRoute = StudentsIdIndexRouteImport.update({
+  id: '/students/$id/',
+  path: '/students/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentsIdAttendanceRoute = StudentsIdAttendanceRouteImport.update({
+  id: '/students/$id/attendance',
+  path: '/students/$id/attendance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/faculty': typeof FacultyRoute
+  '/teachers': typeof TeachersRoute
+  '/dll/$id': typeof DllIdRoute
+  '/dll/new': typeof DllNewRoute
+  '/dll/': typeof DllIndexRoute
+  '/students/$id/attendance': typeof StudentsIdAttendanceRoute
+  '/students/$id/': typeof StudentsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/faculty': typeof FacultyRoute
+  '/teachers': typeof TeachersRoute
+  '/dll/$id': typeof DllIdRoute
+  '/dll/new': typeof DllNewRoute
+  '/dll': typeof DllIndexRoute
+  '/students/$id/attendance': typeof StudentsIdAttendanceRoute
+  '/students/$id': typeof StudentsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/faculty': typeof FacultyRoute
+  '/teachers': typeof TeachersRoute
+  '/dll/$id': typeof DllIdRoute
+  '/dll/new': typeof DllNewRoute
+  '/dll/': typeof DllIndexRoute
+  '/students/$id/attendance': typeof StudentsIdAttendanceRoute
+  '/students/$id/': typeof StudentsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/faculty'
+    | '/teachers'
+    | '/dll/$id'
+    | '/dll/new'
+    | '/dll/'
+    | '/students/$id/attendance'
+    | '/students/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/faculty'
+    | '/teachers'
+    | '/dll/$id'
+    | '/dll/new'
+    | '/dll'
+    | '/students/$id/attendance'
+    | '/students/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/faculty'
+    | '/teachers'
+    | '/dll/$id'
+    | '/dll/new'
+    | '/dll/'
+    | '/students/$id/attendance'
+    | '/students/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FacultyRoute: typeof FacultyRoute
+  TeachersRoute: typeof TeachersRoute
+  DllIdRoute: typeof DllIdRoute
+  DllNewRoute: typeof DllNewRoute
+  DllIndexRoute: typeof DllIndexRoute
+  StudentsIdAttendanceRoute: typeof StudentsIdAttendanceRoute
+  StudentsIdIndexRoute: typeof StudentsIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/teachers': {
+      id: '/teachers'
+      path: '/teachers'
+      fullPath: '/teachers'
+      preLoaderRoute: typeof TeachersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faculty': {
+      id: '/faculty'
+      path: '/faculty'
+      fullPath: '/faculty'
+      preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +157,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dll/': {
+      id: '/dll/'
+      path: '/dll'
+      fullPath: '/dll/'
+      preLoaderRoute: typeof DllIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dll/new': {
+      id: '/dll/new'
+      path: '/dll/new'
+      fullPath: '/dll/new'
+      preLoaderRoute: typeof DllNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dll/$id': {
+      id: '/dll/$id'
+      path: '/dll/$id'
+      fullPath: '/dll/$id'
+      preLoaderRoute: typeof DllIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/students/$id/': {
+      id: '/students/$id/'
+      path: '/students/$id'
+      fullPath: '/students/$id/'
+      preLoaderRoute: typeof StudentsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/students/$id/attendance': {
+      id: '/students/$id/attendance'
+      path: '/students/$id/attendance'
+      fullPath: '/students/$id/attendance'
+      preLoaderRoute: typeof StudentsIdAttendanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FacultyRoute: FacultyRoute,
+  TeachersRoute: TeachersRoute,
+  DllIdRoute: DllIdRoute,
+  DllNewRoute: DllNewRoute,
+  DllIndexRoute: DllIndexRoute,
+  StudentsIdAttendanceRoute: StudentsIdAttendanceRoute,
+  StudentsIdIndexRoute: StudentsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
