@@ -355,6 +355,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
               key={m}
               onClick={() => {
                 setSamples([]);
+                setSnapshots([]);
                 setMode(m);
               }}
               className={`flex-1 rounded-lg px-3 py-1.5 font-semibold capitalize ${mode === m ? "bg-primary text-primary-foreground" : "text-tertiary"}`}
