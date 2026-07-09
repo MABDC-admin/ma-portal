@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminSeedFacultyRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminSchoolYearsRouteImport } from './routes/_authenticated/_admin/school-years'
 import { Route as AuthenticatedAdminKioskRouteImport } from './routes/_authenticated/_admin/kiosk'
 import { Route as AuthenticatedAdminImportLearnersRouteImport } from './routes/_authenticated/_admin/import-learners'
+import { Route as AuthenticatedAdminFaceRegistrationRouteImport } from './routes/_authenticated/_admin/face-registration'
 import { Route as AuthenticatedTeacherMyDllsIndexRouteImport } from './routes/_authenticated/_teacher/my-dlls.index'
 import { Route as AuthenticatedDirectorDllIndexRouteImport } from './routes/_authenticated/_director/dll.index'
 import { Route as AuthenticatedTeacherSectionsIdRouteImport } from './routes/_authenticated/_teacher/sections.$id'
@@ -142,6 +143,12 @@ const AuthenticatedAdminImportLearnersRoute =
     path: '/import-learners',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminFaceRegistrationRoute =
+  AuthenticatedAdminFaceRegistrationRouteImport.update({
+    id: '/face-registration',
+    path: '/face-registration',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedTeacherMyDllsIndexRoute =
   AuthenticatedTeacherMyDllsIndexRouteImport.update({
     id: '/my-dlls/',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/kiosk': typeof AuthenticatedAdminKioskRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
@@ -248,6 +256,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/kiosk': typeof AuthenticatedAdminKioskRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
@@ -281,6 +290,7 @@ export interface FileRoutesById {
   '/_authenticated/_director': typeof AuthenticatedDirectorRouteRouteWithChildren
   '/_authenticated/_student': typeof AuthenticatedStudentRouteRouteWithChildren
   '/_authenticated/_teacher': typeof AuthenticatedTeacherRouteRouteWithChildren
+  '/_authenticated/_admin/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/_authenticated/_admin/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/_authenticated/_admin/kiosk': typeof AuthenticatedAdminKioskRoute
   '/_authenticated/_admin/school-years': typeof AuthenticatedAdminSchoolYearsRoute
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
+    | '/face-registration'
     | '/import-learners'
     | '/kiosk'
     | '/school-years'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
+    | '/face-registration'
     | '/import-learners'
     | '/kiosk'
     | '/school-years'
@@ -372,6 +384,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_director'
     | '/_authenticated/_student'
     | '/_authenticated/_teacher'
+    | '/_authenticated/_admin/face-registration'
     | '/_authenticated/_admin/import-learners'
     | '/_authenticated/_admin/kiosk'
     | '/_authenticated/_admin/school-years'
@@ -539,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminImportLearnersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/face-registration': {
+      id: '/_authenticated/_admin/face-registration'
+      path: '/face-registration'
+      fullPath: '/face-registration'
+      preLoaderRoute: typeof AuthenticatedAdminFaceRegistrationRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_teacher/my-dlls/': {
       id: '/_authenticated/_teacher/my-dlls/'
       path: '/my-dlls'
@@ -627,6 +647,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminFaceRegistrationRoute: typeof AuthenticatedAdminFaceRegistrationRoute
   AuthenticatedAdminImportLearnersRoute: typeof AuthenticatedAdminImportLearnersRoute
   AuthenticatedAdminKioskRoute: typeof AuthenticatedAdminKioskRoute
   AuthenticatedAdminSchoolYearsRoute: typeof AuthenticatedAdminSchoolYearsRoute
@@ -637,6 +658,8 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminFaceRegistrationRoute:
+      AuthenticatedAdminFaceRegistrationRoute,
     AuthenticatedAdminImportLearnersRoute:
       AuthenticatedAdminImportLearnersRoute,
     AuthenticatedAdminKioskRoute: AuthenticatedAdminKioskRoute,
