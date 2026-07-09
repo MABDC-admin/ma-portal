@@ -343,29 +343,29 @@ function KioskPage() {
 
             {/* Greeting card */}
             {greeting && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md">
-                <div className="mx-4 flex max-w-md items-center gap-5 rounded-3xl bg-white p-8 text-slate-900 shadow-2xl animate-in fade-in zoom-in duration-300">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+                <div className="flex w-full max-w-md flex-col sm:flex-row items-center gap-4 sm:gap-5 rounded-3xl bg-white p-5 sm:p-8 text-slate-900 shadow-2xl animate-in fade-in zoom-in duration-300">
                   {greeting.photo ? (
                     <img
                       src={greeting.photo}
                       alt=""
-                      className="h-24 w-24 rounded-2xl object-cover ring-2 ring-primary/40"
+                      className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-2xl object-cover ring-2 ring-primary/40"
                     />
                   ) : (
                     <div
-                      className={`flex h-24 w-24 items-center justify-center rounded-2xl ${greeting.alreadyLogged ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"}`}
+                      className={`flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-2xl ${greeting.alreadyLogged ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"}`}
                     >
-                      <Icon name="check_circle" filled size={56} />
+                      <Icon name="check_circle" filled size={48} />
                     </div>
                   )}
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                  <div className="min-w-0 flex-1 text-center sm:text-left">
+                    <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-500">
                       {greeting.alreadyLogged ? "Already logged" : greeting.action === "in" ? "Welcome" : "Goodbye"}
                     </p>
-                    <p className="mt-1 font-display text-2xl font-extrabold leading-tight">
+                    <p className="mt-1 font-display text-xl sm:text-2xl font-extrabold leading-tight break-words">
                       {greeting.name}
                     </p>
-                    <p className="mt-1 text-sm text-slate-500 num">
+                    <p className="mt-1 text-xs sm:text-sm text-slate-500 num">
                       {greeting.columnLabel} · {greeting.time}
                     </p>
                   </div>
