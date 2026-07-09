@@ -106,8 +106,8 @@ function DirectorAnecdotalPage() {
               <Icon name="error" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">URGENT CONCERNS</p>
-              <h4 className="text-2xl font-extrabold text-red-600">{urgentConcerns}</h4>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">BEHAVIORAL</p>
+              <h4 className="text-2xl font-extrabold text-red-600">{behavioralCount}</h4>
             </div>
           </div>
 
@@ -116,10 +116,11 @@ function DirectorAnecdotalPage() {
               <Icon name="assignment_late" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PENDING RESOLUTIONS</p>
-              <h4 className="text-2xl font-extrabold text-[#3575da]">{pendingRes}</h4>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">ACADEMIC</p>
+              <h4 className="text-2xl font-extrabold text-[#3575da]">{academicCount}</h4>
             </div>
           </div>
+
         </div>
 
         {/* Filters Section */}
