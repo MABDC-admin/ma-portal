@@ -5,7 +5,7 @@ import { AppShell, Card } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/_authenticated/learners")({
+export const Route = createFileRoute("/_authenticated/learners/")({
   head: () => ({
     meta: [
       { title: "Learners List — AttendCloud" },
@@ -65,18 +65,7 @@ function LearnersPage() {
 
   const allUniqueSections = Array.from(sectionMap.values());
 
-  const uniqueSections = allUniqueSections
-    .filter((s) => {
-      // If it's a generic "Grade X" name, check if there's a more specific section for this grade
-      if (/^Grade \d+$/.test(s.name) || /^Kindergarten [12]$/.test(s.name)) {
-        const hasSpecific = allUniqueSections.some(
-          (other) => other.grade_level === s.grade_level && other.name !== s.name
-        );
-        if (hasSpecific) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
+  const uniqueSections = allUniqueSections.sort((a, b) => {
       if (a.grade_level !== b.grade_level) {
         return a.grade_level - b.grade_level;
       }

@@ -13,11 +13,11 @@ import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthenticatedLearnersRouteImport } from './routes/_authenticated/learners'
 import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authenticated/_teacher/route'
 import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/_student/route'
 import { Route as AuthenticatedDirectorRouteRouteImport } from './routes/_authenticated/_director/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
+import { Route as AuthenticatedLearnersIndexRouteImport } from './routes/_authenticated/learners.index'
 import { Route as AuthenticatedTeacherIndexRouteImport } from './routes/_authenticated/_teacher/index'
 import { Route as AuthenticatedLearnersIdRouteImport } from './routes/_authenticated/learners.$id'
 import { Route as AuthenticatedDirectorFacultyRouteImport } from './routes/_authenticated/_director/faculty'
@@ -59,11 +59,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedLearnersRoute = AuthenticatedLearnersRouteImport.update({
-  id: '/learners',
-  path: '/learners',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedTeacherRouteRoute =
   AuthenticatedTeacherRouteRouteImport.update({
     id: '/_teacher',
@@ -83,6 +78,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLearnersIndexRoute =
+  AuthenticatedLearnersIndexRouteImport.update({
+    id: '/learners/',
+    path: '/learners/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTeacherIndexRoute =
   AuthenticatedTeacherIndexRouteImport.update({
     id: '/',
@@ -90,9 +91,9 @@ const AuthenticatedTeacherIndexRoute =
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
 const AuthenticatedLearnersIdRoute = AuthenticatedLearnersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedLearnersRoute,
+  id: '/learners/$id',
+  path: '/learners/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDirectorFacultyRoute =
   AuthenticatedDirectorFacultyRouteImport.update({
@@ -213,7 +214,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/learners': typeof AuthenticatedLearnersRouteWithChildren
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
@@ -222,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
   '/faculty': typeof AuthenticatedDirectorFacultyRoute
   '/learners/$id': typeof AuthenticatedLearnersIdRoute
+  '/learners/': typeof AuthenticatedLearnersIndexRoute
   '/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/dll/new': typeof AuthenticatedTeacherDllNewRoute
@@ -240,7 +241,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/learners': typeof AuthenticatedLearnersRouteWithChildren
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
@@ -249,6 +249,7 @@ export interface FileRoutesByTo {
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
   '/faculty': typeof AuthenticatedDirectorFacultyRoute
   '/learners/$id': typeof AuthenticatedLearnersIdRoute
+  '/learners': typeof AuthenticatedLearnersIndexRoute
   '/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/dll/new': typeof AuthenticatedTeacherDllNewRoute
@@ -272,7 +273,6 @@ export interface FileRoutesById {
   '/_authenticated/_director': typeof AuthenticatedDirectorRouteRouteWithChildren
   '/_authenticated/_student': typeof AuthenticatedStudentRouteRouteWithChildren
   '/_authenticated/_teacher': typeof AuthenticatedTeacherRouteRouteWithChildren
-  '/_authenticated/learners': typeof AuthenticatedLearnersRouteWithChildren
   '/_authenticated/_admin/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/_authenticated/_admin/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/_authenticated/_admin/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
@@ -282,6 +282,7 @@ export interface FileRoutesById {
   '/_authenticated/_director/faculty': typeof AuthenticatedDirectorFacultyRoute
   '/_authenticated/learners/$id': typeof AuthenticatedLearnersIdRoute
   '/_authenticated/_teacher/': typeof AuthenticatedTeacherIndexRoute
+  '/_authenticated/learners/': typeof AuthenticatedLearnersIndexRoute
   '/_authenticated/_director/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/_authenticated/_student/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/_authenticated/_teacher/dll/new': typeof AuthenticatedTeacherDllNewRoute
@@ -302,7 +303,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
-    | '/learners'
     | '/import-learners'
     | '/school-years'
     | '/seed-faculty'
@@ -311,6 +311,7 @@ export interface FileRouteTypes {
     | '/anecdotal'
     | '/faculty'
     | '/learners/$id'
+    | '/learners/'
     | '/dll/$id'
     | '/students/me'
     | '/dll/new'
@@ -329,7 +330,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
-    | '/learners'
     | '/import-learners'
     | '/school-years'
     | '/seed-faculty'
@@ -338,6 +338,7 @@ export interface FileRouteTypes {
     | '/anecdotal'
     | '/faculty'
     | '/learners/$id'
+    | '/learners'
     | '/dll/$id'
     | '/students/me'
     | '/dll/new'
@@ -360,7 +361,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_director'
     | '/_authenticated/_student'
     | '/_authenticated/_teacher'
-    | '/_authenticated/learners'
     | '/_authenticated/_admin/import-learners'
     | '/_authenticated/_admin/school-years'
     | '/_authenticated/_admin/seed-faculty'
@@ -370,6 +370,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_director/faculty'
     | '/_authenticated/learners/$id'
     | '/_authenticated/_teacher/'
+    | '/_authenticated/learners/'
     | '/_authenticated/_director/dll/$id'
     | '/_authenticated/_student/students/me'
     | '/_authenticated/_teacher/dll/new'
@@ -421,13 +422,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/learners': {
-      id: '/_authenticated/learners'
-      path: '/learners'
-      fullPath: '/learners'
-      preLoaderRoute: typeof AuthenticatedLearnersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/_teacher': {
       id: '/_authenticated/_teacher'
       path: ''
@@ -456,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/learners/': {
+      id: '/_authenticated/learners/'
+      path: '/learners'
+      fullPath: '/learners/'
+      preLoaderRoute: typeof AuthenticatedLearnersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/_teacher/': {
       id: '/_authenticated/_teacher/'
       path: '/'
@@ -465,10 +466,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/learners/$id': {
       id: '/_authenticated/learners/$id'
-      path: '/$id'
+      path: '/learners/$id'
       fullPath: '/learners/$id'
       preLoaderRoute: typeof AuthenticatedLearnersIdRouteImport
-      parentRoute: typeof AuthenticatedLearnersRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/_director/faculty': {
       id: '/_authenticated/_director/faculty'
@@ -713,25 +714,13 @@ const AuthenticatedTeacherRouteRouteWithChildren =
     AuthenticatedTeacherRouteRouteChildren,
   )
 
-interface AuthenticatedLearnersRouteChildren {
-  AuthenticatedLearnersIdRoute: typeof AuthenticatedLearnersIdRoute
-}
-
-const AuthenticatedLearnersRouteChildren: AuthenticatedLearnersRouteChildren = {
-  AuthenticatedLearnersIdRoute: AuthenticatedLearnersIdRoute,
-}
-
-const AuthenticatedLearnersRouteWithChildren =
-  AuthenticatedLearnersRoute._addFileChildren(
-    AuthenticatedLearnersRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDirectorRouteRoute: typeof AuthenticatedDirectorRouteRouteWithChildren
   AuthenticatedStudentRouteRoute: typeof AuthenticatedStudentRouteRouteWithChildren
   AuthenticatedTeacherRouteRoute: typeof AuthenticatedTeacherRouteRouteWithChildren
-  AuthenticatedLearnersRoute: typeof AuthenticatedLearnersRouteWithChildren
+  AuthenticatedLearnersIdRoute: typeof AuthenticatedLearnersIdRoute
+  AuthenticatedLearnersIndexRoute: typeof AuthenticatedLearnersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -739,7 +728,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDirectorRouteRoute: AuthenticatedDirectorRouteRouteWithChildren,
   AuthenticatedStudentRouteRoute: AuthenticatedStudentRouteRouteWithChildren,
   AuthenticatedTeacherRouteRoute: AuthenticatedTeacherRouteRouteWithChildren,
-  AuthenticatedLearnersRoute: AuthenticatedLearnersRouteWithChildren,
+  AuthenticatedLearnersIdRoute: AuthenticatedLearnersIdRoute,
+  AuthenticatedLearnersIndexRoute: AuthenticatedLearnersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

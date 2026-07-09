@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
@@ -103,8 +103,17 @@ function LearnerProfilePage() {
   const isAtRisk = attendanceRate > 0 && attendanceRate < 80;
 
   return (
-    <AppShell title="Learner Profile">
+    <AppShell>
       <div className="flex flex-col gap-6 max-w-7xl mx-auto pb-12">
+        <div className="flex items-center gap-3">
+          <Link to="/learners" className="flex items-center justify-center h-10 w-10 -ml-2 rounded-full hover:bg-surface-container transition-colors text-tertiary hover:text-foreground">
+            <Icon name="arrow_back" size={24} />
+          </Link>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight text-foreground">
+            Learner Profile
+          </h1>
+        </div>
+        
         {/* TOP HEADER */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-surface-container-low/50 backdrop-blur-md border border-outline-variant/30 p-6 rounded-3xl shadow-sm">
           <div className="flex items-center gap-6">
