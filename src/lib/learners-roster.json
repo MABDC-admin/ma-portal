@@ -1,0 +1,2947 @@
+{
+  "academic_year": "2025-2026",
+  "sections": [
+    {
+      "name": "Grade 1",
+      "grade_level": 1
+    },
+    {
+      "name": "Grade 10",
+      "grade_level": 10
+    },
+    {
+      "name": "Grade 11",
+      "grade_level": 11
+    },
+    {
+      "name": "Grade 12",
+      "grade_level": 12
+    },
+    {
+      "name": "Grade 2",
+      "grade_level": 2
+    },
+    {
+      "name": "Grade 3",
+      "grade_level": 3
+    },
+    {
+      "name": "Grade 4",
+      "grade_level": 4
+    },
+    {
+      "name": "Grade 5",
+      "grade_level": 5
+    },
+    {
+      "name": "Grade 6",
+      "grade_level": 6
+    },
+    {
+      "name": "Grade 7",
+      "grade_level": 7
+    },
+    {
+      "name": "Grade 8",
+      "grade_level": 8
+    },
+    {
+      "name": "Grade 9",
+      "grade_level": 9
+    },
+    {
+      "name": "Kindergarten 1",
+      "grade_level": 0
+    },
+    {
+      "name": "Kindergarten 2",
+      "grade_level": 0
+    }
+  ],
+  "learners": [
+    {
+      "email": "stacruz.1@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "STA. CRUZ, DAHLIA THERESE S.",
+      "student_number": "20250001",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "zamora.2@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ZAMORA, ZIA SAMANTHA A.",
+      "student_number": "20250002",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "llacuna.3@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LLACUNA, HIRAYA ALIA R.",
+      "student_number": "20250003",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "david.4@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DAVID, GARRETT EUSEF S.",
+      "student_number": "20250004",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "segundo.5@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SEGUNDO, MAVIELONA AMARI S.",
+      "student_number": "20250005",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "nietes.6@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NIETES, ZAFREEN SAMARIAH G.",
+      "student_number": "20250006",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "lebanon.7@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LEBANON, NABIJAH PARWEZ",
+      "student_number": "20250007",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "garcia.8@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARCIA, JIRO CAIDEN C.",
+      "student_number": "20250008",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "pueblo.9@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PUEBLO, SOFIA SCARLETT S.",
+      "student_number": "20250009",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "arango.10@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ARANGO, MARIA AYAH MIKELLE B.",
+      "student_number": "20250010",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "castaeda.11@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CASTA\u00d1EDA, KYLE KRISTIAN F.",
+      "student_number": "20250011",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "elento.12@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ELENTO, RHIANNA KAY N.",
+      "student_number": "20250012",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "capinpin.13@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAPINPIN, AADEN MATEO S.",
+      "student_number": "20250013",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "nito.14@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NITO, CLOUD JAYDEN A.",
+      "student_number": "20250014",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "atazar.15@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ATAZAR, KARL ZEVRICK W.",
+      "student_number": "20250015",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "diocos.16@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DIOCOS, ZARA QUINN N.",
+      "student_number": "20250016",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "galila.17@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GALILA, ELIAN REY C.",
+      "student_number": "20250017",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "canzana.18@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CANZANA, HEIMDALL MARZELLUS T.",
+      "student_number": "20250018",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "igat.19@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "IGAT, SETH SEBASTIAN D.",
+      "student_number": "20250019",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "catunao.20@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CATUNAO, ZACCHAEUS S.",
+      "student_number": "20250020",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "serdoncillo.21@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SERDONCILLO, ZACHARY S.",
+      "student_number": "20250021",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "palacios.22@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PALACIOS, PRINCESS KEITH P.",
+      "student_number": "20250022",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "vitalich.23@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VITALICH, MIRIAM KIAH A.",
+      "student_number": "20250023",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "cataquis.24@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CATAQUIS, NATE DANIEL F.",
+      "student_number": "20250024",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "camaclang.25@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAMACLANG, JUANCHO AMYLE S.",
+      "student_number": "20250025",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "cagampang.26@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAGAMPANG, LEION RAY C.",
+      "student_number": "20250026",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "cisnero.27@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CISNERO, JIANNA AMELIE V.",
+      "student_number": "20250027",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "lim.28@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LIM, FABIO F.",
+      "student_number": "20250028",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "vergara.29@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VERGARA, ASH GABRIELLE",
+      "student_number": "20250029",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "manabat.30@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANABAT, LUCIAN ODIN D.",
+      "student_number": "20250030",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "gendrano.31@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GENDRANO, KIRSTEN BETHANY V.",
+      "student_number": "20250031",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "musico.32@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MUSICO, PSALM Q.",
+      "student_number": "20250032",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "delacruz.33@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE LA CRUZ, MARCUS DEON C.",
+      "student_number": "20250033",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "miranda.34@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MIRANDA, RICHARD CARL C.",
+      "student_number": "20250034",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "espidol.35@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESPIDOL, MACY LINA ANGELA P.",
+      "student_number": "20250035",
+      "section_name": "Kindergarten 1"
+    },
+    {
+      "email": "dino.36@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DINO, NATHALIA SHAYE C.",
+      "student_number": "20250036",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "leynes.37@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LEYNES, SAMUEL JOHN MATEO M.",
+      "student_number": "20250037",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "maulit.38@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAULIT, KENDRIA MARGAUX L.",
+      "student_number": "20250038",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "mateo.39@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MATEO, KURT ERYX YSAIAH",
+      "student_number": "20250039",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "cepe.40@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CEPE, AXELL NOAH H.",
+      "student_number": "20250040",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "bael.41@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAEL, JAIMZ LOUKAS E.",
+      "student_number": "20250041",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "delarosa.42@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA ROSA, XANTHE GABRIELLE R.",
+      "student_number": "20250042",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "ferrer.43@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FERRER, MAYUMI SINAYA T.",
+      "student_number": "20250043",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "valdez.44@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VALDEZ, STACY ATASHA P.",
+      "student_number": "20250044",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "amurao.45@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AMURAO, DEUMANAH ADNISE C.",
+      "student_number": "20250045",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "francisco.46@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, ALONZO DUSTIN C.",
+      "student_number": "20250046",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "misa.47@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MISA, EZEQUIEL GAVRIL A.",
+      "student_number": "20250047",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "diaz.48@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DIAZ, MARIA GABRIELLE E.",
+      "student_number": "20250048",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "resonable.49@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RESONABLE, KRISTINA D.",
+      "student_number": "20250049",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "banay.50@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BANAY, KEZIAH T.",
+      "student_number": "20250050",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "lising.51@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LISING, XAVIER ELIJAH F.",
+      "student_number": "20250051",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "ona.52@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ONA, REIGN BRIELLE L.",
+      "student_number": "20250052",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "discipulo.53@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DISCIPULO, MAVIE GABRIELLE B.",
+      "student_number": "20250053",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "simbajon.54@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SIMBAJON, ELIZA MARIE T.",
+      "student_number": "20250054",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "carreon.55@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CARREON, MISCHA AMARA D.",
+      "student_number": "20250055",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "corpuz.56@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CORPUZ, JANROBE KALEB C.",
+      "student_number": "20250056",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "alicante.57@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALICANTE, MEERA VENESSE I.",
+      "student_number": "20250057",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "hernandez.58@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HERNANDEZ, ALEXA MARIE D.",
+      "student_number": "20250058",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "aguilar.59@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AGUILAR, JAYDIENNE KIMMY C.",
+      "student_number": "20250059",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "roman.60@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ROMAN, RYASH LAUREEN L.",
+      "student_number": "20250060",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "taguinod.61@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TAGUINOD, PRIMO RAFAEL",
+      "student_number": "20250061",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "enclonar.62@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ENCLONAR, MARIA SOFIA A.",
+      "student_number": "20250062",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "gonzaga.63@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GONZAGA, PRINCESS AVIELLE F.",
+      "student_number": "20250063",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "topasi.64@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TOPASI, ANAIAH M.",
+      "student_number": "20250064",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "santos.65@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SANTOS, TRAVIS MAXIMUS T.",
+      "student_number": "20250065",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "sreejith.66@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SREEJITH, SHANE C.",
+      "student_number": "20250066",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "delacruz.67@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA CRUZ, ANIELLE ZAIONE R.",
+      "student_number": "20250067",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "miguel.68@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MIGUEL, JADRIEL ZANDER D.",
+      "student_number": "20250068",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "pili.69@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PILI, RAFAEL S.",
+      "student_number": "20250069",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "pelotera.70@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PELOTERA, LERSHEYZ GLEYD G.",
+      "student_number": "20250070",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "buenvenida.71@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BUENVENIDA, MIA JUDENE B.",
+      "student_number": "20250071",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "jeyaseelan.72@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JEYASEELAN, SAMUEL ZANE D.",
+      "student_number": "20250072",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "quionez.73@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "QUI\u00d1ONEZ, RAFAEL B.",
+      "student_number": "20250073",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "atienza.74@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ATIENZA, MARKO GUILIO P.",
+      "student_number": "20250074",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "viernes.75@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VIERNES, MYKEL EMRIC S.",
+      "student_number": "20250075",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "angeles.76@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ANGELES, LAMBERT ARMAN S.",
+      "student_number": "20250076",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "luza.77@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LUZA, MARIA LUZIA N.",
+      "student_number": "20250077",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "espidol.78@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESPIDOL, MATTHEW LUIZ ANGELO P.",
+      "student_number": "20250078",
+      "section_name": "Kindergarten 2"
+    },
+    {
+      "email": "bernabe.79@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BERNABE, ETHAN ANGELO A.",
+      "student_number": "20250079",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "fernandez.80@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FERNANDEZ, ATARAH SHILOH S.",
+      "student_number": "20250080",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "montemayor.81@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MONTEMAYOR, ZACKIAH P.",
+      "student_number": "20250081",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "lizada.82@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LIZADA, AMANDA PRAISE L.",
+      "student_number": "20250082",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "lasaca.83@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LASACA, HELOISE MAISY G.",
+      "student_number": "20250083",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "garcia.84@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARCIA, RISHON CALEB C.",
+      "student_number": "20250084",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "cheripurath.85@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CHERIPURATH,ELLYSA R.",
+      "student_number": "20250085",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "rogando.86@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ROGANDO, KIARA AZARRIAH D.",
+      "student_number": "20250086",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "torres.87@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TORRES, ZEUS S.",
+      "student_number": "20250087",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "garlitos.88@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARLITOS, ERNEST JERALD M.",
+      "student_number": "20250088",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "balami.89@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BALAMI, MATINA DENISSE O.",
+      "student_number": "20250089",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "almarez.90@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALMAREZ, PETER VON JAMES K.",
+      "student_number": "20250090",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "guillermo.91@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GUILLERMO, JILO DAVID A.",
+      "student_number": "20250091",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "banaban.92@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BANABAN, RAVEN D.",
+      "student_number": "20250092",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "cruz.93@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CRUZ, MARCAEUS JOSE D.",
+      "student_number": "20250093",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "reyes.94@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REYES, JULIEN REEVE B.",
+      "student_number": "20250094",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "sandro.95@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SANDRO, RAYNE LYRESH D.",
+      "student_number": "20250095",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "vallejos.96@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VALLEJOS, LARA CELINE F.",
+      "student_number": "20250096",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "akalal.97@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AKALAL, IMAD T.",
+      "student_number": "20250097",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "caas.98@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CA\u00d1AS, ACE NI\u00d1O DEANIEL P.",
+      "student_number": "20250098",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "acosta.99@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ACOSTA, ALLYZZA MARIE S.",
+      "student_number": "20250099",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "dubduban.100@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DUBDUBAN, SIDNEY LORENZO O.",
+      "student_number": "20250100",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "deleon.101@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE LEON, CELESTE SKY A.",
+      "student_number": "20250101",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "talag.102@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TALAG, KEVIN GEORGE V.",
+      "student_number": "20250102",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "reyes.103@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REYES, KENDALL R.",
+      "student_number": "20250103",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "redugerio.104@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REDUGERIO, JHOSEFIA MARGARETH D.",
+      "student_number": "20250104",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "perez.105@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PEREZ, ARNAV JAMES",
+      "student_number": "20250105",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "cabuhal.106@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CABUHAL, AMARAH NICOLE C.",
+      "student_number": "20250106",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "diaz.107@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DIAZ, ATHALIA KARLISLE Q.",
+      "student_number": "20250107",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "domingo.108@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DOMINGO, CHLOE GABRIELLE C.",
+      "student_number": "20250108",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "salgado.109@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SALGADO, KRISTIAN AUDRICK M.",
+      "student_number": "20250109",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "zaratan.110@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ZARATAN, SAGE RYLAN LOUIS",
+      "student_number": "20250110",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "montenegro.111@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MONTENEGRO, BIN SALMAN Q.",
+      "student_number": "20250111",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "mojares.112@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MOJARES, RAYANNE ESTELLA C.",
+      "student_number": "20250112",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "lim.113@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LIM, BRIANA NICOLE F.",
+      "student_number": "20250113",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "dizon.114@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DIZON, KYLIEKALE PENELOPE V.",
+      "student_number": "20250114",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "songco.115@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SONGCO, RHYS CALVIN M.",
+      "student_number": "20250115",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "sarmiento.116@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SARMIENTO, MARIA AMARELLA HANNAH B.",
+      "student_number": "20250116",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "gendrano.117@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GENDRANO, KARLIS VIANNEY V.",
+      "student_number": "20250117",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "ibaez.118@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "IBA\u00d1EZ, ALISSA MIREYA N.",
+      "student_number": "20250118",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "ahmedabdelwahabsaad.119@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AHMED ABDEL WAHAB SAAD, LAURA G.",
+      "student_number": "20250119",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "miclat.120@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MICLAT, VICTOR DAVIS G.",
+      "student_number": "20250120",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "evangelista.121@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EVANGELISTA, BRIANNA MAE C.",
+      "student_number": "20250121",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "miranda.122@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MIRANDA, RYE CHRISTIAN C.",
+      "student_number": "20250122",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "isla.123@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ISLA, DOMINIC SEVE LEONARD G.",
+      "student_number": "20250123",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "navajas.124@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NAVAJAS, ALFREDO III V.",
+      "student_number": "20250124",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "sulaiman.125@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SULAIMAN, FAHAD E.",
+      "student_number": "20250125",
+      "section_name": "Grade 1"
+    },
+    {
+      "email": "galang.126@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GALANG, BELLE OLIVIA B.",
+      "student_number": "20250126",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "degracia.127@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE GRACIA, KLAY LEVI E.",
+      "student_number": "20250127",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "sapico.128@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAPICO, AAYAN ZAHEER S.",
+      "student_number": "20250128",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "banay.129@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BANAY, TAMARA T.",
+      "student_number": "20250129",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "garcia.130@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARCIA, LOUISSE GABRIEL B.",
+      "student_number": "20250130",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "paule.131@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAULE, CHARLES EVAN S.",
+      "student_number": "20250131",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "alasmar.132@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AL ASMAR, LARA M.",
+      "student_number": "20250132",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "hernandez.133@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HERNANDEZ, LORIEL DAN D.",
+      "student_number": "20250133",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "bardos.134@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BARDOS, AYEESHA MARICLAIRE T.",
+      "student_number": "20250134",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "akalal.135@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AKALAL, AMIR T.",
+      "student_number": "20250135",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "dacara.136@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DACARA, JOHAN MIKAEL S.",
+      "student_number": "20250136",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "feliciano.137@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FELICIANO, KHLOE M.",
+      "student_number": "20250137",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "perucho.138@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PERUCHO, NATHANIEL ANDREW R.",
+      "student_number": "20250138",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "viva.139@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VIVA, MARK KAISER I.",
+      "student_number": "20250139",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "bautista.140@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAUTISTA, FREIDA BERNICE A.",
+      "student_number": "20250140",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "alzaga.141@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALZAGA, GAIUS M.",
+      "student_number": "20250141",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "nieva.142@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NIEVA, JEMIAH ILYSSA M.",
+      "student_number": "20250142",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "manacsa.143@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANACSA, MATTHEA RUTH B.",
+      "student_number": "20250143",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "pahilanga.144@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAHILANGA, KHRYSTIA ROZEL S.",
+      "student_number": "20250144",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "braza.145@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BRAZA, KATE MARY B.",
+      "student_number": "20250145",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "orbita.146@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ORBITA, MATTHAN REI V.",
+      "student_number": "20250146",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "buan.147@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BUAN, YRAM KRISHAEL R.",
+      "student_number": "20250147",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "villones.148@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VILLONES, JACOB LAWRENCE C.",
+      "student_number": "20250148",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "soriano.149@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SORIANO, EOGHAN T.",
+      "student_number": "20250149",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "giron.150@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GIRON, THEA ISABELLE V.",
+      "student_number": "20250150",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "moreno.151@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MORENO, PSALM B.",
+      "student_number": "20250151",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "parana.152@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PARANA, ELA JEANA M.",
+      "student_number": "20250152",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "delasalas.153@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE LAS ALAS, MARIA IVANA M.",
+      "student_number": "20250153",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "payumo.154@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAYUMO, MALCOLM HARPER C.",
+      "student_number": "20250154",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "wabie.155@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "WABIE, DIAMONIQUE NATHANIELLE C.",
+      "student_number": "20250155",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "lalusin.156@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LALUSIN, KEZIAH ASHLEY D.",
+      "student_number": "20250156",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "mauhay.157@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAUHAY, JASPER IDRIS A.",
+      "student_number": "20250157",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "bhatti.158@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BHATTI, MA. BELLAMY NADEEM S.",
+      "student_number": "20250158",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "chua.159@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CHUA, PHINEAS JAEL S.",
+      "student_number": "20250159",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "eiffert.160@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EIFFERT, TREVOR LAYTON R.",
+      "student_number": "20250160",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "tolentino.161@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TOLENTINO, CRIXUS WELCH D.",
+      "student_number": "20250161",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "delosreyes.162@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELOS REYES, MAX BRAIDEN C.",
+      "student_number": "20250162",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "barola.163@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAROLA, KYRIE ZANE A.",
+      "student_number": "20250163",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "oliza.164@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "OLIZA, CALEB ALDWIN G.",
+      "student_number": "20250164",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "calamba.165@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CALAMBA, CHELSEA MONIQUE B.",
+      "student_number": "20250165",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "canedo.166@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CANEDO, PRINCESS RUBBIE E.",
+      "student_number": "20250166",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "corneta.167@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CORNETA, AMILEE V.",
+      "student_number": "20250167",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "dumanlag.168@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DUMANLAG, THADDAEUS EDRIAN A.",
+      "student_number": "20250168",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "gaganting.169@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GAGANTING, ESTHELLA HOPE G.",
+      "student_number": "20250169",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "mendoza.170@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MENDOZA, NATHANIEL EIRON G.",
+      "student_number": "20250170",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "leyesa.171@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LEYESA, ELIANA KIRSTEN D.",
+      "student_number": "20250171",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "evangelista.172@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EVANGELISTA, BRYCE MATTHEW  C.",
+      "student_number": "20250172",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "evaristo.173@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EVARISTO, LEE IVAN",
+      "student_number": "20250173",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "peng.174@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PENG, ZEANNA ERIN T.",
+      "student_number": "20250174",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "josol.175@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JOSOL, YOHAN JOHN C.",
+      "student_number": "20250175",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "espidol.176@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESPIDOL, MARCUS LIONEL P",
+      "student_number": "20250176",
+      "section_name": "Grade 2"
+    },
+    {
+      "email": "galang.177@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GALANG, ADA AURORA B.",
+      "student_number": "20250177",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "alconcel.178@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALCONCEL, MARIA CASSANDRA M.",
+      "student_number": "20250178",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "fausto.179@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FAUSTO, DYLAN ANDREI N.",
+      "student_number": "20250179",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "taboy.180@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TABOY, ZAHIRA CHRIZEL N.",
+      "student_number": "20250180",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "cinco.181@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CINCO, SOFIA PAULYN N.",
+      "student_number": "20250181",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "aquino.182@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AQUINO, RAMIEL ELIJAH C.",
+      "student_number": "20250182",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "bayate.183@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAYATE, LUCAS G.",
+      "student_number": "20250183",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "hufana.184@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HUFANA, SHAWN YURI F.",
+      "student_number": "20250184",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "dichosa.185@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DICHOSA, ELI JOHAN",
+      "student_number": "20250185",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "redugerio.186@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REDUGERIO, JANNAH MARGARETH D.",
+      "student_number": "20250186",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "opciar.187@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "OPCIAR, EMIRIELLE JANE C.",
+      "student_number": "20250187",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "obiniana.188@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "OBINIANA, ARTHUR NATHAN GERIC F.",
+      "student_number": "20250188",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "francisco.189@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, JULIANNA ZAYRAH E.",
+      "student_number": "20250189",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "ali.190@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALI, YOHAN YOUSSEF ABDELSALAM YOUSSEF M.",
+      "student_number": "20250190",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "castillo.191@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CASTILLO, NATE ZION XANDREI P.",
+      "student_number": "20250191",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "racaza.192@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RACAZA, PAIGE JANEUARY M.",
+      "student_number": "20250192",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "domantay.193@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DOMANTAY, RIAN GABRIEL G.",
+      "student_number": "20250193",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "cisnero.194@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CISNERO, ZOE JAYNE V.",
+      "student_number": "20250194",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "francisco.195@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, KHALIA CAZANDRA M.",
+      "student_number": "20250195",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "rejesus.196@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REJESUS, JULIA MARGARET D.",
+      "student_number": "20250196",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "cornelio.197@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CORNELIO, KHALIL V.",
+      "student_number": "20250197",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "pepito.198@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PEPITO, JOHANNA KEAN G.",
+      "student_number": "20250198",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "rabaya.199@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RABAYA, RON MICK SAMUEL T.",
+      "student_number": "20250199",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "losito.200@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LOSITO, JOREIL ETHAN DAVE D.",
+      "student_number": "20250200",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "quizzagan.201@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "QUIZZAGAN, PAUL DAVID  B.",
+      "student_number": "20250201",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "santos.202@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SANTOS, KAITHLYN LOUISE L.",
+      "student_number": "20250202",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "ahmedabdelwahabsaad.203@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AHMED ABDEL WAHAB SAAD, KAWTHER G.",
+      "student_number": "20250203",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "miclat.204@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MICLAT, ALEX DAVIDSON G.",
+      "student_number": "20250204",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "taruc.205@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TARUC, ALEYAH FAITH",
+      "student_number": "20250205",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "getuya.206@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GETUYA, GLYT ROBERT R.",
+      "student_number": "20250206",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "getuya.207@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GETUYA, GHAILE THERESE R.",
+      "student_number": "20250207",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "josol.208@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JOSOL, ZEPHANIAH JAN C.",
+      "student_number": "20250208",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "cuaresma.209@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CUARESMA, COURTNEY R.",
+      "student_number": "20250209",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "luza.210@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LUZA, MATTEO JENSEN N.",
+      "student_number": "20250210",
+      "section_name": "Grade 3"
+    },
+    {
+      "email": "bael.211@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAEL, JAIMY LOUISE E.",
+      "student_number": "20250211",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "baldoz.212@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BALDOZ, ANAKIN VADER B.",
+      "student_number": "20250212",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "francisco.213@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, AYESHA DAPHNE C.",
+      "student_number": "20250213",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "berana.214@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BERANA, ADAM JOEROSS H.",
+      "student_number": "20250214",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "sunico.215@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SUNICO, CALE MATTEO C.",
+      "student_number": "20250215",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "amiscua.216@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AMISCUA, SEBASTIAN IV T.",
+      "student_number": "20250216",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "risal.217@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RISAL, SEAN MARCO G.",
+      "student_number": "20250217",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "bibares.218@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BIBARES , ATHALIA ERICHA",
+      "student_number": "20250218",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "escosura.219@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESCOSURA, AMAVI MARIAN",
+      "student_number": "20250219",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "aquino.220@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AQUINO, EIROS RAPHAEL C.",
+      "student_number": "20250220",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "bisenio.221@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BISENIO, MICAELA RAYE C.",
+      "student_number": "20250221",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "bayate.222@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAYATE, PATRICK G.",
+      "student_number": "20250222",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "valdez.223@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VALDEZ, JOHN CHRISTLER L.",
+      "student_number": "20250223",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "chan.224@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CHAN, NORMAN ZACHARY B.",
+      "student_number": "20250224",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "anunciacion.225@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ANUNCIACION, JEE BLYTHE A.",
+      "student_number": "20250225",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "ballaran.226@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BALLARAN, MELGAR JR M.",
+      "student_number": "20250226",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "martinez.227@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MARTINEZ, LIAN KIRSTEN MIKAELA S.",
+      "student_number": "20250227",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "deleon.228@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE LEON, SAMANTHA FAITH M.",
+      "student_number": "20250228",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "edep.229@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EDEP, EMMANUEL ZETH J.",
+      "student_number": "20250229",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "parana.230@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PARANA, BENZE SAM M.",
+      "student_number": "20250230",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "corpuz.231@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CORPUZ, JAMEAH YIESHA L.",
+      "student_number": "20250231",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "calpa.232@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CALPA, ARISH JAYDEN G.",
+      "student_number": "20250232",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "guijo.233@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GUIJO, BELLA ANASTASIA A.",
+      "student_number": "20250233",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "punayo.234@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PUNAYO, FRANCIS JAMES S.",
+      "student_number": "20250234",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "mamauag.235@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAMAUAG, ABIGAIL JOY A.",
+      "student_number": "20250235",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "jumaoas.236@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JUMAO-AS, CASSANDRA LOUISE D.",
+      "student_number": "20250236",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "gendrano.237@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GENDRANO, KAYDEN CALIX V.",
+      "student_number": "20250237",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "pirzado.238@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PIRZADO, MUSTAFA MOHSIN F.",
+      "student_number": "20250238",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "magnaye.239@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAGNAYE, MARIAH PAULEEN R.",
+      "student_number": "20250239",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "eduba.240@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EDUBA, SABRINA ERRYYL R.",
+      "student_number": "20250240",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "vergara.241@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VERGARA, RODNEY RYLE P.",
+      "student_number": "20250241",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "yu.242@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "YU, VIEL ROSEF M.",
+      "student_number": "20250242",
+      "section_name": "Grade 4"
+    },
+    {
+      "email": "baylen.243@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAYLEN, MICAH REYN INARSOLIN",
+      "student_number": "20250243",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "cabantoc.244@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CABANTOC, TOBY D.",
+      "student_number": "20250244",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "factolerin.245@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FACTOLERIN, AYESHA B.",
+      "student_number": "20250245",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "sanantonio.246@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAN ANTONIO, JEAN CLAUDE D.",
+      "student_number": "20250246",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "maago.247@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MA\u00d1AGO, JERUS NATHANIEL M.",
+      "student_number": "20250247",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "reyes.248@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REYES, JADEN REECE B.",
+      "student_number": "20250248",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "delapea.249@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA PE\u00d1A, CARLO ISAIAH C.",
+      "student_number": "20250249",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "sarmiento.250@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SARMIENTO, SHANEA CHELSEA L.",
+      "student_number": "20250250",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "saldanha.251@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SALDANHA, NIGEL DOMINIC M.",
+      "student_number": "20250251",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "mangaoang.252@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANGAOANG, JOHANNES CLIVE M.",
+      "student_number": "20250252",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "tamisin.253@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TAMISIN, MUHAMMAD YDLIZIR J.",
+      "student_number": "20250253",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "nieva.254@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NIEVA, JEMILLE IYESHA M.",
+      "student_number": "20250254",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "makalingkang.255@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAKALINGKANG, AYMAN S.",
+      "student_number": "20250255",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "enriquez.256@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ENRIQUEZ, MARK ANDREI V.",
+      "student_number": "20250256",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "francisco.257@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, JHIANNA KHIEZYAH E.",
+      "student_number": "20250257",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "solis.258@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SOLIS, KARLA ANDREA V.",
+      "student_number": "20250258",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "mendoza.259@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MENDOZA, MATEO LOUIEX G.",
+      "student_number": "20250259",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "bhatti.260@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BHATTI, THEODORE NADEEM S.",
+      "student_number": "20250260",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "delacruz.261@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA CRUZ, ANICAH ZAIRELLE R.",
+      "student_number": "20250261",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "ofalsa.262@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "OFALSA, FRANCIS BENJAMIN G.",
+      "student_number": "20250262",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "debo.263@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DEBO, MA. SOFIA ROSE D.",
+      "student_number": "20250263",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "collamat.264@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "COLLAMAT, VAUGHN MATTHEW H.",
+      "student_number": "20250264",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "barola.265@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAROLA, TERENCE GABE A.",
+      "student_number": "20250265",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "badong.266@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BADONG, EROS ZANIEL D.",
+      "student_number": "20250266",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "batomalaque.267@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BATOMALAQUE, ENZO N.",
+      "student_number": "20250267",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "cardosa.268@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CARDOSA, MARK NATHAN JAY",
+      "student_number": "20250268",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "flores.269@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FLORES, EMMANUEL JOB I.",
+      "student_number": "20250269",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "castillo.270@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CASTILLO, EMMA\u00d1UELLE D''IANDRAH O.",
+      "student_number": "20250270",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "samonte.271@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAMONTE, MHEL CHRISTIAN A.",
+      "student_number": "20250271",
+      "section_name": "Grade 5"
+    },
+    {
+      "email": "halili.272@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HALILI, JOHN MATTHEW B.",
+      "student_number": "20250272",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "factolerin.273@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FACTOLERIN, MUWAHHID B.",
+      "student_number": "20250273",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "alicante.274@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALICANTE, MAXINE VIEL",
+      "student_number": "20250274",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "montemayor.275@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MONTEMAYOR, JOAQUIN OLIVER D.",
+      "student_number": "20250275",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "manacsa.276@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANACSA, EZRA JABEZ B.",
+      "student_number": "20250276",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "khan.277@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "KHAN, AYSHA G.",
+      "student_number": "20250277",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "urbano.278@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "URBANO, RAVEN BEATRICE A.",
+      "student_number": "20250278",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "delacruz.279@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE LA CRUZ, MARCUS ZEMBER C.",
+      "student_number": "20250279",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "gairanod.280@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GAIRANOD, KHALEYLA JESTINE R.",
+      "student_number": "20250280",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "solis.281@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SOLIS, KARL ANDREI V.",
+      "student_number": "20250281",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "salgado.282@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SALGADO, KEITH AIDRIC M.",
+      "student_number": "20250282",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "payumo.283@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAYUMO, MAVERICK HUNTER C.",
+      "student_number": "20250283",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "reyes.284@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "REYES, RAPHA SIMON M.",
+      "student_number": "20250284",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "trinidad.285@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TRINIDAD, CHRISTRINA B.",
+      "student_number": "20250285",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "sarmiento.286@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SARMIENTO, AKEISHA BRIELLE T.",
+      "student_number": "20250286",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "benedicto.287@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BENEDICTO, LOUISSE KATHRINE G.",
+      "student_number": "20250287",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "fernan.288@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FERNAN, MARION ZALDY A.",
+      "student_number": "20250288",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "ricafrente.289@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RICAFRENTE, VICTOR K.",
+      "student_number": "20250289",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "aguas.290@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AGUAS, ETHAN LOUISSE J.",
+      "student_number": "20250290",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "guevara.291@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GUEVARA, AIDEN JACOB I.",
+      "student_number": "20250291",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "serrano.292@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SERRANO, POLEEN YSABELLAH D.",
+      "student_number": "20250292",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "corneta.293@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CORNETA, AYIANNA CELESTINE V.",
+      "student_number": "20250293",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "darisan.294@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DARISAN, SOPHIA ALEXA T.",
+      "student_number": "20250294",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "garcia.295@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARCIA, MARY ROSI GREDTH M.",
+      "student_number": "20250295",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "daulong.296@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DAULONG, ALIYAH MORRISSEY A.",
+      "student_number": "20250296",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "aonuevo.297@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "A\u00d1ONUEVO, TYRONE ORVIL T.",
+      "student_number": "20250297",
+      "section_name": "Grade 6"
+    },
+    {
+      "email": "unknownstudent.298@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "Unknown Student",
+      "student_number": "20250298",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "tomenio.299@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TOMENIO, LIAM ANDRIE D.",
+      "student_number": "20250299",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "chua.300@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CHUA, AUDRIC DANIEL A.",
+      "student_number": "20250300",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "cabarloc.301@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CABARLOC, MITZUO HIMURA O.",
+      "student_number": "20250301",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "devera.302@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DE VERA, NATHAN ZACHARY A.",
+      "student_number": "20250302",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "cayabyab.303@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAYABYAB, ANTOINE MIGUEL M.",
+      "student_number": "20250303",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "maago.304@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MA\u00d1AGO, JAIME ANNE M.",
+      "student_number": "20250304",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "medenilla.305@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MEDENILLA, AVERY JOHN",
+      "student_number": "20250305",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "delapea.306@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA PE\u00d1A, MIKEL RUI C.",
+      "student_number": "20250306",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "magday.307@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAGDAY, LIAM JAMES T.",
+      "student_number": "20250307",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "delapea.308@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA PE\u00d1A, GIAN LEE G.",
+      "student_number": "20250308",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "rodelas.309@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RODELAS, BRYCE MATTAN KEITH",
+      "student_number": "20250309",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "ituralde.310@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ITURALDE, RANELEENE MAGDALEENE C.",
+      "student_number": "20250310",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "nieva.311@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NIEVA, JEMILLAH IZZY M.",
+      "student_number": "20250311",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "alarcon.312@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALARCON, ZIYHANNE AMBER R.",
+      "student_number": "20250312",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "mallari.313@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MALLARI, JOHN NAITHAN P.",
+      "student_number": "20250313",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "baldove.314@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BALDOVE, EDRY VON D.",
+      "student_number": "20250314",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "arandid.315@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ARANDID, MIKAYLA LEIGH F.",
+      "student_number": "20250315",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "valmadrid.316@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VALMADRID, AVRIA LANA H.",
+      "student_number": "20250316",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "nitura.317@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NITURA, KENSHIN M.",
+      "student_number": "20250317",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "mondia.318@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MONDIA, CLAYTON P.",
+      "student_number": "20250318",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "treyes.319@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TREYES, VENICE DOMINIQUE S.",
+      "student_number": "20250319",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "enrile.320@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ENRILE, ELLRINE DRAKE C.",
+      "student_number": "20250320",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "cagampang.321@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAGAMPANG, DESTHAN RAE C.",
+      "student_number": "20250321",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "quenio.322@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "QUENIO, PIERRE JACOB A.",
+      "student_number": "20250322",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "baltazar.323@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BALTAZAR, AKHIO ZIV ZABDIEL C.",
+      "student_number": "20250323",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "pelotera.324@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PELOTERA, LLERY ZHINT G.",
+      "student_number": "20250324",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "narciso.325@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NARCISO, DUNCAN JOSEPH R.",
+      "student_number": "20250325",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "punsalang.326@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PUNSALANG, ZIANNE CRISZETTE S.",
+      "student_number": "20250326",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "paular.327@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAULAR, ELLA SOPHIA Y.",
+      "student_number": "20250327",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "olete.328@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "OLETE, AERON FRANCIS G.",
+      "student_number": "20250328",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "sanjose.329@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAN JOSE, DOMINIC M.",
+      "student_number": "20250329",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "ramos.330@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RAMOS, JARED Y.",
+      "student_number": "20250330",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "flores.331@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FLORES, ELIZABETH JOY  I.",
+      "student_number": "20250331",
+      "section_name": "Grade 7"
+    },
+    {
+      "email": "alifdeen.332@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALIFDEEN, MOHAMMED JAWHAR S.",
+      "student_number": "20250332",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "baylen.333@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAYLEN, RENZ MICHAEL INARSOLIN",
+      "student_number": "20250333",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "verano.334@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VERANO, YAEL EZRA D.",
+      "student_number": "20250334",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "cabantoc.335@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CABANTOC, AEDAN D.",
+      "student_number": "20250335",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "magnaye.336@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAGNAYE, HANZEL JAMES",
+      "student_number": "20250336",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "sayas.337@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAYAS, SEBASTIAN B.",
+      "student_number": "20250337",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "pugeda.338@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PUGEDA, ZIAN M.",
+      "student_number": "20250338",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "tor.339@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TOR, FRANCIS ROBERT F.",
+      "student_number": "20250339",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "montemayor.340@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MONTEMAYOR, OLIVER JACOB D.",
+      "student_number": "20250340",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "manacsa.341@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANACSA, EZEKIEL B.",
+      "student_number": "20250341",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "layson.342@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LAYSON, JAN GABRIEL V.",
+      "student_number": "20250342",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "dayangco.343@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DAYANGCO, PAUL NORBEL DWIN T.",
+      "student_number": "20250343",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "villar.344@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VILLAR, THAMINA ISABEL A.",
+      "student_number": "20250344",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "tandog.345@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TANDOG, RAFA L.",
+      "student_number": "20250345",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "cyricqkmatthewstagulao.346@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CYRICQK MATTHEW S. TAGULAO",
+      "student_number": "20250346",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "ceres.347@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CERES, PRINCESS JANAIRE VIRNALOU S.",
+      "student_number": "20250347",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "delacruz.348@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DELA CRUZ, ADEN DANIEL D.",
+      "student_number": "20250348",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "cagampang.349@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CAGAMPANG, NATHAN RAE C.",
+      "student_number": "20250349",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "foja.350@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FOJA, CATALIAH KLENJCZEE V.",
+      "student_number": "20250350",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "butt.351@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BUTT, AHMED YASIR ARFAT L.",
+      "student_number": "20250351",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "guijo.352@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GUIJO, ZAPHANIAH JAY A.",
+      "student_number": "20250352",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "vista.353@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VISTA, PRINCE MICHAEL D.",
+      "student_number": "20250353",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "mamauag.354@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAMAUAG, ADRIEL IZRI A.",
+      "student_number": "20250354",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "pilon.355@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PILON, REUBEN L.",
+      "student_number": "20250355",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "serrano.356@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SERRANO, PAUL CZARR BIEL D.",
+      "student_number": "20250356",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "daguio.357@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DAGUIO, ALEX MATEO L.",
+      "student_number": "20250357",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "peng.358@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PENG, ZHYRUS ETHAN T.",
+      "student_number": "20250358",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "amurao.359@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AMURAO, RAVEN JAIRUS A.",
+      "student_number": "20250359",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "garcia.360@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GARCIA, JOSE GIL IV M.",
+      "student_number": "20250360",
+      "section_name": "Grade 8"
+    },
+    {
+      "email": "aldave.361@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALDAVE, MHEL MARIANE R.",
+      "student_number": "20250361",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "paule.362@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PAULE, CRISS EVERTT S.",
+      "student_number": "20250362",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "hernandez.363@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HERNANDEZ, DANIELLA NICOLE D.",
+      "student_number": "20250363",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "elmaakouri.364@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EL MAAKOURI, LOUISE NATHANIEL P.",
+      "student_number": "20250364",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "manacsa.365@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MANACSA, MICAH JOY B.",
+      "student_number": "20250365",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "orbita.366@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ORBITA, MATT RAFFAELE V.",
+      "student_number": "20250366",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "ayo.367@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AYO, MARCIAL JOMARRY M.",
+      "student_number": "20250367",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "nepomuceno.368@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NEPOMUCENO, ETHAN THOMAS B.",
+      "student_number": "20250368",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "mojares.369@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MOJARES, RYLLIE YSABELLE C.",
+      "student_number": "20250369",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "estrebo.370@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESTREBO, ANDREA MARRIE V.",
+      "student_number": "20250370",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "solatorio.371@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SOLATORIO, RAY AIZEN P.",
+      "student_number": "20250371",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "vista.372@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VISTA, PRINCESS MITCHEDES D.",
+      "student_number": "20250372",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "rabaya.373@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RABAYA, RONDELL MIKHAEL ANGELO T.",
+      "student_number": "20250373",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "sanjose.374@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SAN JOSE, MA. CHRISTINA M.",
+      "student_number": "20250374",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "saturay.375@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SATURAY, MIHAEL CHLOE T.",
+      "student_number": "20250375",
+      "section_name": "Grade 9"
+    },
+    {
+      "email": "hernandez.376@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "HERNANDEZ, ZED REH JR. D.",
+      "student_number": "20250376",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "aquino.377@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AQUINO, ERICH KYLIE P.",
+      "student_number": "20250377",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "gatdula.378@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GATDULA, YOHANCE AYMON V.",
+      "student_number": "20250378",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "gallenito.379@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "GALLENITO, JANROYCE",
+      "student_number": "20250379",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "llames.380@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "LLAMES, PRINCE DARWAINE M.",
+      "student_number": "20250380",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "tor.381@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TOR, FRANCINE JEAN F.",
+      "student_number": "20250381",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "asuncion.382@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ASUNCION, FRANCESCA JAMIE B.",
+      "student_number": "20250382",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "arandid.383@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ARANDID, ASHLEY SHEIN F.",
+      "student_number": "20250383",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "wabie.384@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "WABIE, DOMINIQUE NATHAN C.",
+      "student_number": "20250384",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "quenio.385@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "QUENIO, LUKE GABRIEL A.",
+      "student_number": "20250385",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "jazo.386@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JAZO, KEISHA CHLOE B.",
+      "student_number": "20250386",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "pascua.387@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PASCUA, ELIJAH NATHANIEL C.",
+      "student_number": "20250387",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "quizzagan.388@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "QUIZZAGAN, MARIAH BELLA B.",
+      "student_number": "20250388",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "batomalaque.389@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BATOMALAQUE, CLIO JULIA N.",
+      "student_number": "20250389",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "espiritu.390@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ESPIRITU, JORGE LEXI D.",
+      "student_number": "20250390",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "borres.391@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BORRES, FRANCIS DWAYNE A.",
+      "student_number": "20250391",
+      "section_name": "Grade 10"
+    },
+    {
+      "email": "singhid.392@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "SINGHID, ETHAN MANUEL S.",
+      "student_number": "20250392",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "navarro.393@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "NAVARRO, JAMES G.",
+      "student_number": "20250393",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "rante.394@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "RANTE, KEITH PAOLO M.",
+      "student_number": "20250394",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "tacusalme.395@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TACUSALME, NATHALIE JANE A.",
+      "student_number": "20250395",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "bautista.396@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "BAUTISTA, JULIANNE C.",
+      "student_number": "20250396",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "jazo.397@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "JAZO, KESTER CLYDE B.",
+      "student_number": "20250397",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "pelotera.398@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "PELOTERA, LERKXON G.",
+      "student_number": "20250398",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "villones.399@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VILLONES, CASSEY KARYLE C.",
+      "student_number": "20250399",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "eduba.400@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "EDUBA, SAMANTHA JASMINE R.",
+      "student_number": "20250400",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "diaz.401@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DIAZ, RUZZEL ANGEL G.",
+      "student_number": "20250401",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "villaluz.402@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "VILLALUZ, VICENZO SANTINO D.",
+      "student_number": "20250402",
+      "section_name": "Grade 11"
+    },
+    {
+      "email": "agapan.403@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "AGAPAN, MA. QUEENSLEE L.",
+      "student_number": "20250403",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "francisco.404@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "FRANCISCO, ZEINA V.",
+      "student_number": "20250404",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "urbano.405@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "URBANO, AMIRA SHEBA A.",
+      "student_number": "20250405",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "torres.406@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "TORRES, ARLAN SHANNE T.",
+      "student_number": "20250406",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "magboo.407@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "MAGBOO, ENRICO JULIAN G.",
+      "student_number": "20250407",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "domingo.408@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "DOMINGO, JEHN MYRISH C.",
+      "student_number": "20250408",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "cruz.409@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CRUZ, KATRINA AMBER A.",
+      "student_number": "20250409",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "alarcon.410@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "ALARCON, YUNA ALEIGHA D.",
+      "student_number": "20250410",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "casiquin.411@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CASIQUIN, JEANINE ZIAHNELL D.",
+      "student_number": "20250411",
+      "section_name": "Grade 12"
+    },
+    {
+      "email": "caballero.412@student.mabdc.edu.ph",
+      "password": "mabdc2025",
+      "full_name": "CABALLERO, ANECAH FATIMA S.",
+      "student_number": "20250412",
+      "section_name": "Grade 12"
+    }
+  ]
+}
