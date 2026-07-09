@@ -303,7 +303,9 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         setStatus("No face detected in that photo.");
         return;
       }
+      const snap = snapshotFromImage(img, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
+      setSnapshots((prev) => [...prev, snap]);
       setStatus(`Captured ${samples.length + 1} sample${samples.length ? "s" : ""}.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Photo detection failed");
