@@ -335,9 +335,9 @@ function KioskPage() {
 
             {/* Status overlay */}
             {isAwake && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/60">Status</p>
-                <p className="mt-1 font-display text-2xl font-bold">{error ?? status}</p>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 sm:p-6">
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/60">Status</p>
+                <p className="mt-1 font-display text-lg sm:text-2xl font-bold">{error ?? status}</p>
               </div>
             )}
 
