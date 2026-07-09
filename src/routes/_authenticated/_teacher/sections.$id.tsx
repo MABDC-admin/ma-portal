@@ -299,6 +299,3 @@ function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStude
     </div>
   );
 }
-
-// Silence unused-import warning if `supabase` optimization ever removes it — keep reference
-void supabase;
