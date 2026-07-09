@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listSectionRosterFn, saveFaceDescriptorFn } from "@/lib/teacher.functions";
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+// (no browser supabase import — all data flows through server functions)
 
 export const Route = createFileRoute("/_authenticated/_teacher/sections/$id")({
   head: () => ({ meta: [{ title: "Section — AttendCloud" }] }),
