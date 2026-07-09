@@ -96,29 +96,26 @@ function DllPortal() {
             <h1 className="text-3xl font-bold text-slate-800 tracking-tight">DLL Review Portal</h1>
             <p className="text-[13px] text-slate-500 mt-1">Monitoring Daily Lesson Log compliance across all departments.</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:bg-slate-50 transition">
-            <Icon name="calendar_today" size={16} className="text-primary" />
-            <span className="text-[13px] font-semibold text-slate-700">Term 2, Week 7</span>
-          </button>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <KpiCard 
+          <KpiCard
             icon="description" iconBg="bg-blue-50 text-primary"
             title="TOTAL SUBMISSIONS" value={kpiQ.data?.total ?? 0}
-            badge="+12% ↑" badgeColor="text-emerald-500"
+            badge="" badgeColor=""
           />
-          <KpiCard 
+          <KpiCard
             icon="assignment_late" iconBg="bg-orange-50 text-orange-500"
             title="PENDING REVIEW" value={kpiQ.data?.submitted ?? 0}
-            badge="Action Needed" badgeColor="text-red-500"
+            badge={kpiQ.data?.submitted ? "Action Needed" : ""} badgeColor="text-red-500"
           />
-          <KpiCard 
+          <KpiCard
             icon="check_circle" iconBg="bg-emerald-50 text-emerald-500"
-            title="APPROVED TODAY" value={kpiQ.data?.approved ?? 0}
-            badge="Last hour: 8" badgeColor="text-slate-400"
+            title="APPROVED" value={kpiQ.data?.approved ?? 0}
+            badge="" badgeColor=""
           />
+
           <div className="glass-panel rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up flex flex-col justify-between relative overflow-hidden" style={{ animationDelay: '0.15s' }}>
             <div>
               <div className="flex items-center justify-between mb-4">
