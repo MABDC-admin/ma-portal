@@ -212,6 +212,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
   const [status, setStatus] = useState("Loading models…");
   const [error, setError] = useState<string | null>(null);
   const [samples, setSamples] = useState<Float32Array[]>([]);
+  const [snapshots, setSnapshots] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
 
