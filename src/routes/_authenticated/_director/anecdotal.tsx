@@ -143,44 +143,16 @@ function DirectorAnecdotalPage() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-1.5 flex-1 min-w-[150px]">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">CONCERN LEVEL</label>
-            <div className="relative">
-              <select 
-                value={concernFilter}
-                onChange={e => setConcernFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg px-4 py-2 outline-none focus:border-primary"
-              >
-                <option>All Levels</option>
-                <option>Urgent</option>
-                <option>Monitor</option>
-                <option>Normal</option>
-              </select>
-              <Icon name="expand_more" size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 flex-[1.5] min-w-[200px]">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">DATE RANGE</label>
-            <div className="relative">
-              <Icon name="calendar_today" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                defaultValue="Oct 01 - Oct 31"
-                className="w-full bg-white border border-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg pl-9 pr-4 py-2 outline-none focus:border-primary"
-              />
-            </div>
-          </div>
-
           <div className="ml-auto">
-            <button 
-              onClick={() => { setCategoryFilter("All Categories"); setConcernFilter("All Levels"); }}
+            <button
+              onClick={() => { setCategoryFilter("All Categories"); }}
               className="bg-[#e4ebfb] text-[#2c65cc] font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-blue-100 transition"
             >
               Reset Filters
             </button>
           </div>
         </div>
+
 
         {/* Data Table */}
         <div className="glass-panel rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.25s' }}>
