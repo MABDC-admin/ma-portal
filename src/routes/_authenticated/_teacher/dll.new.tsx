@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { AppShell, Card } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,27 +16,26 @@ export const Route = createFileRoute("/_authenticated/_teacher/dll/new")({
 function NewDllEntry() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const prefill = (() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const raw = sessionStorage.getItem("dll:prefill");
-      if (!raw) return null;
-      sessionStorage.removeItem("dll:prefill");
-      return JSON.parse(raw) as {
-        subject?: string; section_id?: string | null;
-        objectives?: string; content?: string; procedures?: string; assessment?: string;
-      };
-    } catch { return null; }
-  })();
-  const [sectionId, setSectionId] = useState(prefill?.section_id ?? "");
-  const [subject, setSubject] = useState(prefill?.subject ?? "");
-  const [lessonDate, setLessonDate] = useState(new Date().toISOString().slice(0, 10));
-  const [objectives, setObjectives] = useState(prefill?.objectives ?? "");
-  const [content, setContent] = useState(prefill?.content ?? "");
-  const [procedures, setProcedures] = useState(prefill?.procedures ?? "");
-  const [assessment, setAssessment] = useState(prefill?.assessment ?? "");
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState<null | "draft" | "submit">(null);
+  // Using user profile for Teacher Name, fallback to Sarah Jenkins as in screenshot
+  const teacherName = (user as any)?.user_metadata?.full_name || user?.email || "Sarah Jenkins";
+  
+  const [sectionId, setSectionId] = useState("");
+  const [subject, setSubject] = useState("General Mathematics");
+  const [lessonDate, setLessonDate] = useState("2023-10-27");
+  const [quarterWeek, setQuarterWeek] = useState("Q2 / W4");
+  const [topic, setTopic] = useState("Introduction to Quadratic Functions");
+  
+  const [objectives, setObjectives] = useState("");
+  const [activities, setActivities] = useState("");
+  const [reflection, setReflection] = useState("");
+  
+  const [status, setStatus] = useState("Completed");
+  const [assessments, setAssessments] = useState({
+    quiz: false, activity: false, performance: false, oral: false
+  });
+  const [remediation, setRemediation] = useState("");
+
+  const [saving, setSaving] = useState(false);
 
   const sectionsQ = useQuery({
     queryKey: ["sections-all"],
@@ -49,10 +48,9 @@ function NewDllEntry() {
 
   const createDll = useServerFn(createDllFn);
 
-  async function save(kind: "draft" | "submit") {
+  async function save() {
     if (!user) return;
-    setError(null);
-    setSaving(kind);
+    setSaving(true);
     try {
       await createDll({
         data: {
@@ -60,107 +58,239 @@ function NewDllEntry() {
           subject,
           lesson_date: lessonDate,
           objectives,
-          content,
-          procedures,
-          assessment,
-          submit: kind === "submit",
+          content: topic + (quarterWeek ? " (" + quarterWeek + ")" : ""),
+          procedures: activities,
+          assessment: Object.entries(assessments).filter(([_,v])=>v).map(([k])=>k).join(",") + (remediation ? "\nRemediation: " + remediation : ""),
+          submit: true,
         },
       });
       navigate({ to: "/" });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to save");
+      console.error(e);
     } finally {
-      setSaving(null);
+      setSaving(false);
     }
   }
 
   return (
     <AppShell>
-      <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+      <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-6 mt-2 animate-fade-in">
         <div>
-          <nav className="mb-2 flex items-center gap-2 text-sm text-tertiary">
-            <Link to="/">Dashboard</Link>
-            <Icon name="chevron_right" size={16} />
-            <span>New DLL Entry</span>
-          </nav>
-          <h2 className="font-display text-3xl font-extrabold text-foreground">New DLL Entry</h2>
+          <h2 className="text-3xl font-bold text-slate-800 tracking-tight">New DLL Entry</h2>
+          <p className="text-[13px] text-slate-500 mt-1">Record and reflect on your classroom implementation for today.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link to="/" className="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold hover:bg-surface-container">Discard</Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/"
+            className="px-6 py-2 text-[13px] font-semibold text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            Discard
+          </Link>
           <button
-            onClick={() => save("draft")}
-            disabled={!!saving}
-            className="rounded-lg border border-outline-variant px-5 py-2.5 text-sm font-semibold hover:bg-surface-container disabled:opacity-60"
-          >{saving === "draft" ? "Saving…" : "Save Draft"}</button>
-          <button
-            onClick={() => save("submit")}
-            disabled={!!saving}
-            className="rounded-lg bg-primary px-8 py-2.5 text-sm font-semibold text-primary-foreground shadow-md hover:brightness-110 disabled:opacity-60"
-          >{saving === "submit" ? "Submitting…" : "Submit Log"}</button>
+            onClick={save}
+            disabled={saving}
+            className="px-6 py-2 text-[13px] font-semibold text-white bg-gradient-primary rounded hover:opacity-90 transition-all shadow-md disabled:opacity-60"
+          >
+            {saving ? "Submitting..." : "Submit Log"}
+          </button>
         </div>
       </div>
 
-      {error && <div className="mb-4 rounded-lg bg-status-absent/10 p-3 text-sm text-status-absent">{error}</div>}
-
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 space-y-6 lg:col-span-8">
-          <Card className="p-6">
-            <h3 className="mb-6 font-display text-xl font-bold">Lesson Identity</h3>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Field label="Date of Lesson">
-                <input type="date" value={lessonDate} onChange={(e) => setLessonDate(e.target.value)} className="input" />
+      <div className="grid grid-cols-12 gap-6 pb-20 animate-fade-in">
+        {/* Left Column */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          
+          {/* Lesson Identity */}
+          <div className="glass-panel rounded-xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.05s' }}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-primary">
+                <Icon name="description" size={18} />
+              </div>
+              <h3 className="text-[17px] font-semibold text-slate-800">Lesson Identity</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+              <Field label="DATE OF LESSON">
+                <input type="date" value={lessonDate} onChange={e=>setLessonDate(e.target.value)} className="input-field w-full" />
               </Field>
-              <Field label="Section">
-                <select value={sectionId} onChange={(e) => setSectionId(e.target.value)} className="input">
-                  <option value="">— Select section —</option>
-                  {sectionsQ.data?.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              <Field label="TEACHER NAME">
+                <input readOnly value={teacherName} className="input-field bg-[#f8fafc] text-slate-500 w-full" />
+              </Field>
+              
+              <Field label="LEARNING AREA / SUBJECT">
+                <select value={subject} onChange={e=>setSubject(e.target.value)} className="input-field w-full">
+                  <option value="General Mathematics">General Mathematics</option>
+                  <option value="Science">Science</option>
+                  <option value="English">English</option>
                 </select>
               </Field>
-              <Field label="Subject">
-                <input required value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Algebra" className="input" />
+              <Field label="GRADE & SECTION">
+                <select value={sectionId} onChange={e=>setSectionId(e.target.value)} className="input-field w-full">
+                  <option value="">11 - Galileo</option>
+                  {sectionsQ.data?.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
               </Field>
+              
+              <Field label="QUARTER/WEEK">
+                <input value={quarterWeek} onChange={e=>setQuarterWeek(e.target.value)} className="input-field w-full" />
+              </Field>
+              <div className="md:col-span-2">
+                <Field label="TOPIC / LESSON TITLE">
+                  <input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Introduction to Quadratic Functions" className="input-field w-full" />
+                </Field>
+              </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6">
-            <h3 className="mb-6 font-display text-xl font-bold">Curriculum Delivery</h3>
+          {/* Curriculum Delivery */}
+          <div className="glass-panel rounded-xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-primary">
+                <Icon name="fact_check" size={18} />
+              </div>
+              <h3 className="text-[17px] font-semibold text-slate-800">Curriculum Delivery</h3>
+            </div>
             <div className="space-y-6">
-              <Field label="Learning Objectives">
-                <textarea rows={3} value={objectives} onChange={(e) => setObjectives(e.target.value)} placeholder="What students will achieve…" className="input" />
+              <Field label="LEARNING COMPETENCY / OBJECTIVES">
+                <textarea rows={3} value={objectives} onChange={e=>setObjectives(e.target.value)} placeholder="Identify the domain and range of a quadratic function..." className="input-field w-full resize-none" />
               </Field>
-              <Field label="Content / Topics">
-                <textarea rows={3} value={content} onChange={(e) => setContent(e.target.value)} placeholder="Chapters, sections, materials…" className="input" />
-              </Field>
-              <Field label="Procedures / Activities">
-                <textarea rows={5} value={procedures} onChange={(e) => setProcedures(e.target.value)} placeholder="Direct instruction, group work, checks for understanding…" className="input" />
-              </Field>
-              <Field label="Assessment">
-                <textarea rows={3} value={assessment} onChange={(e) => setAssessment(e.target.value)} placeholder="Exit ticket, quiz, performance task…" className="input" />
+              <Field label="TEACHING ACTIVITIES">
+                <textarea rows={4} value={activities} onChange={e=>setActivities(e.target.value)} className="input-field w-full resize-none" />
               </Field>
             </div>
-          </Card>
+          </div>
+
+          {/* Reflection */}
+          <div className="glass-panel rounded-xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.15s' }}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-primary">
+                <Icon name="psychology" size={20} />
+              </div>
+              <h3 className="text-[17px] font-semibold text-slate-800">Reflection & Action Plan</h3>
+            </div>
+            <Field label="NOTES ON PROGRESS / NEXT STEPS">
+              <textarea rows={4} value={reflection} onChange={e=>setReflection(e.target.value)} placeholder="Reflection on student engagement, what worked, and necessary adjustments for tomorrow..." className="input-field w-full resize-none" />
+            </Field>
+          </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-4">
-          <div className="flex gap-3 rounded-xl border border-outline-variant bg-surface-container-low p-4">
-            <Icon name="info" size={20} className="text-primary" />
-            <p className="text-xs text-tertiary">
-              Save as draft to keep working, or submit to send to the Academic Director for review.
+        {/* Right Column */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          
+          <div className="glass-panel rounded-xl p-5 animate-slide-up" style={{ animationDelay: '0.05s' }}>
+            <Field label="IMPLEMENTATION STATUS">
+              <select value={status} onChange={e=>setStatus(e.target.value)} className="input-field bg-white/70 backdrop-blur w-full">
+                <option value="Completed">Completed</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Not Started">Not Started</option>
+              </select>
+            </Field>
+          </div>
+
+          <div className="glass-panel rounded-xl p-5 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <Field label="ASSESSMENT USED">
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <AssessmentCheck label="Quiz" checked={assessments.quiz} onChange={v => setAssessments({...assessments, quiz: v})} />
+                <AssessmentCheck label="Activity" checked={assessments.activity} onChange={v => setAssessments({...assessments, activity: v})} />
+                <AssessmentCheck label="Performance" checked={assessments.performance} onChange={v => setAssessments({...assessments, performance: v})} />
+                <AssessmentCheck label="Oral Exam" checked={assessments.oral} onChange={v => setAssessments({...assessments, oral: v})} />
+              </div>
+            </Field>
+          </div>
+
+          <div className="glass-panel rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.15s' }}>
+            <div className="flex justify-between items-end mb-4">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">LEARNER PERFORMANCE</label>
+            </div>
+            <div className="mb-5">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[13px] text-slate-700">Mastery Level</span>
+                <span className="text-[13px] font-bold text-emerald-500">84%</span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div className="bg-gradient-primary h-1.5 rounded-full" style={{ width: "84%" }}></div>
+              </div>
+            </div>
+            <textarea rows={3} value={remediation} onChange={e=>setRemediation(e.target.value)} placeholder="Specific learners needing remediation..." className="input-field w-full text-[13px] resize-none" />
+          </div>
+
+          <div className="glass-panel rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="flex justify-between items-center mb-4">
+              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">ATTACHMENTS</label>
+              <button className="text-[12px] font-semibold text-primary hover:text-secondary transition-colors">+ Add Link</button>
+            </div>
+            <div className="border border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center bg-white/50 mb-4 hover:bg-slate-50/70 transition cursor-pointer">
+              <Icon name="cloud_upload" size={24} className="text-slate-400 mb-2" />
+              <p className="text-[13px] font-semibold text-slate-700">Upload presentation or handout</p>
+              <p className="text-[10px] text-slate-500 mt-1">PDF, PPTX, or DOCX up to 10MB</p>
+            </div>
+            <div className="flex items-center justify-between glass-panel border border-primary/20 rounded-lg p-3">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center bg-white/80 backdrop-blur rounded p-1 text-primary shadow-sm border border-slate-100">
+                  <Icon name="description" size={16} />
+                </div>
+                <div>
+                  <p className="text-[12px] font-semibold text-slate-800">Quadratic_Functions_v2.pptx</p>
+                  <p className="text-[10px] text-slate-500">2.4 MB</p>
+                </div>
+              </div>
+              <button className="text-slate-400 hover:text-slate-600">
+                <Icon name="close" size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-slate-50/50 backdrop-blur border border-slate-200 rounded-lg p-4 flex gap-3 text-slate-600 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+            <Icon name="info" size={18} className="text-primary flex-shrink-0" />
+            <p className="text-[11px] leading-relaxed">
+              This log will be synced to the Department Head's dashboard for weekly monitoring. Ensure all competencies are mapped to the MELCs.
             </p>
           </div>
+
         </div>
       </div>
 
-      <style>{`.input{width:100%;border-radius:.5rem;border:1px solid var(--outline-variant);background:var(--surface);padding:.625rem .75rem;font-size:.875rem;outline:none;transition:all 150ms}.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in oklch,var(--primary) 20%,transparent)}`}</style>
+      <style>{`
+        .input-field {
+          border-radius: 0.375rem;
+          border: 1px solid #e2e8f0;
+          background: rgba(248, 250, 252, 0.8);
+          backdrop-filter: blur(8px);
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
+          color: #334155;
+          outline: none;
+          transition: all 150ms;
+        }
+        .input-field:focus {
+          border-color: var(--color-primary);
+          background: #ffffff;
+          box-shadow: 0 0 0 1px var(--color-primary);
+        }
+        .input-field::placeholder {
+          color: #94a3b8;
+        }
+      `}</style>
     </AppShell>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1">
-      <label className="text-xs font-semibold uppercase tracking-widest text-tertiary">{label}</label>
+    <div className="flex flex-col space-y-1.5">
+      <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        {label}
+      </label>
       {children}
     </div>
+  );
+}
+
+function AssessmentCheck({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-2 bg-white/70 backdrop-blur border border-slate-200 rounded-md px-3 py-2 cursor-pointer hover:border-slate-300 transition-all hover:-translate-y-0.5 shadow-sm">
+      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="w-3.5 h-3.5 rounded-sm border-slate-300 text-primary focus:ring-primary" />
+      <span className="text-[12px] text-slate-700">{label}</span>
+    </label>
   );
 }

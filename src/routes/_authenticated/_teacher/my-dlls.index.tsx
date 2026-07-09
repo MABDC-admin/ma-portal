@@ -21,7 +21,7 @@ function MyDllsPage() {
     queryFn: () => listFn(),
   });
 
-  const rows = (q.data ?? []).filter((r) => filter === "all" ? true : r.status === filter);
+  const rows = (q.data ?? []).filter((r) => (filter === "all" ? true : r.status === filter));
   const counts = { draft: 0, submitted: 0, approved: 0, returned: 0 };
   for (const r of q.data ?? []) counts[r.status as keyof typeof counts]++;
 
@@ -30,7 +30,10 @@ function MyDllsPage() {
       title="My Lesson Logs"
       subtitle="Every DLL you've drafted, submitted, or had reviewed."
       actions={
-        <Link to="/dll/new" className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110">
+        <Link
+          to="/dll/new"
+          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110"
+        >
           <Icon name="note_add" size={18} /> New Entry
         </Link>
       }
@@ -50,8 +53,13 @@ function MyDllsPage() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={"rounded-md px-3 py-1 capitalize " + (filter === f ? "bg-surface shadow-sm" : "text-tertiary")}
-              >{f}</button>
+                className={
+                  "rounded-md px-3 py-1 capitalize " +
+                  (filter === f ? "bg-surface shadow-sm" : "text-tertiary")
+                }
+              >
+                {f}
+              </button>
             ))}
           </div>
         </div>
@@ -60,7 +68,12 @@ function MyDllsPage() {
         {!q.isLoading && rows.length === 0 && (
           <div className="rounded-xl border border-dashed border-outline-variant p-8 text-center">
             <p className="text-sm text-tertiary">No lesson logs match this filter.</p>
-            <Link to="/dll/new" className="mt-3 inline-block text-sm font-semibold text-primary hover:underline">Create your first DLL →</Link>
+            <Link
+              to="/dll/new"
+              className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
+            >
+              Create your first DLL →
+            </Link>
           </div>
         )}
 
@@ -80,13 +93,24 @@ function MyDllsPage() {
                 {rows.map((d) => {
                   const section = (d as unknown as { sections: { name: string } | null }).sections;
                   return (
-                    <tr key={d.id} className="border-t border-outline-variant/40 hover:bg-surface-container-low/40">
+                    <tr
+                      key={d.id}
+                      className="border-t border-outline-variant/40 hover:bg-surface-container-low/40"
+                    >
                       <td className="px-4 py-3 num">{d.lesson_date}</td>
                       <td className="px-4 py-3 font-medium">{d.subject}</td>
                       <td className="px-4 py-3 text-tertiary">{section?.name || "—"}</td>
-                      <td className="px-4 py-3"><StatusBadge status={d.status as string} /></td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={d.status as string} />
+                      </td>
                       <td className="px-4 py-3 text-right">
-                        <Link to="/my-dlls/$id" params={{ id: d.id }} className="rounded-lg bg-primary-container/40 px-4 py-1.5 text-xs font-semibold text-primary hover:bg-primary-container/60">Open</Link>
+                        <Link
+                          to="/my-dlls/$id"
+                          params={{ id: d.id }}
+                          className="rounded-lg bg-primary-container/40 px-4 py-1.5 text-xs font-semibold text-primary hover:bg-primary-container/60"
+                        >
+                          Open
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -100,8 +124,25 @@ function MyDllsPage() {
   );
 }
 
-function Kpi({ label, value, icon, tone }: { label: string; value: number; icon: string; tone: "present" | "late" | "absent" | "neutral" }) {
-  const c = tone === "present" ? "text-status-present" : tone === "late" ? "text-status-late" : tone === "absent" ? "text-status-absent" : "text-tertiary";
+function Kpi({
+  label,
+  value,
+  icon,
+  tone,
+}: {
+  label: string;
+  value: number;
+  icon: string;
+  tone: "present" | "late" | "absent" | "neutral";
+}) {
+  const c =
+    tone === "present"
+      ? "text-status-present"
+      : tone === "late"
+        ? "text-status-late"
+        : tone === "absent"
+          ? "text-status-absent"
+          : "text-tertiary";
   return (
     <Card className="p-4">
       <div className="flex items-center gap-3">
@@ -116,9 +157,29 @@ function Kpi({ label, value, icon, tone }: { label: string; value: number; icon:
 }
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === "draft") return <StatusPill tone="neutral" icon="edit">Draft</StatusPill>;
-  if (status === "submitted") return <StatusPill tone="late" icon="pending">Submitted</StatusPill>;
-  if (status === "approved") return <StatusPill tone="present" icon="check_circle">Approved</StatusPill>;
-  if (status === "returned") return <StatusPill tone="absent" icon="assignment_return">Returned</StatusPill>;
+  if (status === "draft")
+    return (
+      <StatusPill tone="neutral" icon="edit">
+        Draft
+      </StatusPill>
+    );
+  if (status === "submitted")
+    return (
+      <StatusPill tone="late" icon="pending">
+        Submitted
+      </StatusPill>
+    );
+  if (status === "approved")
+    return (
+      <StatusPill tone="present" icon="check_circle">
+        Approved
+      </StatusPill>
+    );
+  if (status === "returned")
+    return (
+      <StatusPill tone="absent" icon="assignment_return">
+        Returned
+      </StatusPill>
+    );
   return <StatusPill tone="neutral">{status}</StatusPill>;
 }

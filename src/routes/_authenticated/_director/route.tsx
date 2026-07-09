@@ -8,7 +8,8 @@ export const Route = createFileRoute("/_authenticated/_director")({
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
       supabase.rpc("has_role", { _user_id: userId, _role: "academic_director" }),
     ]);
-    if (!isAdmin && !isDirector) throw redirect({ to: "/unauthorized", search: { redirect: location.href } });
+    if (!isAdmin && !isDirector)
+      throw redirect({ to: "/unauthorized", search: { redirect: location.href } });
   },
   component: () => <Outlet />,
 });

@@ -55,7 +55,9 @@ function AttendanceProfile() {
   return (
     <AppShell>
       <div className="mb-6 flex items-center gap-2 text-sm text-tertiary">
-        <Link to="/students/$id" params={{ id }} className="hover:text-foreground">Profile</Link>
+        <Link to="/students/$id" params={{ id }} className="hover:text-foreground">
+          Profile
+        </Link>
         <Icon name="chevron_right" size={16} />
         <span className="font-medium text-foreground">Attendance</span>
       </div>
@@ -69,28 +71,43 @@ function AttendanceProfile() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
-          <h3 className="mb-4 font-display text-lg font-bold">{first.toLocaleString(undefined, { month: "long", year: "numeric" })}</h3>
+          <h3 className="mb-4 font-display text-lg font-bold">
+            {first.toLocaleString(undefined, { month: "long", year: "numeric" })}
+          </h3>
           <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-tertiary">
-            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => <div key={i}>{d}</div>)}
+            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+              <div key={i}>{d}</div>
+            ))}
           </div>
           <div className="grid grid-cols-7 gap-1 text-center num text-sm">
             {cells.map((c, i) => {
               if (c.s === "empty") return <div key={i} className="p-2" />;
               const cls =
-                c.s === "present" ? "bg-status-present/10 text-status-present"
-                : c.s === "late" ? "bg-status-late/15 text-status-late"
-                : c.s === "absent" ? "bg-status-absent/10 text-status-absent"
-                : c.s === "excused" ? "bg-status-excused/10 text-status-excused"
-                : c.s === "off" ? "bg-surface-container/50 text-tertiary/50"
-                : "bg-surface-container text-tertiary";
-              return <div key={i} className={`rounded-md p-2 font-medium ${cls}`}>{c.n}</div>;
+                c.s === "present"
+                  ? "bg-status-present/10 text-status-present"
+                  : c.s === "late"
+                    ? "bg-status-late/15 text-status-late"
+                    : c.s === "absent"
+                      ? "bg-status-absent/10 text-status-absent"
+                      : c.s === "excused"
+                        ? "bg-status-excused/10 text-status-excused"
+                        : c.s === "off"
+                          ? "bg-surface-container/50 text-tertiary/50"
+                          : "bg-surface-container text-tertiary";
+              return (
+                <div key={i} className={`rounded-md p-2 font-medium ${cls}`}>
+                  {c.n}
+                </div>
+              );
             })}
           </div>
         </Card>
 
         <Card className="p-6">
           <h3 className="mb-4 font-display text-lg font-bold">Detailed Log</h3>
-          {records.length === 0 && <p className="text-sm text-tertiary">No attendance records yet.</p>}
+          {records.length === 0 && (
+            <p className="text-sm text-tertiary">No attendance records yet.</p>
+          )}
           <div className="max-h-[400px] overflow-y-auto">
             <table className="w-full text-sm">
               <tbody>
@@ -98,7 +115,9 @@ function AttendanceProfile() {
                   <tr key={r.date} className="border-b border-outline-variant/40 last:border-0">
                     <td className="py-3 num text-tertiary">{r.date}</td>
                     <td className="py-3 text-right">
-                      <StatusPill tone={r.status as Status}>{String(r.status).toUpperCase()}</StatusPill>
+                      <StatusPill tone={r.status as Status}>
+                        {String(r.status).toUpperCase()}
+                      </StatusPill>
                     </td>
                   </tr>
                 ))}
@@ -111,8 +130,23 @@ function AttendanceProfile() {
   );
 }
 
-function Kpi({ label, value, tone }: { label: string; value: string | number; tone: "primary" | "present" | "late" | "absent" }) {
-  const c = tone === "present" ? "text-status-present" : tone === "late" ? "text-status-late" : tone === "absent" ? "text-status-absent" : "text-primary";
+function Kpi({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string | number;
+  tone: "primary" | "present" | "late" | "absent";
+}) {
+  const c =
+    tone === "present"
+      ? "text-status-present"
+      : tone === "late"
+        ? "text-status-late"
+        : tone === "absent"
+          ? "text-status-absent"
+          : "text-primary";
   return (
     <Card className="p-4 text-center">
       <p className="text-xs font-semibold uppercase tracking-wider text-tertiary">{label}</p>

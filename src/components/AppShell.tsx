@@ -11,10 +11,21 @@ const nav: NavItem[] = [
   { to: "/my-dlls", label: "My Lesson Logs", icon: "history_edu", roles: ["teacher"] },
   { to: "/dll/new", label: "New DLL Entry", icon: "note_add", roles: ["admin", "teacher"] },
   { to: "/teachers", label: "Teachers", icon: "school", roles: ["admin"] },
-  { to: "/faculty", label: "Faculty Directory", icon: "badge", roles: ["admin", "academic_director"] },
+  {
+    to: "/faculty",
+    label: "Faculty Directory",
+    icon: "badge",
+    roles: ["admin", "academic_director"],
+  },
   { to: "/dll", label: "DLL Review", icon: "description", roles: ["admin", "academic_director"] },
-  { to: "/anecdotal", label: "Anecdotal Log", icon: "sticky_note_2", roles: ["admin", "academic_director"] },
+  {
+    to: "/anecdotal",
+    label: "Anecdotal Log",
+    icon: "sticky_note_2",
+    roles: ["admin", "academic_director"],
+  },
   { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
+  { to: "/school-years", label: "School Years", icon: "date_range", roles: ["admin"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
   { to: "/seed-faculty", label: "Seed Faculty", icon: "cloud_upload", roles: ["admin"] },
 ];
@@ -55,7 +66,9 @@ export function AppShell({
             <Icon name="school" filled weight={600} />
           </div>
           <div>
-            <h2 className="font-display text-lg font-extrabold leading-tight text-foreground">AttendCloud</h2>
+            <h2 className="font-display text-lg font-extrabold leading-tight text-foreground">
+              AttendCloud
+            </h2>
             <p className="text-xs text-muted-foreground">Horizon Academy</p>
           </div>
         </div>
@@ -103,7 +116,9 @@ export function AppShell({
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{displayName}</p>
-              <span className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-bold ${badge.tone}`}>
+              <span
+                className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-bold ${badge.tone}`}
+              >
                 {badge.label}
               </span>
             </div>
@@ -114,17 +129,27 @@ export function AppShell({
       <div className="md:ml-[240px]">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-outline-variant bg-surface/80 px-6 backdrop-blur-md">
           <div className="relative w-full max-w-md">
-            <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tertiary" size={18} />
+            <Icon
+              name="search"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tertiary"
+              size={18}
+            />
             <input
               placeholder="Search students, teachers, logs…"
               className="h-10 w-full rounded-lg border border-outline-variant bg-surface pl-10 pr-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground" aria-label="Notifications">
+            <button
+              className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground"
+              aria-label="Notifications"
+            >
               <Icon name="notifications" size={20} />
             </button>
-            <button className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground" aria-label="Help">
+            <button
+              className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground"
+              aria-label="Help"
+            >
               <Icon name="help" size={20} />
             </button>
             <div className="relative">
@@ -137,10 +162,7 @@ export function AppShell({
               </button>
               {menuOpen && (
                 <>
-                  <div
-                    className="fixed inset-0 z-30"
-                    onClick={() => setMenuOpen(false)}
-                  />
+                  <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} />
                   <div className="absolute right-0 top-11 z-40 w-56 rounded-2xl border border-outline-variant bg-surface p-2 shadow-xl">
                     <div className="border-b border-outline-variant/50 px-3 py-2">
                       <p className="truncate text-sm font-semibold">{displayName}</p>
@@ -167,7 +189,9 @@ export function AppShell({
           <div className="flex flex-col gap-4 border-b border-outline-variant/50 bg-background px-6 pb-6 pt-8 sm:flex-row sm:items-end sm:justify-between md:px-10">
             <div>
               {title && (
-                <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">{title}</h1>
+                <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
+                  {title}
+                </h1>
               )}
               {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
             </div>
@@ -207,7 +231,9 @@ export function StatusPill({
     neutral: "bg-surface-container text-tertiary",
   } as const;
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${toneMap[tone]}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${toneMap[tone]}`}
+    >
       {icon && <Icon name={icon} size={14} filled />}
       {children}
     </span>

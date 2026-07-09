@@ -110,7 +110,11 @@ export const reviewDllFn = createServerFn({ method: "POST" })
       try {
         const { sendMabdcEmail, renderEmail } = await import("./mail.server");
         const [{ data: teacher }, { data: reviewer }] = await Promise.all([
-          supabase.from("profiles").select("email, full_name").eq("id", updated.teacher_id).single(),
+          supabase
+            .from("profiles")
+            .select("email, full_name")
+            .eq("id", updated.teacher_id)
+            .single(),
           supabase.from("profiles").select("email, full_name").eq("id", userId).single(),
         ]);
         if (teacher?.email) {

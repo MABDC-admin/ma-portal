@@ -3,7 +3,11 @@ import { AppShell, Card } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { listSectionRosterFn, getSectionAttendanceFn, upsertAttendanceFn } from "@/lib/teacher.functions";
+import {
+  listSectionRosterFn,
+  getSectionAttendanceFn,
+  upsertAttendanceFn,
+} from "@/lib/teacher.functions";
 import { useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/_teacher/sections/$id/attendance")({
@@ -44,13 +48,27 @@ function SectionAttendance() {
   useEffect(() => {
     const map: Record<string, { status: Status; notes: string }> = {};
     for (const r of attQ.data ?? []) {
-      map[r.student_id as string] = { status: r.status as Status, notes: (r.notes as string) ?? "" };
+      map[r.student_id as string] = {
+        status: r.status as Status,
+        notes: (r.notes as string) ?? "",
+      };
     }
     setEdits(map);
   }, [attQ.data]);
 
   const students = useMemo(() => {
-    const raw = (rosterQ.data as unknown as { students: Array<{ user_id: string; student_number: string; profiles: { full_name: string | null; email: string | null } | null }> } | undefined)?.students ?? [];
+    const raw =
+      (
+        rosterQ.data as unknown as
+          | {
+              students: Array<{
+                user_id: string;
+                student_number: string;
+                profiles: { full_name: string | null; email: string | null } | null;
+              }>;
+            }
+          | undefined
+      )?.students ?? [];
     return raw;
   }, [rosterQ.data]);
 
@@ -76,7 +94,11 @@ function SectionAttendance() {
     setSaving(true);
     setMessage(null);
     try {
-      const entries = Object.entries(edits).map(([studentId, v]) => ({ studentId, status: v.status, notes: v.notes || null }));
+      const entries = Object.entries(edits).map(([studentId, v]) => ({
+        studentId,
+        status: v.status,
+        notes: v.notes || null,
+      }));
       const res = await upsertFn({ data: { sectionId: id, date, entries } });
       await Promise.all([
         qc.invalidateQueries({ queryKey: ["section-attendance", id, date] }),
@@ -90,22 +112,35 @@ function SectionAttendance() {
     }
   }
 
-  const section = (rosterQ.data as unknown as { section: { name: string; grade_level: number } } | undefined)?.section;
+  const section = (
+    rosterQ.data as unknown as { section: { name: string; grade_level: number } } | undefined
+  )?.section;
 
   return (
     <AppShell>
-      <Link to="/sections/$id" params={{ id }} className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground">
+      <Link
+        to="/sections/$id"
+        params={{ id }}
+        className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground"
+      >
         <Icon name="arrow_back" size={16} /> Back to section
       </Link>
       <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="font-display text-3xl font-extrabold">Daily attendance</h1>
-          <p className="mt-1 text-sm text-tertiary">{section?.name ?? "Section"} · Grade {section?.grade_level ?? "—"}</p>
+          <p className="mt-1 text-sm text-tertiary">
+            {section?.name ?? "Section"} · Grade {section?.grade_level ?? "—"}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm">
             <Icon name="calendar_today" size={16} />
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent outline-none num" />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="bg-transparent outline-none num"
+            />
           </label>
           <button
             onClick={() => setAll("present")}
@@ -131,7 +166,11 @@ function SectionAttendance() {
         <Kpi label="Unmarked" value={counts.unmarked} tone="neutral" />
       </div>
 
-      {message && <div className="mb-4 rounded-lg bg-primary-container/30 p-3 text-sm text-primary">{message}</div>}
+      {message && (
+        <div className="mb-4 rounded-lg bg-primary-container/30 p-3 text-sm text-primary">
+          {message}
+        </div>
+      )}
 
       <Card className="overflow-hidden">
         <table className="w-full text-sm">
@@ -144,7 +183,13 @@ function SectionAttendance() {
             </tr>
           </thead>
           <tbody>
-            {rosterQ.isLoading && <tr><td colSpan={4} className="px-4 py-8 text-center text-tertiary">Loading…</td></tr>}
+            {rosterQ.isLoading && (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-tertiary">
+                  Loading…
+                </td>
+              </tr>
+            )}
             {students.map((s) => {
               const name = s.profiles?.full_name || s.profiles?.email || "Student";
               const cur = edits[s.user_id];
@@ -160,7 +205,12 @@ function SectionAttendance() {
                       {STATUSES.map((st) => (
                         <button
                           key={st}
-                          onClick={() => setEdits((p) => ({ ...p, [s.user_id]: { status: st, notes: p[s.user_id]?.notes ?? "" } }))}
+                          onClick={() =>
+                            setEdits((p) => ({
+                              ...p,
+                              [s.user_id]: { status: st, notes: p[s.user_id]?.notes ?? "" },
+                            }))
+                          }
                           className={
                             "rounded-lg px-3 py-1 text-xs font-bold capitalize ring-1 transition " +
                             (cur?.status === st
@@ -176,7 +226,15 @@ function SectionAttendance() {
                   <td className="px-4 py-3">
                     <input
                       value={cur?.notes ?? ""}
-                      onChange={(e) => setEdits((p) => ({ ...p, [s.user_id]: { status: p[s.user_id]?.status ?? "present", notes: e.target.value } }))}
+                      onChange={(e) =>
+                        setEdits((p) => ({
+                          ...p,
+                          [s.user_id]: {
+                            status: p[s.user_id]?.status ?? "present",
+                            notes: e.target.value,
+                          },
+                        }))
+                      }
                       placeholder="Optional note…"
                       className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-1.5 text-sm outline-none focus:border-primary"
                     />
@@ -193,11 +251,15 @@ function SectionAttendance() {
 
 function Kpi({ label, value, tone }: { label: string; value: number; tone: Status | "neutral" }) {
   const c =
-    tone === "present" ? "text-status-present"
-    : tone === "late" ? "text-status-late"
-    : tone === "absent" ? "text-status-absent"
-    : tone === "excused" ? "text-status-excused"
-    : "text-tertiary";
+    tone === "present"
+      ? "text-status-present"
+      : tone === "late"
+        ? "text-status-late"
+        : tone === "absent"
+          ? "text-status-absent"
+          : tone === "excused"
+            ? "text-status-excused"
+            : "text-tertiary";
   return (
     <Card className="p-4 text-center">
       <p className="text-xs font-semibold uppercase tracking-wider text-tertiary">{label}</p>

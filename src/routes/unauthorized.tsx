@@ -20,7 +20,8 @@ function UnauthorizedPage() {
         </div>
         <h1 className="mt-6 font-display text-3xl font-extrabold text-foreground">Access Denied</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your account does not have permission to view this page. Contact an administrator if you believe this is an error.
+          Your account does not have permission to view this page. Contact an administrator if you
+          believe this is an error.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link

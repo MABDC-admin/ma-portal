@@ -30,25 +30,43 @@ function SectionDetail() {
   });
   const [enrollStudent, setEnrollStudent] = useState<RosterStudent | null>(null);
 
-  if (q.isLoading) return <AppShell><p className="text-tertiary">Loading roster…</p></AppShell>;
-  if (q.error || !q.data) return <AppShell><p className="text-status-absent">Unable to load section.</p></AppShell>;
+  if (q.isLoading)
+    return (
+      <AppShell>
+        <p className="text-tertiary">Loading roster…</p>
+      </AppShell>
+    );
+  if (q.error || !q.data)
+    return (
+      <AppShell>
+        <p className="text-status-absent">Unable to load section.</p>
+      </AppShell>
+    );
 
   const { section, students, isAdviser } = q.data as unknown as {
     section: { id: string; name: string; grade_level: number; academic_year: string };
     students: RosterStudent[];
     isAdviser: boolean;
   };
-  const enrolled = students.filter((s) => Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128).length;
+  const enrolled = students.filter(
+    (s) => Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128,
+  ).length;
 
   return (
     <AppShell>
-      <Link to="/" className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground">
+      <Link
+        to="/"
+        className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground"
+      >
         <Icon name="arrow_back" size={16} /> Dashboard
       </Link>
       <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="font-display text-3xl font-extrabold">{section.name}</h1>
-          <p className="mt-1 text-sm text-tertiary">Grade {section.grade_level} · SY {section.academic_year} · {students.length} students · {enrolled} enrolled faces</p>
+          <p className="mt-1 text-sm text-tertiary">
+            Grade {section.grade_level} · SY {section.academic_year} · {students.length} students ·{" "}
+            {enrolled} enrolled faces
+          </p>
         </div>
         {isAdviser && (
           <div className="flex flex-wrap items-center gap-2">
@@ -72,7 +90,8 @@ function SectionDetail() {
 
       {!isAdviser && (
         <Card className="mb-6 border border-status-late/30 bg-status-late/5 p-4 text-sm">
-          You are not the assigned adviser for this section. Attendance and kiosk actions are disabled.
+          You are not the assigned adviser for this section. Attendance and kiosk actions are
+          disabled.
         </Card>
       )}
 
@@ -89,7 +108,11 @@ function SectionDetail() {
           </thead>
           <tbody>
             {students.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-tertiary">No students in this section yet.</td></tr>
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-tertiary">
+                  No students in this section yet.
+                </td>
+              </tr>
             )}
             {students.map((s) => {
               const name = s.profiles?.full_name || s.profiles?.email || "Student";
@@ -109,7 +132,9 @@ function SectionDetail() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <StatusPill tone={s.status === "active" ? "present" : "neutral"}>{s.status}</StatusPill>
+                    <StatusPill tone={s.status === "active" ? "present" : "neutral"}>
+                      {s.status}
+                    </StatusPill>
                   </td>
                   <td className="px-4 py-3">
                     {has ? (
@@ -158,11 +183,24 @@ function SectionDetail() {
 }
 
 function initials(name: string) {
-  return name.split(/\s+/).map((n) => n[0]?.toUpperCase()).filter(Boolean).slice(0, 2).join("");
+  return name
+    .split(/\s+/)
+    .map((n) => n[0]?.toUpperCase())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
 }
 
 // -------- Face enrollment modal --------
-function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStudent; sectionId: string; onClose: () => void }) {
+function FaceEnrollModal({
+  student,
+  sectionId,
+  onClose,
+}: {
+  student: RosterStudent;
+  sectionId: string;
+  onClose: () => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState("Loading models…");
   const [samples, setSamples] = useState<Float32Array[]>([]);
@@ -190,9 +228,14 @@ function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStude
         ]);
         if (cancelled) return;
         setStatus("Requesting camera…");
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: 640, height: 480 },
+        });
         streamRef.current = stream;
-        if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play();
@@ -218,7 +261,10 @@ function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStude
     try {
       const faceapi = await import("face-api.js");
       const detection = await faceapi
-        .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
+        .detectSingleFace(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }),
+        )
         .withFaceLandmarks()
         .withFaceDescriptor();
       if (!detection) {
@@ -261,11 +307,19 @@ function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStude
             <h3 className="font-display text-xl font-bold">Enroll face</h3>
             <p className="text-sm text-tertiary">{name}</p>
           </div>
-          <button onClick={onClose} className="rounded-full p-2 hover:bg-surface-container"><Icon name="close" /></button>
+          <button onClick={onClose} className="rounded-full p-2 hover:bg-surface-container">
+            <Icon name="close" />
+          </button>
         </div>
 
         <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
-          <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover [transform:scaleX(-1)]" />
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="h-full w-full object-cover [transform:scaleX(-1)]"
+          />
           <div className="pointer-events-none absolute inset-6 rounded-2xl border-2 border-primary/70" />
         </div>
 
@@ -275,7 +329,10 @@ function FaceEnrollModal({ student, sectionId, onClose }: { student: RosterStude
         <div className="mt-4 flex items-center justify-between gap-3">
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
-              <span key={i} className={`h-2.5 w-8 rounded-full ${i < samples.length ? "bg-primary" : "bg-surface-container"}`} />
+              <span
+                key={i}
+                className={`h-2.5 w-8 rounded-full ${i < samples.length ? "bg-primary" : "bg-surface-container"}`}
+              />
             ))}
           </div>
           <div className="flex gap-2">

@@ -8,7 +8,10 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign In — AttendCloud" },
-      { name: "description", content: "Sign in to AttendCloud to manage attendance, review DLLs, and view profiles." },
+      {
+        name: "description",
+        content: "Sign in to AttendCloud to manage attendance, review DLLs, and view profiles.",
+      },
     ],
   }),
   component: AuthPage,

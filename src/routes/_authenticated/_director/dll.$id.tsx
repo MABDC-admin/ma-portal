@@ -26,7 +26,9 @@ function DllReviewDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dlls")
-        .select("*, profiles!dlls_teacher_profile_fkey(email, full_name), sections:section_id(name, grade_level)")
+        .select(
+          "*, profiles!dlls_teacher_profile_fkey(email, full_name), sections:section_id(name, grade_level)",
+        )
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -57,8 +59,18 @@ function DllReviewDetail() {
     }
   }
 
-  if (dllQ.isLoading) return <AppShell><p className="text-tertiary">Loading…</p></AppShell>;
-  if (dllQ.error || !dllQ.data) return <AppShell><p className="text-status-absent">Not found.</p></AppShell>;
+  if (dllQ.isLoading)
+    return (
+      <AppShell>
+        <p className="text-tertiary">Loading…</p>
+      </AppShell>
+    );
+  if (dllQ.error || !dllQ.data)
+    return (
+      <AppShell>
+        <p className="text-status-absent">Not found.</p>
+      </AppShell>
+    );
 
   const d = dllQ.data;
   const teacherName = d.profiles?.full_name || d.profiles?.email || "Teacher";
@@ -68,7 +80,10 @@ function DllReviewDetail() {
       <header className="mb-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <Link to="/dll" className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground">
+            <Link
+              to="/dll"
+              className="mb-3 flex items-center gap-1 text-sm text-tertiary hover:text-foreground"
+            >
               <Icon name="arrow_back" size={16} /> Back to review portal
             </Link>
             <h1 className="font-display text-3xl font-extrabold text-foreground">{d.subject}</h1>
@@ -94,10 +109,18 @@ function DllReviewDetail() {
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <div className="space-y-6 lg:col-span-8">
-          <Section title="Learning Objectives">{d.objectives || <em className="text-tertiary">Not provided.</em>}</Section>
-          <Section title="Content / Topics">{d.content || <em className="text-tertiary">Not provided.</em>}</Section>
-          <Section title="Procedures / Activities">{d.procedures || <em className="text-tertiary">Not provided.</em>}</Section>
-          <Section title="Assessment">{d.assessment || <em className="text-tertiary">Not provided.</em>}</Section>
+          <Section title="Learning Objectives">
+            {d.objectives || <em className="text-tertiary">Not provided.</em>}
+          </Section>
+          <Section title="Content / Topics">
+            {d.content || <em className="text-tertiary">Not provided.</em>}
+          </Section>
+          <Section title="Procedures / Activities">
+            {d.procedures || <em className="text-tertiary">Not provided.</em>}
+          </Section>
+          <Section title="Assessment">
+            {d.assessment || <em className="text-tertiary">Not provided.</em>}
+          </Section>
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-24 lg:col-span-4">
@@ -109,14 +132,16 @@ function DllReviewDetail() {
                 disabled={!!saving}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-bold text-primary-foreground shadow-sm hover:brightness-110 disabled:opacity-60"
               >
-                <Icon name="check_circle" filled /> {saving === "approve" ? "Approving…" : "Approve"}
+                <Icon name="check_circle" filled />{" "}
+                {saving === "approve" ? "Approving…" : "Approve"}
               </button>
               <button
                 onClick={() => review("return")}
                 disabled={!!saving}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-outline-variant bg-surface py-4 font-bold text-foreground hover:bg-surface-container disabled:opacity-60"
               >
-                <Icon name="assignment_return" /> {saving === "return" ? "Returning…" : "Return for Revision"}
+                <Icon name="assignment_return" />{" "}
+                {saving === "return" ? "Returning…" : "Return for Revision"}
               </button>
             </div>
             {error && <p className="mt-3 text-xs text-status-absent">{error}</p>}
@@ -131,7 +156,9 @@ function DllReviewDetail() {
               placeholder="Add comments visible to the teacher…"
               className="w-full rounded-lg border border-outline-variant bg-surface p-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
-            <p className="mt-2 text-xs text-tertiary">Comments are saved with the review decision.</p>
+            <p className="mt-2 text-xs text-tertiary">
+              Comments are saved with the review decision.
+            </p>
           </Card>
 
           {d.reviewed_at && (
@@ -157,8 +184,27 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === "submitted") return <StatusPill tone="late" icon="pending">Pending Review</StatusPill>;
-  if (status === "approved") return <StatusPill tone="present" icon="check_circle">Approved</StatusPill>;
-  if (status === "returned") return <StatusPill tone="absent" icon="assignment_return">Returned</StatusPill>;
-  return <StatusPill tone="neutral" icon="edit">Draft</StatusPill>;
+  if (status === "submitted")
+    return (
+      <StatusPill tone="late" icon="pending">
+        Pending Review
+      </StatusPill>
+    );
+  if (status === "approved")
+    return (
+      <StatusPill tone="present" icon="check_circle">
+        Approved
+      </StatusPill>
+    );
+  if (status === "returned")
+    return (
+      <StatusPill tone="absent" icon="assignment_return">
+        Returned
+      </StatusPill>
+    );
+  return (
+    <StatusPill tone="neutral" icon="edit">
+      Draft
+    </StatusPill>
+  );
 }

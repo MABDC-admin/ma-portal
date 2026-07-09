@@ -1,6 +1,7 @@
 ## Goal
 
 Provision 16 real accounts from the pasted roster into the app:
+
 - **15 teachers**
 - **Glorie Ann I. Espinosa** as **academic_director**
 

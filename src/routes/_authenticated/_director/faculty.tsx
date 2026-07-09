@@ -20,7 +20,9 @@ function FacultyPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("teachers")
-        .select("user_id, employee_id, department, subjects, status, profiles!teachers_user_id_profiles_fkey(email, full_name)")
+        .select(
+          "user_id, employee_id, department, subjects, status, profiles!teachers_user_id_profiles_fkey(email, full_name)",
+        )
         .order("employee_id");
       if (error) throw error;
       return data ?? [];
@@ -37,7 +39,10 @@ function FacultyPage() {
         .select("teacher_id, status")
         .gte("lesson_date", since.toISOString().slice(0, 10));
       if (error) throw error;
-      const map: Record<string, { total: number; approved: number; returned: number; submitted: number }> = {};
+      const map: Record<
+        string,
+        { total: number; approved: number; returned: number; submitted: number }
+      > = {};
       for (const d of data ?? []) {
         const t = (map[d.teacher_id] ||= { total: 0, approved: 0, returned: 0, submitted: 0 });
         t.total++;
@@ -52,7 +57,11 @@ function FacultyPage() {
   const teachers = teachersQ.data ?? [];
   const totalActive = teachers.filter((t) => t.status === "active").length;
   const totals = Object.values(dllsQ.data ?? {}).reduce(
-    (acc, t) => ({ total: acc.total + t.total, approved: acc.approved + t.approved, submitted: acc.submitted + t.submitted }),
+    (acc, t) => ({
+      total: acc.total + t.total,
+      approved: acc.approved + t.approved,
+      submitted: acc.submitted + t.submitted,
+    }),
     { total: 0, approved: 0, submitted: 0 },
   );
   const compliance = totals.total ? Math.round((totals.approved / totals.total) * 100) : 0;
@@ -65,7 +74,10 @@ function FacultyPage() {
   ];
 
   return (
-    <AppShell title="Faculty Directory" subtitle="Faculty roster with DLL compliance signals (last 30 days).">
+    <AppShell
+      title="Faculty Directory"
+      subtitle="Faculty roster with DLL compliance signals (last 30 days)."
+    >
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {kpis.map((k) => (
           <Card key={k.label} className="p-5">
@@ -83,28 +95,68 @@ function FacultyPage() {
           <table className="w-full text-sm">
             <thead className="bg-surface-container-low/50 text-left">
               <tr>
-                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Teacher</th>
-                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Department</th>
-                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">DLLs (30d)</th>
-                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Compliance</th>
-                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Status</th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">
+                  Teacher
+                </th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">
+                  Department
+                </th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">
+                  DLLs (30d)
+                </th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">
+                  Compliance
+                </th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
-              {teachersQ.isLoading && <tr><td colSpan={5} className="px-6 py-8 text-center text-tertiary">Loading…</td></tr>}
+              {teachersQ.isLoading && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-tertiary">
+                    Loading…
+                  </td>
+                </tr>
+              )}
               {teachers.length === 0 && !teachersQ.isLoading && (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-tertiary">No teachers yet.</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-tertiary">
+                    No teachers yet.
+                  </td>
+                </tr>
               )}
               {teachers.map((t) => {
-                const p = t.profiles as unknown as { email: string | null; full_name: string | null } | null;
+                const p = t.profiles as unknown as {
+                  email: string | null;
+                  full_name: string | null;
+                } | null;
                 const name = p?.full_name || p?.email || t.employee_id;
                 const stats = dllsQ.data?.[t.user_id];
-                const rate = stats && stats.total ? Math.round((stats.approved / stats.total) * 100) : null;
+                const rate =
+                  stats && stats.total ? Math.round((stats.approved / stats.total) * 100) : null;
                 const tone: "present" | "late" | "absent" | "neutral" =
-                  rate === null ? "neutral" : rate >= 80 ? "present" : rate >= 50 ? "late" : "absent";
-                const label = rate === null ? "No data" : rate >= 80 ? "Up-to-date" : rate >= 50 ? "Under review" : "Overdue";
+                  rate === null
+                    ? "neutral"
+                    : rate >= 80
+                      ? "present"
+                      : rate >= 50
+                        ? "late"
+                        : "absent";
+                const label =
+                  rate === null
+                    ? "No data"
+                    : rate >= 80
+                      ? "Up-to-date"
+                      : rate >= 50
+                        ? "Under review"
+                        : "Overdue";
                 return (
-                  <tr key={t.user_id} className="border-t border-outline-variant/40 hover:bg-surface-container-low/40">
+                  <tr
+                    key={t.user_id}
+                    className="border-t border-outline-variant/40 hover:bg-surface-container-low/40"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary">
@@ -121,7 +173,9 @@ function FacultyPage() {
                       {stats ? `${stats.approved}/${stats.total} approved` : "0"}
                     </td>
                     <td className="px-6 py-4 num">{rate === null ? "—" : `${rate}%`}</td>
-                    <td className="px-6 py-4"><StatusPill tone={tone}>{label}</StatusPill></td>
+                    <td className="px-6 py-4">
+                      <StatusPill tone={tone}>{label}</StatusPill>
+                    </td>
                   </tr>
                 );
               })}

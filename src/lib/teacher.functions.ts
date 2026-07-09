@@ -21,7 +21,9 @@ export const listMyDllsFn = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("dlls")
-      .select("id, subject, lesson_date, status, submitted_at, reviewed_at, feedback, section_id, sections:section_id(name)")
+      .select(
+        "id, subject, lesson_date, status, submitted_at, reviewed_at, feedback, section_id, sections:section_id(name)",
+      )
       .eq("teacher_id", userId)
       .order("lesson_date", { ascending: false });
     if (error) throw new Error(error.message);
@@ -58,7 +60,9 @@ export const listSectionRosterFn = createServerFn({ method: "GET" })
     if (secErr) throw new Error(secErr.message);
     const { data: students, error } = await supabase
       .from("students")
-      .select("user_id, student_number, status, photo_url, face_descriptor, profiles!students_user_id_fkey(full_name, email, avatar_url)")
+      .select(
+        "user_id, student_number, status, photo_url, face_descriptor, profiles!students_user_id_fkey(full_name, email, avatar_url)",
+      )
       .eq("section_id", data.sectionId)
       .order("student_number");
     if (error) throw new Error(error.message);
@@ -88,11 +92,13 @@ type AttendanceStatus = "present" | "late" | "absent" | "excused";
 
 export const upsertAttendanceFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: {
-    sectionId: string;
-    date: string;
-    entries: Array<{ studentId: string; status: AttendanceStatus; notes?: string | null }>;
-  }) => input)
+  .inputValidator(
+    (input: {
+      sectionId: string;
+      date: string;
+      entries: Array<{ studentId: string; status: AttendanceStatus; notes?: string | null }>;
+    }) => input,
+  )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     if (data.entries.length === 0) return { count: 0 };
@@ -148,18 +154,16 @@ export const kioskCheckInFn = createServerFn({ method: "POST" })
     const now = new Date();
     const status: AttendanceStatus = now.getHours() >= 8 ? "late" : "present";
 
-    const { error: upErr } = await supabase
-      .from("attendance")
-      .upsert(
-        {
-          student_id: data.studentId,
-          section_id: data.sectionId,
-          date: today,
-          status,
-          recorded_by: userId,
-        },
-        { onConflict: "student_id,date" },
-      );
+    const { error: upErr } = await supabase.from("attendance").upsert(
+      {
+        student_id: data.studentId,
+        section_id: data.sectionId,
+        date: today,
+        status,
+        recorded_by: userId,
+      },
+      { onConflict: "student_id,date" },
+    );
     if (upErr) throw new Error(upErr.message);
 
     const { data: prof } = await supabase
@@ -185,7 +189,9 @@ export const listAnecdotalsForStudentFn = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data: rows, error } = await supabase
       .from("anecdotal_entries")
-      .select("id, category, note, occurred_on, teacher_id, created_at, profiles:teacher_id(full_name, email)")
+      .select(
+        "id, category, note, occurred_on, teacher_id, created_at, profiles:teacher_id(full_name, email)",
+      )
       .eq("student_id", data.studentId)
       .order("occurred_on", { ascending: false });
     if (error) throw new Error(error.message);
@@ -209,12 +215,10 @@ export const listAllAnecdotalsFn = createServerFn({ method: "GET" })
 
 export const createAnecdotalFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: {
-    studentId: string;
-    category: AnecdotalCategory;
-    note: string;
-    occurredOn: string;
-  }) => input)
+  .inputValidator(
+    (input: { studentId: string; category: AnecdotalCategory; note: string; occurredOn: string }) =>
+      input,
+  )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: inserted, error } = await supabase
@@ -238,9 +242,7 @@ export const createAnecdotalFn = createServerFn({ method: "POST" })
         supabase.from("profiles").select("full_name, email").eq("id", userId).single(),
         supabase.from("profiles").select("email").eq("role", "academic_director"),
       ]);
-      const recipients = (directors ?? [])
-        .map((d) => d.email)
-        .filter((e): e is string => !!e);
+      const recipients = (directors ?? []).map((d) => d.email).filter((e): e is string => !!e);
       if (recipients.length) {
         const studentName = student?.full_name || student?.email || "student";
         const teacherName = teacher?.full_name || teacher?.email || "A teacher";

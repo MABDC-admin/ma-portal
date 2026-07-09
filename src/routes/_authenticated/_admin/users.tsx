@@ -9,7 +9,10 @@ export const Route = createFileRoute("/_authenticated/_admin/users")({
   head: () => ({
     meta: [
       { title: "User Management — AttendCloud" },
-      { name: "description", content: "Manage user roles and access across the AttendCloud portal." },
+      {
+        name: "description",
+        content: "Manage user roles and access across the AttendCloud portal.",
+      },
     ],
   }),
   component: UsersPage,
@@ -74,19 +77,25 @@ function UsersPage() {
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-tertiary">
-                    <Icon name="progress_activity" className="inline animate-spin" size={20} /> Loading users…
+                    <Icon name="progress_activity" className="inline animate-spin" size={20} />{" "}
+                    Loading users…
                   </td>
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className="border-b border-outline-variant/40 last:border-0 transition hover:bg-surface-container-low/40">
+                  <tr
+                    key={u.id}
+                    className="border-b border-outline-variant/40 last:border-0 transition hover:bg-surface-container-low/40"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary">
                           {initials(u.full_name ?? u.email ?? "?")}
                         </div>
                         <div>
-                          <p className="font-semibold text-foreground">{u.full_name || "Unnamed User"}</p>
+                          <p className="font-semibold text-foreground">
+                            {u.full_name || "Unnamed User"}
+                          </p>
                           <p className="text-xs text-tertiary num">ID: {u.id.slice(0, 8)}</p>
                         </div>
                       </div>
@@ -112,7 +121,10 @@ function UsersPage() {
                       {new Date(u.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="rounded p-1.5 text-tertiary transition hover:bg-surface-container hover:text-primary" aria-label="Edit">
+                      <button
+                        className="rounded p-1.5 text-tertiary transition hover:bg-surface-container hover:text-primary"
+                        aria-label="Edit"
+                      >
                         <Icon name="edit" size={18} />
                       </button>
                     </td>

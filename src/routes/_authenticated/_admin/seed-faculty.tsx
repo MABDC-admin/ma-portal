@@ -23,11 +23,23 @@ const ROSTER_PREVIEW = [
   { name: "Julie Fe L. Benedicto", email: "luciojuliefb@gmail.com", role: "teacher" as const },
   { name: "Jecille F. Buizon", email: "franciscojecille451@gmail.com", role: "teacher" as const },
   { name: "Jayson B. Cuello", email: "jisuncwelyo10@gmail.com", role: "teacher" as const },
-  { name: "Jan Alfred P. Macalintal", email: "macalintaljanalfred@gmail.com", role: "teacher" as const },
+  {
+    name: "Jan Alfred P. Macalintal",
+    email: "macalintaljanalfred@gmail.com",
+    role: "teacher" as const,
+  },
   { name: "Jade Emerald A. Amurao", email: "jhaydey0203@gmail.com", role: "teacher" as const },
   { name: "Homer S. Macrohon", email: "ayeshanicolemacrohon@gmail.com", role: "teacher" as const },
-  { name: "Glorie Ann I. Espinosa", email: "espinosaglorieann@gmail.com", role: "academic_director" as const },
-  { name: "Princess Jesa D. Tagulao", email: "0128princessjesa@gmail.com", role: "teacher" as const },
+  {
+    name: "Glorie Ann I. Espinosa",
+    email: "espinosaglorieann@gmail.com",
+    role: "academic_director" as const,
+  },
+  {
+    name: "Princess Jesa D. Tagulao",
+    email: "0128princessjesa@gmail.com",
+    role: "teacher" as const,
+  },
   { name: "Mark John J. Ramirez", email: "ramirezmarkjohn@gmail.com", role: "teacher" as const },
   { name: "Christine Mari M. Jonson", email: "cmjonson01@yahoo.com", role: "teacher" as const },
   { name: "Arianne Kaye N. Sager", email: "aknsager@gmail.com", role: "teacher" as const },
@@ -80,9 +92,18 @@ function SeedFacultyPage() {
 
       {results && (
         <div className="mb-4 grid grid-cols-3 gap-3">
-          <Card className="p-4"><p className="text-xs uppercase tracking-widest text-tertiary">Created</p><p className="mt-1 font-display text-3xl font-bold text-status-present">{created}</p></Card>
-          <Card className="p-4"><p className="text-xs uppercase tracking-widest text-tertiary">Skipped (existed)</p><p className="mt-1 font-display text-3xl font-bold text-status-late">{skipped}</p></Card>
-          <Card className="p-4"><p className="text-xs uppercase tracking-widest text-tertiary">Errors</p><p className="mt-1 font-display text-3xl font-bold text-status-absent">{errored}</p></Card>
+          <Card className="p-4">
+            <p className="text-xs uppercase tracking-widest text-tertiary">Created</p>
+            <p className="mt-1 font-display text-3xl font-bold text-status-present">{created}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs uppercase tracking-widest text-tertiary">Skipped (existed)</p>
+            <p className="mt-1 font-display text-3xl font-bold text-status-late">{skipped}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs uppercase tracking-widest text-tertiary">Errors</p>
+            <p className="mt-1 font-display text-3xl font-bold text-status-absent">{errored}</p>
+          </Card>
         </div>
       )}
 
@@ -92,7 +113,12 @@ function SeedFacultyPage() {
             <thead className="border-b border-outline-variant bg-surface-container-low/50">
               <tr className="text-left">
                 {["Name", "Email", "Role", "Status", "Message"].map((h) => (
-                  <th key={h} className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">{h}</th>
+                  <th
+                    key={h}
+                    className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-tertiary"
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -104,15 +130,33 @@ function SeedFacultyPage() {
                     <td className="px-5 py-3 font-semibold">{row.name}</td>
                     <td className="px-5 py-3 text-tertiary">{row.email}</td>
                     <td className="px-5 py-3">
-                      {row.role === "academic_director"
-                        ? <span className="rounded-full bg-status-late/15 px-2 py-0.5 text-xs font-semibold text-status-late">Director</span>
-                        : <span className="rounded-full bg-primary-container/40 px-2 py-0.5 text-xs font-semibold text-primary">Teacher</span>}
+                      {row.role === "academic_director" ? (
+                        <span className="rounded-full bg-status-late/15 px-2 py-0.5 text-xs font-semibold text-status-late">
+                          Director
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-primary-container/40 px-2 py-0.5 text-xs font-semibold text-primary">
+                          Teacher
+                        </span>
+                      )}
                     </td>
                     <td className="px-5 py-3">
                       {!r && <span className="text-xs text-tertiary">—</span>}
-                      {r?.status === "created" && <StatusPill tone="present" icon="check_circle">Created</StatusPill>}
-                      {r?.status === "skipped" && <StatusPill tone="neutral" icon="info">Skipped</StatusPill>}
-                      {r?.status === "error" && <StatusPill tone="absent" icon="error">Error</StatusPill>}
+                      {r?.status === "created" && (
+                        <StatusPill tone="present" icon="check_circle">
+                          Created
+                        </StatusPill>
+                      )}
+                      {r?.status === "skipped" && (
+                        <StatusPill tone="neutral" icon="info">
+                          Skipped
+                        </StatusPill>
+                      )}
+                      {r?.status === "error" && (
+                        <StatusPill tone="absent" icon="error">
+                          Error
+                        </StatusPill>
+                      )}
                     </td>
                     <td className="px-5 py-3 text-xs text-tertiary">{r?.message ?? ""}</td>
                   </tr>
