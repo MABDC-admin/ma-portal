@@ -212,6 +212,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
   const [status, setStatus] = useState("Loading models…");
   const [error, setError] = useState<string | null>(null);
   const [samples, setSamples] = useState<Float32Array[]>([]);
+  const [snapshots, setSnapshots] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -273,7 +274,9 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         setStatus("No face detected — try again.");
         return;
       }
+      const snap = snapshotFromVideo(videoRef.current, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
+      setSnapshots((prev) => [...prev, snap]);
       setStatus(`Captured ${samples.length + 1} of 3 recommended samples.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Detection failed");
@@ -300,7 +303,9 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         setStatus("No face detected in that photo.");
         return;
       }
+      const snap = snapshotFromImage(img, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
+      setSnapshots((prev) => [...prev, snap]);
       setStatus(`Captured ${samples.length + 1} sample${samples.length ? "s" : ""}.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Photo detection failed");
@@ -350,6 +355,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
               key={m}
               onClick={() => {
                 setSamples([]);
+                setSnapshots([]);
                 setMode(m);
               }}
               className={`flex-1 rounded-lg px-3 py-1.5 font-semibold capitalize ${mode === m ? "bg-primary text-primary-foreground" : "text-tertiary"}`}
@@ -387,6 +393,38 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
 
         <p className="mt-3 text-sm text-tertiary">{error ?? status}</p>
 
+        {snapshots.length > 0 && (
+          <div className="mt-3">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-tertiary">
+              Captured face samples
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {snapshots.map((src, i) => (
+                <div
+                  key={i}
+                  className="relative h-20 w-20 overflow-hidden rounded-lg border border-outline-variant bg-surface-container"
+                >
+                  <img src={src} alt={`Sample ${i + 1}`} className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSamples((prev) => prev.filter((_, idx) => idx !== i));
+                      setSnapshots((prev) => prev.filter((_, idx) => idx !== i));
+                    }}
+                    className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black/80"
+                    aria-label={`Remove sample ${i + 1}`}
+                  >
+                    <Icon name="close" size={12} />
+                  </button>
+                  <span className="absolute bottom-0.5 left-0.5 rounded bg-black/60 px-1 text-[10px] font-bold text-white">
+                    {i + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-3 flex items-center justify-between">
           <p className="text-sm">
             Samples captured:{" "}
@@ -403,6 +441,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
             </button>
           )}
         </div>
+
 
         <div className="mt-5 flex justify-end gap-2">
           <button
@@ -423,3 +462,49 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
     </div>
   );
 }
+
+type Box = { x: number; y: number; width: number; height: number };
+
+function snapshotFromVideo(video: HTMLVideoElement, box?: Box): string {
+  return snapshotFromSource(video, video.videoWidth, video.videoHeight, box, true);
+}
+
+function snapshotFromImage(img: HTMLImageElement, box?: Box): string {
+  return snapshotFromSource(img, img.naturalWidth, img.naturalHeight, box, false);
+}
+
+function snapshotFromSource(
+  source: CanvasImageSource,
+  sw: number,
+  sh: number,
+  box: Box | undefined,
+  mirror: boolean,
+): string {
+  const size = 160;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return "";
+  const pad = 0.4;
+  let sx: number, sy: number, sSize: number;
+  if (box) {
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+    sSize = Math.max(box.width, box.height) * (1 + pad);
+    sx = Math.max(0, cx - sSize / 2);
+    sy = Math.max(0, cy - sSize / 2);
+    sSize = Math.min(sSize, Math.min(sw - sx, sh - sy));
+  } else {
+    sSize = Math.min(sw, sh);
+    sx = (sw - sSize) / 2;
+    sy = (sh - sSize) / 2;
+  }
+  if (mirror) {
+    ctx.translate(size, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(source, sx, sy, sSize, sSize, 0, 0, size, size);
+  return canvas.toDataURL("image/jpeg", 0.85);
+}
+
