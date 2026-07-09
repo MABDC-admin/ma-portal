@@ -24,11 +24,14 @@ function DllReviewDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dlls")
-        .select("*, profiles:teacher_id(email, full_name), sections:section_id(name, grade_level)")
+        .select("*, profiles!dlls_teacher_profile_fkey(email, full_name), sections:section_id(name, grade_level)")
         .eq("id", id)
         .single();
       if (error) throw error;
-      return data;
+      return data as typeof data & {
+        profiles: { email: string | null; full_name: string | null } | null;
+        sections: { name: string; grade_level: number } | null;
+      };
     },
   });
 
