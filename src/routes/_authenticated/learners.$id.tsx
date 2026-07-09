@@ -279,29 +279,25 @@ function LearnerProfilePage() {
           </Card>
 
           <Card className="p-5 border-l-4 border-l-status-present">
-            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">GPA / Rank</p>
+            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Present Days</p>
             <div className="flex items-end gap-2 mb-1">
-              <span className="text-3xl font-bold font-heading">3.2</span>
-              <span className="bg-status-present/10 text-status-present px-1.5 py-0.5 rounded text-[10px] font-bold mb-1.5">
-                TOP 15%
-              </span>
+              <span className="text-3xl font-bold font-heading">{presentDays}</span>
+              <span className="text-sm font-medium text-tertiary mb-1">of {totalDays}</span>
             </div>
-            <p className="text-sm text-tertiary">Consistent in STEM</p>
+            <p className="text-sm text-tertiary">All recorded attendance</p>
           </Card>
 
           <Card className="p-5 border-l-4 border-l-primary">
-            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Classes Enrolled</p>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-3xl font-bold font-heading">6</span>
-              <span className="text-sm font-medium text-tertiary mb-1">Core subjects</span>
+            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Section</p>
+            <div className="flex items-end gap-2 mb-1">
+              <span className="text-lg font-bold font-heading">
+                {student.sections ? `${gradeLabel(student.sections.grade_level)}` : "—"}
+              </span>
             </div>
-            <div className="flex gap-1 h-1.5 w-full">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="flex-1 bg-primary rounded-full" />
-              ))}
-            </div>
+            <p className="text-sm text-tertiary">{student.sections?.name || "Unassigned"}</p>
           </Card>
         </div>
+
 
         {/* MAIN CONTENT GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
