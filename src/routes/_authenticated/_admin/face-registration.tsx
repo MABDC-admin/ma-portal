@@ -170,7 +170,10 @@ function FaceRegistrationPage() {
                     </td>
                     <td className="px-4 py-2 text-right">
                       <button
-                        onClick={() => setActive(l)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActive(l);
+                        }}
                         className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
                       >
                         {l.has_face ? "Re-enroll" : "Enroll"}
