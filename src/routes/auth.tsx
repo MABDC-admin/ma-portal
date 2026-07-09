@@ -60,7 +60,7 @@ function AuthForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,9 +73,8 @@ function AuthForm() {
         const result = await login(email, password);
         if (result.error) {
           setError(result.error);
-        } else {
-          await router.invalidate();
         }
+        // AuthProvider's onAuthStateChange will refresh context and AuthPage redirects
       } else {
         const { error } = await supabase.auth.signUp({
           email,
