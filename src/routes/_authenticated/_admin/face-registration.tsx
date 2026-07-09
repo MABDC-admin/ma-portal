@@ -274,7 +274,9 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         setStatus("No face detected — try again.");
         return;
       }
+      const snap = snapshotFromVideo(videoRef.current, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
+      setSnapshots((prev) => [...prev, snap]);
       setStatus(`Captured ${samples.length + 1} of 3 recommended samples.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Detection failed");
