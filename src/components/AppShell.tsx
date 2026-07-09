@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Icon } from "./Icon";
 import { useAuth } from "@/hooks/use-auth";
 import type { AppRole } from "@/lib/auth.functions";
@@ -40,6 +40,8 @@ const roleBadge: Record<AppRole, { label: string; tone: string }> = {
   student: { label: "Student", tone: "bg-status-present/10 text-status-present" },
 };
 
+const COLLAPSE_KEY = "appshell:sidebar-collapsed";
+
 export function AppShell({
   children,
   title,
@@ -55,6 +57,29 @@ export function AppShell({
   const { profile, logout, hasAnyRole } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  // hydrate persisted collapse state after mount to avoid SSR mismatch
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(COLLAPSE_KEY);
+      if (saved === "1") setCollapsed(true);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed((v) => {
+      const next = !v;
+      try {
+        localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   const visibleNav = nav.filter((item) => hasAnyRole(item.roles));
   const role = profile?.role ?? "student";
@@ -62,44 +87,54 @@ export function AppShell({
   const displayName = profile?.full_name || profile?.email || "User";
   const userInitials = initials(displayName);
 
+  const sidebarWidth = collapsed ? "w-[72px]" : "w-[240px]";
+  const mainOffset = collapsed ? "md:ml-[72px]" : "md:ml-[240px]";
+
   return (
     <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden" 
+        <div
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-0 z-40 h-screen w-[240px] flex-col border-r border-outline-variant bg-surface transition-transform duration-300 ease-in-out md:translate-x-0 md:flex ${mobileMenuOpen ? "translate-x-0 flex shadow-2xl" : "-translate-x-full hidden md:flex"}`}>
-        <div className="flex items-center gap-3 px-5 py-5">
+      <aside
+        className={`fixed left-0 top-0 z-40 h-screen ${sidebarWidth} flex-col border-r border-outline-variant bg-surface transition-[width,transform] duration-300 ease-in-out md:translate-x-0 md:flex ${mobileMenuOpen ? "translate-x-0 flex shadow-2xl w-[240px]" : "-translate-x-full hidden md:flex"}`}
+      >
+        <div className={`flex items-center gap-3 px-5 py-5 ${collapsed ? "md:justify-center md:px-2" : ""}`}>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Icon name="school" filled weight={600} />
           </div>
-          <div className="min-w-0">
-            <h2 className="font-display text-lg font-extrabold leading-tight text-foreground truncate">
-              AttendCloud
-            </h2>
-            <p className="text-xs text-muted-foreground truncate">Horizon Academy</p>
-          </div>
+          {(!collapsed || mobileMenuOpen) && (
+            <div className={`min-w-0 ${collapsed ? "md:hidden" : ""}`}>
+              <h2 className="font-display text-lg font-extrabold leading-tight text-foreground truncate">
+                AttendCloud
+              </h2>
+              <p className="text-xs text-muted-foreground truncate">Horizon Academy</p>
+            </div>
+          )}
         </div>
 
         {hasAnyRole(["admin", "teacher"]) && (
-          <div className="px-4 pb-2">
+          <div className={`px-4 pb-2 ${collapsed ? "md:px-2" : ""}`}>
             <Link
               to="/dll/new"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
+              title={collapsed ? "New DLL Entry" : undefined}
+              className={`flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110 ${collapsed ? "md:px-0" : ""}`}
             >
               <Icon name="add_circle" size={18} />
-              <span>New DLL Entry</span>
+              {(!collapsed || mobileMenuOpen) && (
+                <span className={collapsed ? "md:hidden" : ""}>New DLL Entry</span>
+              )}
             </Link>
           </div>
         )}
 
-        <nav className="mt-2 flex-1 space-y-1 overflow-y-auto px-3">
+        <nav className={`mt-2 flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 ${collapsed ? "md:px-2" : ""}`}>
           {visibleNav.map((item) => {
             const active =
               item.to === "/"
@@ -110,45 +145,74 @@ export function AppShell({
                 key={item.to}
                 to={item.to}
                 onClick={() => setMobileMenuOpen(false)}
+                title={collapsed ? item.label : undefined}
                 className={
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition " +
+                  (collapsed ? "md:justify-center md:px-2 " : "") +
                   (active
                     ? "bg-primary-container/60 text-primary"
                     : "text-tertiary hover:bg-surface-container hover:text-foreground")
                 }
               >
                 <Icon name={item.icon} size={20} filled={active} />
-                <span>{item.label}</span>
+                {(!collapsed || mobileMenuOpen) && (
+                  <span className={collapsed ? "md:hidden" : ""}>{item.label}</span>
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-outline-variant/60 p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary">
+        {/* Collapse toggle (desktop only) */}
+        <button
+          onClick={toggleCollapsed}
+          className="hidden md:flex items-center justify-center gap-2 border-t border-outline-variant/60 py-2 text-xs font-medium text-tertiary transition hover:bg-surface-container hover:text-foreground"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <Icon name={collapsed ? "chevron_right" : "chevron_left"} size={18} />
+          {!collapsed && <span>Collapse</span>}
+        </button>
+
+        <div className={`border-t border-outline-variant/60 p-4 ${collapsed ? "md:p-2" : ""}`}>
+          <div className={`flex items-center gap-3 ${collapsed ? "md:justify-center" : ""}`}>
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-sm font-bold text-primary"
+              title={collapsed ? displayName : undefined}
+            >
               {userInitials}
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{displayName}</p>
-              <span
-                className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-bold ${badge.tone}`}
-              >
-                {badge.label}
-              </span>
-            </div>
+            {(!collapsed || mobileMenuOpen) && (
+              <div className={`min-w-0 flex-1 ${collapsed ? "md:hidden" : ""}`}>
+                <p className="truncate text-sm font-semibold">{displayName}</p>
+                <span
+                  className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-bold ${badge.tone}`}
+                >
+                  {badge.label}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 md:ml-[240px] h-screen overflow-y-auto">
+      <div className={`flex-1 flex flex-col min-w-0 ${mainOffset} h-screen overflow-y-auto transition-[margin] duration-300 ease-in-out`}>
         <header className="sticky top-0 z-20 shrink-0 flex h-16 items-center gap-2 sm:gap-4 border-b border-outline-variant bg-surface/80 px-4 md:px-6 backdrop-blur-md">
-          <button 
+          <button
             className="md:hidden p-2 -ml-2 rounded-lg text-tertiary hover:bg-surface-container shrink-0 transition"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
           >
             <Icon name="menu" size={24} />
+          </button>
+
+          <button
+            className="hidden md:flex p-2 -ml-2 rounded-lg text-tertiary hover:bg-surface-container shrink-0 transition"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <Icon name="menu" size={22} />
           </button>
 
           <div className="relative w-full max-w-md">
