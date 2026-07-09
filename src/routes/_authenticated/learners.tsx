@@ -15,82 +15,83 @@ export const Route = createFileRoute("/_authenticated/learners")({
   component: LearnersPage,
 });
 
+type LearnerRow = {
+  user_id: string;
+  student_number: string;
+  status: string;
+  profiles: { full_name: string | null; email: string | null } | null;
+  sections: { name: string; grade_level: number; academic_year: string } | null;
+};
+
+function gradeLabel(g: number) {
+  if (g === -1) return "Kindergarten 1";
+  if (g === 0) return "Kindergarten 2";
+  return `Grade ${g}`;
+}
+
 function LearnersPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [gradeFilter, setGradeFilter] = useState("");
-
-  type LearnerRecord = {
-    id: string;
-    school_year_id: string;
-    grade_level: string;
-    student_name: string;
-    birthdate: string;
-    age: number;
-    gender: string;
-    mother_contact: string;
-    mother_name: string;
-    father_contact: string;
-    father_name: string;
-    philippine_address: string;
-    uae_address: string;
-  };
+  const [sectionFilter, setSectionFilter] = useState("");
 
   const { data: learners, isLoading, error } = useQuery({
-    queryKey: ["learner_records"],
+    queryKey: ["learners_directory"],
     queryFn: async () => {
-      // First get active school year
-      const { data: sy } = await supabase
-        .from("school_years")
-        .select("id")
-        .eq("is_active", true)
-        .single();
-
-      if (!sy) return [];
-
       const { data, error } = await supabase
-        .from("learner_records" as any)
-        .select("*")
-        .eq("school_year_id", sy.id)
-        .order("grade_level", { ascending: true })
-        .order("student_name", { ascending: true });
-
+        .from("students")
+        .select(
+          "user_id, student_number, status, profiles!students_user_id_profiles_fkey(full_name, email), sections(name, grade_level, academic_year)",
+        )
+        .order("student_number", { ascending: true });
       if (error) throw error;
-      return (data as any[]) as LearnerRecord[];
+      return (data ?? []) as unknown as LearnerRow[];
     },
   });
 
-  const filteredLearners = learners?.filter((l) => {
-    const matchesSearch = l.student_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGrade = gradeFilter ? l.grade_level === gradeFilter : true;
-    return matchesSearch && matchesGrade;
+  const filtered = learners?.filter((l) => {
+    const name = l.profiles?.full_name?.toLowerCase() ?? "";
+    const num = l.student_number?.toLowerCase() ?? "";
+    const q = searchTerm.toLowerCase();
+    const matches = !q || name.includes(q) || num.includes(q);
+    const matchesSection = sectionFilter ? l.sections?.name === sectionFilter : true;
+    return matches && matchesSection;
   });
 
-  const uniqueGrades = Array.from(new Set(learners?.map(l => l.grade_level).filter(Boolean))).sort();
+  const uniqueSections = Array.from(
+    new Set(learners?.map((l) => l.sections?.name).filter(Boolean) as string[]),
+  ).sort();
 
   return (
     <AppShell
       title="Learners List"
-      subtitle="View all enrolled learner records for the active academic year."
+      subtitle={`Directory of all enrolled learners${
+        learners ? ` — ${learners.length} total` : ""
+      }.`}
     >
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
-          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary" size={18} />
+          <Icon
+            name="search"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary"
+            size={18}
+          />
           <input
             type="text"
-            placeholder="Search by student name..."
+            placeholder="Search by name or LRN..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full rounded-xl border border-outline-variant bg-surface/50 pl-10 pr-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <select
-          value={gradeFilter}
-          onChange={(e) => setGradeFilter(e.target.value)}
-          className="rounded-xl border border-outline-variant bg-surface/50 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 appearance-none min-w-[150px]"
+          value={sectionFilter}
+          onChange={(e) => setSectionFilter(e.target.value)}
+          className="rounded-xl border border-outline-variant bg-surface/50 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 min-w-[180px]"
         >
-          <option value="">All Grade Levels</option>
-          {uniqueGrades.map((grade) => (
-            <option key={String(grade)} value={String(grade)}>{grade}</option>
+          <option value="">All Sections</option>
+          {uniqueSections.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
       </div>
@@ -99,14 +100,18 @@ function LearnersPage() {
         <div className="overflow-x-auto max-h-[70vh]">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-tertiary">
-              <Icon name="progress_activity" size={32} className="animate-spin text-primary mb-4" />
-              <p>Loading records...</p>
+              <Icon
+                name="progress_activity"
+                size={32}
+                className="animate-spin text-primary mb-4"
+              />
+              <p>Loading learners...</p>
             </div>
           ) : error ? (
             <div className="p-8 text-center text-status-absent">
-              Failed to load records. Ensure the database is updated.
+              Failed to load learners: {error instanceof Error ? error.message : String(error)}
             </div>
-          ) : filteredLearners?.length === 0 ? (
+          ) : filtered?.length === 0 ? (
             <div className="p-12 text-center text-tertiary">
               <Icon name="group_off" size={48} className="mb-4 opacity-50" />
               <h3 className="text-lg font-bold text-foreground">No learners found</h3>
@@ -120,41 +125,52 @@ function LearnersPage() {
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-surface-container-low/80 backdrop-blur-md sticky top-0 z-10 border-b border-outline-variant">
                 <tr>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">Name</th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">Grade</th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">Age / Gender</th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">Parents</th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">Contact</th>
-                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">UAE Address</th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    LRN
+                  </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    Name
+                  </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    Email
+                  </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    Grade
+                  </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    Section
+                  </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/30">
-                {filteredLearners?.map((learner) => (
-                  <tr key={learner.id} className="hover:bg-surface-container-low/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-foreground">{learner.student_name}</div>
-                      <div className="text-xs text-tertiary mt-0.5">{learner.birthdate}</div>
+                {filtered?.map((l) => (
+                  <tr
+                    key={l.user_id}
+                    className="hover:bg-surface-container-low/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 font-mono text-xs text-tertiary">
+                      {l.student_number}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-foreground">
+                      {l.profiles?.full_name ?? "—"}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-tertiary">
+                      {l.profiles?.email ?? "—"}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-md bg-primary-container/30 px-2 py-1 text-xs font-semibold text-primary">
-                        {learner.grade_level}
-                      </span>
+                      {l.sections ? (
+                        <span className="inline-flex items-center rounded-md bg-primary-container/30 px-2 py-1 text-xs font-semibold text-primary">
+                          {gradeLabel(l.sections.grade_level)}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-tertiary">—</span>
+                      )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-foreground">{learner.age} yrs</div>
-                      <div className="text-xs text-tertiary mt-0.5">{learner.gender}</div>
-                    </td>
-                    <td className="px-6 py-4 max-w-[200px] truncate">
-                      <div className="text-xs"><span className="text-tertiary">M:</span> {learner.mother_name || "N/A"}</div>
-                      <div className="text-xs mt-0.5"><span className="text-tertiary">F:</span> {learner.father_name || "N/A"}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs">{learner.mother_contact || "N/A"}</div>
-                      <div className="text-xs mt-0.5">{learner.father_contact || "N/A"}</div>
-                    </td>
-                    <td className="px-6 py-4 max-w-[250px] truncate text-xs text-tertiary" title={learner.uae_address || ""}>
-                      {learner.uae_address || "N/A"}
-                    </td>
+                    <td className="px-6 py-4 text-xs">{l.sections?.name ?? "—"}</td>
+                    <td className="px-6 py-4 text-xs capitalize">{l.status}</td>
                   </tr>
                 ))}
               </tbody>
