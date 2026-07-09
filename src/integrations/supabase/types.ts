@@ -57,10 +57,14 @@ export type Database = {
       }
       attendance: {
         Row: {
+          am_time_in: string | null
+          am_time_out: string | null
           created_at: string
           date: string
           id: string
           notes: string | null
+          pm_time_in: string | null
+          pm_time_out: string | null
           recorded_by: string | null
           section_id: string
           status: Database["public"]["Enums"]["attendance_status"]
@@ -68,10 +72,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          am_time_in?: string | null
+          am_time_out?: string | null
           created_at?: string
           date: string
           id?: string
           notes?: string | null
+          pm_time_in?: string | null
+          pm_time_out?: string | null
           recorded_by?: string | null
           section_id: string
           status: Database["public"]["Enums"]["attendance_status"]
@@ -79,10 +87,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          am_time_in?: string | null
+          am_time_out?: string | null
           created_at?: string
           date?: string
           id?: string
           notes?: string | null
+          pm_time_in?: string | null
+          pm_time_out?: string | null
           recorded_by?: string | null
           section_id?: string
           status?: Database["public"]["Enums"]["attendance_status"]
