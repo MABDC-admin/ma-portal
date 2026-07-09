@@ -17,6 +17,7 @@ const nav: NavItem[] = [
     icon: "badge",
     roles: ["admin", "academic_director"],
   },
+  { to: "/learners", label: "Learners List", icon: "groups", roles: ["admin", "academic_director"] },
   { to: "/dll", label: "DLL Review", icon: "description", roles: ["admin", "academic_director"] },
   {
     to: "/anecdotal",
@@ -27,7 +28,7 @@ const nav: NavItem[] = [
   { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
   { to: "/school-years", label: "School Years", icon: "date_range", roles: ["admin"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
-  { to: "/seed-faculty", label: "Seed Faculty", icon: "cloud_upload", roles: ["admin"] },
+  { to: "/import-learners", label: "Import Learners", icon: "cloud_upload", roles: ["admin"] },
 ];
 
 const roleBadge: Record<AppRole, { label: string; tone: string }> = {
