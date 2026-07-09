@@ -24,7 +24,7 @@ const subjects = [
 ];
 
 function StudentProfile() {
-  const { id } = Route.useParams();
+  const { id } = Route.useParams() as { id: string };
   const displayName = id.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join(" ");
   return (
     <AppShell>

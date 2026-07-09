@@ -27,7 +27,7 @@ const month: Day[] = [
 const trend = [92, 95, 88, 90, 96, 94, 93, 97, 91, 94, 95, 96];
 
 function AttendanceProfile() {
-  const { id } = Route.useParams();
+  const { id } = Route.useParams() as { id: string };
   const displayName = id.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join(" ");
 
   return (
