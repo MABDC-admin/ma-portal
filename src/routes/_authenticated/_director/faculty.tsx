@@ -1,138 +1,130 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/_director/faculty")({
   head: () => ({
     meta: [
-      { title: "Faculty Directory — Horizon Academy" },
-      { name: "description", content: "Monitor academic staff performance, DLL compliance, and department assignments." },
-      { property: "og:title", content: "Faculty Directory — Horizon Academy" },
-      { property: "og:description", content: "Directory of every teacher at Horizon Academy with compliance and workload signals." },
+      { title: "Faculty Directory — AttendCloud" },
+      { name: "description", content: "Faculty roster with DLL compliance signals." },
     ],
   }),
   component: FacultyPage,
 });
 
-const kpis = [
-  { icon: "groups", tone: "primary", label: "Total Faculty", value: "124", delta: "+4%", deltaTone: "up" },
-  { icon: "person_check", tone: "secondary", label: "Active Teachers", value: "118", delta: "98% Active", deltaTone: "neutral" },
-  { icon: "assignment_turned_in", tone: "late", label: "DLL Compliance Rate", value: "89.2%", delta: "-2.5%", deltaTone: "down" },
-  { icon: "rate_review", tone: "absent", label: "Pending Reviews", value: "12", delta: "Priority", deltaTone: "warn" },
-] as const;
-
-const faculty = [
-  { name: "Elena Rodriguez", id: "2024-0012", dept: "Science", classes: ["Grade 11 - Einstein", "General Chemistry 2"], status: "up-to-date" as const, initials: "ER" },
-  { name: "Marcus Thorne", id: "2023-0088", dept: "History", classes: ["Grade 10 - Socrates", "World Civilizations"], status: "up-to-date" as const, initials: "MT" },
-  { name: "Dr. Samuel Rivera", id: "2022-0041", dept: "Computer Science", classes: ["Grade 12 - Einstein", "Advanced ICT"], status: "review" as const, initials: "SR" },
-  { name: "Priya Patel", id: "2024-0031", dept: "English", classes: ["Grade 11 - Curie", "Composition"], status: "overdue" as const, initials: "PP" },
-  { name: "Robert Chen", id: "2021-0019", dept: "Mathematics", classes: ["Grade 12 - Newton", "Calculus III"], status: "up-to-date" as const, initials: "RC" },
-];
-
 function FacultyPage() {
-  return (
-    <AppShell
-      title="Faculty Directory"
-      subtitle="Manage and monitor academic staff performance and compliance."
-      actions={
-        <button className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110">
-          <Icon name="person_add" size={18} />
-          <span>Add New Teacher</span>
-        </button>
+  const teachersQ = useQuery({
+    queryKey: ["faculty-teachers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("teachers")
+        .select("user_id, employee_id, department, subjects, status, profiles:user_id(email, full_name)")
+        .order("employee_id");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const dllsQ = useQuery({
+    queryKey: ["faculty-dll-counts"],
+    queryFn: async () => {
+      const since = new Date();
+      since.setDate(since.getDate() - 30);
+      const { data, error } = await supabase
+        .from("dlls")
+        .select("teacher_id, status")
+        .gte("lesson_date", since.toISOString().slice(0, 10));
+      if (error) throw error;
+      const map: Record<string, { total: number; approved: number; returned: number; submitted: number }> = {};
+      for (const d of data ?? []) {
+        const t = (map[d.teacher_id] ||= { total: 0, approved: 0, returned: 0, submitted: 0 });
+        t.total++;
+        if (d.status === "approved") t.approved++;
+        else if (d.status === "returned") t.returned++;
+        else if (d.status === "submitted") t.submitted++;
       }
-    >
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      return map;
+    },
+  });
+
+  const teachers = teachersQ.data ?? [];
+  const totalActive = teachers.filter((t) => t.status === "active").length;
+  const totals = Object.values(dllsQ.data ?? {}).reduce(
+    (acc, t) => ({ total: acc.total + t.total, approved: acc.approved + t.approved, submitted: acc.submitted + t.submitted }),
+    { total: 0, approved: 0, submitted: 0 },
+  );
+  const compliance = totals.total ? Math.round((totals.approved / totals.total) * 100) : 0;
+
+  const kpis = [
+    { icon: "groups", label: "Total Faculty", value: teachers.length },
+    { icon: "person_check", label: "Active", value: totalActive },
+    { icon: "assignment_turned_in", label: "DLL Compliance (30d)", value: `${compliance}%` },
+    { icon: "rate_review", label: "Pending Review", value: totals.submitted },
+  ];
+
+  return (
+    <AppShell title="Faculty Directory" subtitle="Faculty roster with DLL compliance signals (last 30 days).">
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {kpis.map((k) => (
           <Card key={k.label} className="p-5">
-            <div className="flex items-start justify-between">
-              <div className={
-                "flex h-11 w-11 items-center justify-center rounded-xl " +
-                (k.tone === "primary" ? "bg-primary-container/40 text-primary"
-                  : k.tone === "secondary" ? "bg-secondary/15 text-secondary"
-                  : k.tone === "late" ? "bg-status-late/15 text-status-late"
-                  : "bg-status-absent/10 text-status-absent")
-              }>
-                <Icon name={k.icon} filled />
-              </div>
-              <span className={
-                "text-xs font-bold " +
-                (k.deltaTone === "up" ? "text-status-present"
-                  : k.deltaTone === "down" ? "text-status-absent"
-                  : k.deltaTone === "warn" ? "text-status-late"
-                  : "text-tertiary")
-              }>{k.delta}</span>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-container/40 text-primary">
+              <Icon name={k.icon} filled />
             </div>
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-widest text-tertiary">{k.label}</p>
-              <p className="mt-1 num font-display text-3xl font-extrabold text-foreground">{k.value}</p>
-            </div>
+            <p className="mt-4 text-xs uppercase tracking-widest text-tertiary">{k.label}</p>
+            <p className="mt-1 num font-display text-3xl font-extrabold">{k.value}</p>
           </Card>
         ))}
       </div>
 
-      <Card className="overflow-hidden rounded-3xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant/50 p-6">
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "All Staff", count: 124, active: true },
-              { label: "STEM" }, { label: "ABM" }, { label: "HUMSS" }, { label: "GAS" },
-            ].map((t) => (
-              <button key={t.label} className={
-                "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition " +
-                (t.active ? "bg-primary-container/40 text-primary" : "text-tertiary hover:bg-surface-container")
-              }>
-                <span>{t.label}</span>
-                {t.count && <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">{t.count}</span>}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2 text-sm font-medium text-tertiary hover:bg-surface-container">
-              <Icon name="filter_list" size={16} /> More Filters
-            </button>
-            <button className="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2 text-sm font-medium text-tertiary hover:bg-surface-container">
-              <Icon name="download" size={16} /> Export
-            </button>
-          </div>
-        </div>
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-surface-container-low/50">
-              <tr className="text-left">
-                {["Teacher Name", "Department", "Handled Classes", "DLL Status", ""].map((h, i) => (
-                  <th key={i} className={`px-6 py-4 text-xs font-bold uppercase tracking-widest text-tertiary ${i === 4 ? "text-right" : ""}`}>{h}</th>
-                ))}
+            <thead className="bg-surface-container-low/50 text-left">
+              <tr>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Teacher</th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Department</th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">DLLs (30d)</th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Compliance</th>
+                <th className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Status</th>
               </tr>
             </thead>
             <tbody>
-              {faculty.map((f) => (
-                <tr key={f.id} className="border-t border-outline-variant/40 transition hover:bg-surface-container-low/40">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary shadow-sm">{f.initials}</div>
-                      <div>
-                        <p className="font-semibold text-foreground">{f.name}</p>
-                        <p className="text-xs text-tertiary num">ID: {f.id}</p>
+              {teachersQ.isLoading && <tr><td colSpan={5} className="px-6 py-8 text-center text-tertiary">Loading…</td></tr>}
+              {teachers.length === 0 && !teachersQ.isLoading && (
+                <tr><td colSpan={5} className="px-6 py-8 text-center text-tertiary">No teachers yet.</td></tr>
+              )}
+              {teachers.map((t) => {
+                const p = t.profiles as unknown as { email: string | null; full_name: string | null } | null;
+                const name = p?.full_name || p?.email || t.employee_id;
+                const stats = dllsQ.data?.[t.user_id];
+                const rate = stats && stats.total ? Math.round((stats.approved / stats.total) * 100) : null;
+                const tone: "present" | "late" | "absent" | "neutral" =
+                  rate === null ? "neutral" : rate >= 80 ? "present" : rate >= 50 ? "late" : "absent";
+                const label = rate === null ? "No data" : rate >= 80 ? "Up-to-date" : rate >= 50 ? "Under review" : "Overdue";
+                return (
+                  <tr key={t.user_id} className="border-t border-outline-variant/40 hover:bg-surface-container-low/40">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary">
+                          {name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">{name}</p>
+                          <p className="text-xs text-tertiary num">{t.employee_id}</p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">{f.dept}</td>
-                  <td className="px-6 py-4">
-                    {f.classes.map((c) => (<p key={c} className="text-xs text-tertiary first:text-sm first:text-foreground first:font-medium">{c}</p>))}
-                  </td>
-                  <td className="px-6 py-4">
-                    {f.status === "up-to-date" && <StatusPill tone="present" icon="check_circle">Up-to-Date</StatusPill>}
-                    {f.status === "review" && <StatusPill tone="late" icon="rate_review">Under Review</StatusPill>}
-                    {f.status === "overdue" && <StatusPill tone="absent" icon="warning">Overdue</StatusPill>}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button className="rounded-lg p-2 text-primary transition hover:bg-primary/10" aria-label="View"><Icon name="visibility" size={18} /></button>
-                      <button className="rounded-lg p-2 text-tertiary transition hover:bg-surface-container" aria-label="More"><Icon name="more_horiz" size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4">{t.department}</td>
+                    <td className="px-6 py-4 num text-tertiary">
+                      {stats ? `${stats.approved}/${stats.total} approved` : "0"}
+                    </td>
+                    <td className="px-6 py-4 num">{rate === null ? "—" : `${rate}%`}</td>
+                    <td className="px-6 py-4"><StatusPill tone={tone}>{label}</StatusPill></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

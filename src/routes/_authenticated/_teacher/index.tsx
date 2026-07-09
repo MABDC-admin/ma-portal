@@ -1,142 +1,152 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/_teacher/")({
   head: () => ({
     meta: [
-      { title: "Live Attendance — AttendCloud" },
-      { name: "description", content: "See today's attendance in real time, weekly summary, and recent check-ins." },
-      { property: "og:title", content: "Live Attendance — AttendCloud" },
-      { property: "og:description", content: "Real-time class check-in board with weekly summary and activity feed." },
+      { title: "Teacher Dashboard — AttendCloud" },
+      { name: "description", content: "Your sections, attendance snapshot, and recent DLL activity." },
     ],
   }),
-  component: LivePage,
+  component: TeacherHome,
 });
 
-const week = [
-  { d: "M", tone: "present" as const },
-  { d: "T", tone: "present" as const },
-  { d: "W", tone: "late" as const },
-  { d: "T", tone: "present" as const },
-  { d: "F", tone: "neutral" as const },
-];
+function TeacherHome() {
+  const { user } = useAuth();
+  const uid = user?.id;
 
-const activity = [
-  { subject: "Physics 202", when: "Today, 09:12 AM", method: "Face ID", methodIcon: "face", status: "present", icon: "person_check" },
-  { subject: "Calculus II", when: "Yesterday, 11:30 AM", method: "PIN", methodIcon: "dialpad", status: "late", icon: "schedule" },
-  { subject: "Biology 101", when: "Oct 22, 08:00 AM", method: "QR Scan", methodIcon: "qr_code", status: "present", icon: "qr_code" },
-  { subject: "English Lit", when: "Oct 21, 10:15 AM", method: "Face ID", methodIcon: "face", status: "present", icon: "person_check" },
-] as const;
+  const sectionsQ = useQuery({
+    queryKey: ["my-sections", uid],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("sections")
+        .select("id, name, grade_level, academic_year")
+        .eq("adviser_id", uid!);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
 
-function LivePage() {
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const attendanceQ = useQuery({
+    queryKey: ["today-attendance", uid, todayISO],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("attendance")
+        .select("status, section_id")
+        .eq("date", todayISO);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const dllsQ = useQuery({
+    queryKey: ["my-dlls", uid],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("dlls")
+        .select("id, subject, lesson_date, status")
+        .eq("teacher_id", uid!)
+        .order("lesson_date", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const counts = { present: 0, late: 0, absent: 0, excused: 0 };
+  for (const a of attendanceQ.data ?? []) counts[a.status as keyof typeof counts]++;
+
   return (
     <AppShell
-      title="Live Attendance"
-      subtitle="Punch-in feed, weekly trend, and your check-in status."
+      title="Teacher Dashboard"
+      subtitle="Your sections and lesson logs at a glance."
       actions={
-        <>
-          <button className="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-surface-container">
-            <Icon name="calendar_month" size={18} />
-            <span>This week</span>
-          </button>
-          <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
-            <Icon name="fingerprint" size={18} />
-            <span>Punch In</span>
-          </button>
-        </>
+        <Link to="/dll/new" className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:brightness-110">
+          <Icon name="note_add" size={18} />
+          <span>New DLL Entry</span>
+        </Link>
       }
     >
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="relative overflow-hidden p-6 lg:col-span-2">
-          <Icon name="check_circle" size={140} filled className="pointer-events-none absolute -right-4 -top-6 text-status-present/10" />
-          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-status-present">
-            <Icon name="check_circle" size={18} filled />
-            <span>Today's Status</span>
-          </div>
-          <p className="font-display text-4xl font-extrabold text-foreground">Present</p>
-          <p className="mt-2 text-sm text-tertiary">
-            Physics 202 · <span className="num">Punched in at 09:12 AM</span>
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110">
-              <Icon name="qr_code_scanner" size={16} />
-              View Ticket
-            </button>
-            <button className="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition hover:bg-surface-container">
-              <Icon name="download" size={16} />
-              Download Log
-            </button>
-          </div>
-        </Card>
-
-        <div className="grid grid-cols-3 gap-3 lg:col-span-1">
-          <Kpi label="Overall Rate" value="94%" tone="present" />
-          <Kpi label="On Time" value="88%" tone="primary" />
-          <Kpi label="Absences" value="2" tone="absent" />
-        </div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <Kpi label="Present today" value={counts.present} tone="present" />
+        <Kpi label="Late today" value={counts.late} tone="late" />
+        <Kpi label="Absent today" value={counts.absent} tone="absent" />
+        <Kpi label="Excused today" value={counts.excused} tone="neutral" />
       </div>
 
       <section className="mt-8">
-        <div className="mb-3 flex items-end justify-between">
-          <h3 className="font-display text-lg font-bold">Weekly Summary</h3>
-          <span className="num text-xs uppercase tracking-widest text-tertiary">OCT 21 – 25</span>
-        </div>
-        <Card className="p-6">
-          <div className="flex items-end justify-between">
-            {week.map((day, i) => (
-              <div key={i} className="flex flex-col items-center gap-3">
-                <span className="text-xs font-semibold text-tertiary">{day.d}</span>
-                <div className={
-                  "h-16 w-4 rounded-full " +
-                  (day.tone === "present" ? "bg-status-present" : day.tone === "late" ? "bg-status-late" : "bg-surface-container-high")
-                } />
-                <div className={
-                  "h-3 w-3 rounded-full " +
-                  (day.tone === "present" ? "bg-status-present" : day.tone === "late" ? "bg-status-late" : "bg-surface-container-high")
-                } />
-              </div>
-            ))}
-          </div>
-        </Card>
-      </section>
-
-      <section className="mt-8">
-        <h3 className="mb-3 font-display text-lg font-bold">Recent Activity</h3>
-        <div className="flex flex-col gap-3">
-          {activity.map((a) => (
-            <Card key={a.subject + a.when} className="flex items-center justify-between gap-4 p-4">
-              <div className="flex items-start gap-4">
-                <div className={
-                  "flex h-10 w-10 items-center justify-center rounded-full " +
-                  (a.status === "present" ? "bg-status-present/10 text-status-present" : "bg-status-late/15 text-status-late")
-                }>
-                  <Icon name={a.icon} size={20} filled />
-                </div>
+        <h3 className="mb-3 font-display text-lg font-bold">My Sections</h3>
+        {sectionsQ.isLoading && <p className="text-sm text-tertiary">Loading…</p>}
+        {sectionsQ.data?.length === 0 && (
+          <Card className="p-6 text-sm text-tertiary">You aren't assigned as adviser to any section yet.</Card>
+        )}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {sectionsQ.data?.map((s) => (
+            <Card key={s.id} className="p-5">
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-foreground">{a.subject}</p>
-                  <p className="text-xs text-tertiary num">{a.when}</p>
-                  <div className="mt-2 flex items-center gap-1.5 text-xs text-tertiary">
-                    <Icon name={a.methodIcon} size={14} />
-                    <span>Method: {a.method}</span>
-                  </div>
+                  <p className="font-display text-lg font-bold">{s.name}</p>
+                  <p className="text-xs text-tertiary">Grade {s.grade_level} · SY {s.academic_year}</p>
                 </div>
+                <Icon name="groups" filled className="text-primary" />
               </div>
-              <StatusPill tone={a.status as "present" | "late"}>{a.status.toUpperCase()}</StatusPill>
             </Card>
           ))}
         </div>
+      </section>
+
+      <section className="mt-8">
+        <h3 className="mb-3 font-display text-lg font-bold">Recent Lesson Logs</h3>
+        <Card className="overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="border-b border-outline-variant bg-surface-container-low/50 text-left">
+              <tr>
+                <th className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Date</th>
+                <th className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Subject</th>
+                <th className="px-4 py-3 text-xs font-bold uppercase tracking-widest text-tertiary">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dllsQ.data?.length === 0 && <tr><td colSpan={3} className="px-4 py-6 text-center text-tertiary">No lesson logs yet.</td></tr>}
+              {dllsQ.data?.map((d) => (
+                <tr key={d.id} className="border-b border-outline-variant/40 last:border-0">
+                  <td className="px-4 py-3 num">{d.lesson_date}</td>
+                  <td className="px-4 py-3 font-medium">{d.subject}</td>
+                  <td className="px-4 py-3">
+                    <DllStatus status={d.status as string} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
       </section>
     </AppShell>
   );
 }
 
-function Kpi({ label, value, tone }: { label: string; value: string; tone: "present" | "primary" | "absent" }) {
-  const c = tone === "present" ? "text-status-present" : tone === "absent" ? "text-status-absent" : "text-primary";
+function Kpi({ label, value, tone }: { label: string; value: number; tone: "present" | "late" | "absent" | "neutral" }) {
+  const c = tone === "present" ? "text-status-present" : tone === "late" ? "text-status-late" : tone === "absent" ? "text-status-absent" : "text-tertiary";
   return (
-    <Card className="flex flex-col items-center gap-1 p-4 text-center">
+    <Card className="p-4 text-center">
       <p className="text-xs font-semibold uppercase tracking-wider text-tertiary">{label}</p>
-      <p className={`num font-display text-2xl font-extrabold ${c}`}>{value}</p>
+      <p className={`num font-display text-3xl font-extrabold ${c}`}>{value}</p>
     </Card>
   );
+}
+
+function DllStatus({ status }: { status: string }) {
+  if (status === "draft") return <StatusPill tone="neutral" icon="edit">Draft</StatusPill>;
+  if (status === "submitted") return <StatusPill tone="late" icon="pending">Submitted</StatusPill>;
+  if (status === "approved") return <StatusPill tone="present" icon="check_circle">Approved</StatusPill>;
+  if (status === "returned") return <StatusPill tone="absent" icon="assignment_return">Returned</StatusPill>;
+  return <StatusPill tone="neutral">{status}</StatusPill>;
 }
