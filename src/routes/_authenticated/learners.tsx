@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/AppShell";
@@ -56,9 +56,32 @@ function LearnersPage() {
     return matches && matchesSection;
   });
 
-  const uniqueSections = Array.from(
-    new Set(learners?.map((l) => l.sections?.name).filter(Boolean) as string[]),
-  ).sort();
+  const sectionMap = new Map<string, { name: string; grade_level: number }>();
+  learners?.forEach((l) => {
+    if (l.sections && !sectionMap.has(l.sections.name)) {
+      sectionMap.set(l.sections.name, l.sections);
+    }
+  });
+
+  const allUniqueSections = Array.from(sectionMap.values());
+
+  const uniqueSections = allUniqueSections
+    .filter((s) => {
+      // If it's a generic "Grade X" name, check if there's a more specific section for this grade
+      if (/^Grade \d+$/.test(s.name) || /^Kindergarten [12]$/.test(s.name)) {
+        const hasSpecific = allUniqueSections.some(
+          (other) => other.grade_level === s.grade_level && other.name !== s.name
+        );
+        if (hasSpecific) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (a.grade_level !== b.grade_level) {
+        return a.grade_level - b.grade_level;
+      }
+      return a.name.localeCompare(b.name);
+    });
 
   return (
     <AppShell
@@ -89,8 +112,8 @@ function LearnersPage() {
         >
           <option value="">All Sections</option>
           {uniqueSections.map((s) => (
-            <option key={s} value={s}>
-              {s}
+            <option key={s.name} value={s.name}>
+              {s.name}
             </option>
           ))}
         </select>
@@ -143,6 +166,9 @@ function LearnersPage() {
                   <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary">
                     Status
                   </th>
+                  <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-tertiary text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/30">
@@ -171,6 +197,16 @@ function LearnersPage() {
                     </td>
                     <td className="px-6 py-4 text-xs">{l.sections?.name ?? "—"}</td>
                     <td className="px-6 py-4 text-xs capitalize">{l.status}</td>
+                    <td className="px-6 py-4 text-right">
+                      <Link
+                        to="/learners/$id"
+                        params={{ id: l.user_id }}
+                        className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-primary/20 transition whitespace-nowrap"
+                      >
+                        <Icon name="visibility" size={14} />
+                        View Profile
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
