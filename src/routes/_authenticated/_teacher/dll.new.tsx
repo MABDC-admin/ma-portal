@@ -16,13 +16,25 @@ export const Route = createFileRoute("/_authenticated/_teacher/dll/new")({
 function NewDllEntry() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [sectionId, setSectionId] = useState("");
-  const [subject, setSubject] = useState("");
+  const prefill = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = sessionStorage.getItem("dll:prefill");
+      if (!raw) return null;
+      sessionStorage.removeItem("dll:prefill");
+      return JSON.parse(raw) as {
+        subject?: string; section_id?: string | null;
+        objectives?: string; content?: string; procedures?: string; assessment?: string;
+      };
+    } catch { return null; }
+  })();
+  const [sectionId, setSectionId] = useState(prefill?.section_id ?? "");
+  const [subject, setSubject] = useState(prefill?.subject ?? "");
   const [lessonDate, setLessonDate] = useState(new Date().toISOString().slice(0, 10));
-  const [objectives, setObjectives] = useState("");
-  const [content, setContent] = useState("");
-  const [procedures, setProcedures] = useState("");
-  const [assessment, setAssessment] = useState("");
+  const [objectives, setObjectives] = useState(prefill?.objectives ?? "");
+  const [content, setContent] = useState(prefill?.content ?? "");
+  const [procedures, setProcedures] = useState(prefill?.procedures ?? "");
+  const [assessment, setAssessment] = useState(prefill?.assessment ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<null | "draft" | "submit">(null);
 

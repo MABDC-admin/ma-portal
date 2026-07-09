@@ -1,70 +1,66 @@
-## Goal
+# Teacher Portal Expansion + Attendance Kiosk
 
-Send email notifications through the MABDC mail API (`https://api-mail.mabdc.com/v1/emails`) whenever key workflow events happen: DLL submission, DLL approval, DLL return (with feedback), and anecdotal entry creation.
+## Scope confirmed
+- All 4 teacher-portal additions
+- Anecdotal notifications → **Academic Director** only
+- Attendance = **daily bulk grid** (one row per student per day)
+- New: **Attendance Kiosk** with front-camera face recognition for student self check-in
 
-## Secret handling
+---
 
-- Store the API key as a backend secret named `MABDC_MAIL_API_KEY` via the secret tool (never commit it, never expose to the browser).
-- Since the key was pasted in chat, rotate it after setup is confirmed — mention this to the user.
+## 1. Teacher — My DLLs
+- Route `src/routes/_authenticated/_teacher/dll.index.tsx`
+- Server fn `listMyDllsFn` (RLS-scoped by `teacher_id = auth.uid()`)
+- Filter chips: All / Draft / Submitted / Approved / Returned
+- Card list → click opens teacher detail
 
-## Email sender helper
+## 2. Teacher — DLL Detail (read-only + duplicate)
+- Route `src/routes/_authenticated/_teacher/dll.$id.tsx`
+- Shows lesson content + director feedback banner (color-coded by status)
+- "Duplicate as new draft" action for `returned` entries → prefills `/dll/new`
 
-Create `src/lib/mail.server.ts` with a single `sendMabdcEmail({ to, subject, html })` function:
+## 3. Teacher — My Sections → Roster + Attendance
+- Route `src/routes/_authenticated/_teacher/sections.$id.tsx` — roster + today's summary
+- Route `src/routes/_authenticated/_teacher/sections.$id.attendance.tsx` — daily bulk grid
+  - Date picker (defaults today), single row per student per day
+  - Bulk toolbar: "Mark all present", per-row toggle (Present / Absent / Late / Excused), notes field
+  - Save = upsert on `(student_id, date)`
+- Server fns: `listSectionRosterFn`, `getSectionAttendanceFn(date)`, `upsertAttendanceFn` (teacher must advise the section)
 
-- Reads `MABDC_MAIL_API_KEY` from `process.env` inside the function (not at module scope).
-- POSTs to `https://api-mail.mabdc.com/v1/emails` with `Authorization: Bearer …` and JSON `{ to, from: "notifications@mabdc.org", subject, html }`.
-- On non-2xx, log the status + body and throw; callers wrap in try/catch so a mail failure never blocks the DB write.
+## 4. Teacher — Anecdotal Entries
+- **New table `anecdotal_entries`**: `student_id`, `teacher_id`, `category` (enum: academic / behavioral / social / achievement), `note` (text), `occurred_on` (date)
+- Route `src/routes/_authenticated/_teacher/students.$id.anecdotal.tsx` — list + create form
+- Server fn `createAnecdotalFn` → inserts row + emails **all Academic Directors** via `sendMabdcEmail` with student name, teacher, category, note excerpt, link to student profile
+- Directors get a read-only surface too: `src/routes/_authenticated/_director/anecdotal.tsx` (list, filter by student/teacher)
 
-A small `renderEmail({ title, intro, bodyHtml, ctaLabel?, ctaUrl? })` helper produces branded HTML (header, body, CTA button, footer) reused across all notification types.
+## 5. Attendance Kiosk (public, per-section)
+- Route `src/routes/_authenticated/_teacher/sections.$id.kiosk.tsx` (teacher launches it on a shared device; stays authenticated as the teacher)
+- Fullscreen UI: live front-camera video, subtle scanning animation, big status area
+- Uses **face-api.js** (browser, WASM/tiny models) — TinyFaceDetector + FaceLandmark68Net + FaceRecognitionNet
+- Flow:
+  1. On mount, load descriptors for all students in the section (from `students.face_descriptor`)
+  2. Video loop → detect face → compute descriptor → nearest neighbor (euclidean < 0.5)
+  3. Match → call `kioskCheckInFn({ studentId, sectionId })` → server verifies teacher advises section, upserts today's attendance as `present`, returns student name + time
+  4. Show greeting card: photo/initials, "Welcome, {name} — 7:42 AM ✓", 3-second cooldown per student to prevent double-scan
+  5. No match after N frames → "Face not recognized — please see your teacher"
+- **Enrollment**: on `sections.$id.tsx` roster, each student row gets an "Enroll face" button that opens a modal, captures 3 samples, averages the descriptor, saves to `students.face_descriptor` (float[])
 
-## Notification triggers
+## Database migration
+1. `students`: add `face_descriptor float8[]`, `photo_url text` (nullable)
+2. `anecdotal_entries` table (CREATE → GRANT authenticated + service_role → RLS → policies):
+   - Teacher can insert own; teacher can read own; academic_director can read all
+3. `attendance`: ensure unique `(student_id, date)` for upsert; teacher policies scoped via `sections.adviser_id = auth.uid()`
 
-All triggers live inside existing server functions (or new ones) so RLS + auth are enforced. Each fires **after** the DB mutation succeeds and is best-effort.
+## Navigation
+- Extend `AppShell` teacher menu: Dashboard · My DLLs · New DLL · My Sections
+- Section detail page has action buttons: **Take Attendance**, **Launch Kiosk**, **Enroll Faces**
+- Director menu gains: **Anecdotal Log**
 
-1. **DLL submitted** (teacher → directors)
-   - Trigger: DLL status transitions `draft → submitted`.
-   - Recipients: all users with role `academic_director` (query `profiles` by role).
-   - Content: teacher name, subject, section, lesson date, link to `/dll/<id>` (director view).
+## Dependencies
+- `face-api.js` (bun add) + copy model weights to `/public/models/` (tiny_face_detector, face_landmark_68, face_recognition)
 
-2. **DLL approved** (director → teacher)
-   - Trigger: status → `approved`.
-   - Recipient: the DLL's teacher (`teachers.user_id` → `profiles.email`).
-   - Content: DLL title/subject/date, reviewer name, optional feedback, link to teacher DLL view.
-
-3. **DLL returned** (director → teacher)
-   - Trigger: status → `returned`.
-   - Recipient: teacher owner.
-   - Content: reviewer name, **required feedback text**, link to teacher DLL edit view.
-
-4. **Anecdotal entry created** (teacher → student's guardians/self and section adviser)
-   - Trigger: new row in the anecdotal table (need to confirm existence — see Open questions).
-   - Recipients: the student's profile email (if present) + section adviser.
-   - Content: entry date, category/severity if present, short excerpt, link to student profile.
-
-## Server-function changes
-
-Files to touch (add try/catch mail dispatch after the successful update/insert):
-
-- `src/lib/dlls.functions.ts` (or wherever `submitDll` / `reviewDll` live — will confirm during build).
-- The anecdotal server function (to confirm).
-- New `src/lib/mail.server.ts`.
-
-Each dispatch fetches the minimal recipient data with `context.supabase` (RLS-safe), builds the HTML via `renderEmail`, and calls `sendMabdcEmail`. Failures are logged and swallowed.
-
-## Frontend
-
-No UI changes required. Existing buttons (Submit, Approve, Return, Save anecdotal) already call the server functions; adding email inside those functions is transparent to the client.
-
-## Verification
-
-After build:
-1. Sign in as a teacher, submit a DLL → confirm directors receive email.
-2. Sign in as director, approve + return → confirm teacher receives both.
-3. Create an anecdotal entry → confirm recipient list gets email.
-4. Check server-function logs for any non-2xx responses from the mail API.
-
-## Open questions (need answers before build)
-
-1. **Anecdotal entries** — I don't see an anecdotal table in the current schema (only `attendance`, `dlls`, etc.). Should I add an `anecdotal_entries` table (student_id, teacher_id, date, category, notes, severity) as part of this change, or does it already exist under another name?
-2. **Sender identity** — OK to use `notifications@mabdc.org` as the `from` address, or do you want a specific mailbox (e.g. `no-reply@mabdc.org`, `dll@mabdc.org`)?
-3. **Base URL for links** — should email CTA links use the published domain (once known) or the current preview URL for now? I'll default to a `PUBLIC_APP_URL` env var, falling back to the request origin.
+## Tech notes
+- All new writes go through `createServerFn` + `requireSupabaseAuth`; kiosk check-in verifies caller is section adviser server-side
+- Face descriptors stay in DB (float[128]); matching happens client-side in kiosk (avoids uploading video)
+- Email helper reused from `src/lib/mail.server.ts`; anecdotal notification queries `profiles` for role=`academic_director`
+- Design: kiosk uses dark gradient bg, large rounded video frame, animated scan ring, MABDC brand tokens

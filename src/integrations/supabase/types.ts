@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      anecdotal_entries: {
+        Row: {
+          category: Database["public"]["Enums"]["anecdotal_category"]
+          created_at: string
+          id: string
+          note: string
+          occurred_on: string
+          student_id: string
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["anecdotal_category"]
+          created_at?: string
+          id?: string
+          note: string
+          occurred_on?: string
+          student_id: string
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["anecdotal_category"]
+          created_at?: string
+          id?: string
+          note?: string
+          occurred_on?: string
+          student_id?: string
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anecdotal_entries_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           created_at: string
@@ -215,6 +256,8 @@ export type Database = {
       students: {
         Row: {
           created_at: string
+          face_descriptor: number[] | null
+          photo_url: string | null
           section_id: string | null
           status: string
           student_number: string
@@ -223,6 +266,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          face_descriptor?: number[] | null
+          photo_url?: string | null
           section_id?: string | null
           status?: string
           student_number: string
@@ -231,6 +276,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          face_descriptor?: number[] | null
+          photo_url?: string | null
           section_id?: string | null
           status?: string
           student_number?: string
@@ -324,6 +371,7 @@ export type Database = {
       }
     }
     Enums: {
+      anecdotal_category: "academic" | "behavioral" | "social" | "achievement"
       app_role: "admin" | "academic_director" | "teacher" | "student"
       attendance_status: "present" | "absent" | "late" | "excused"
       dll_status: "draft" | "submitted" | "approved" | "returned"
@@ -455,6 +503,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      anecdotal_category: ["academic", "behavioral", "social", "achievement"],
       app_role: ["admin", "academic_director", "teacher", "student"],
       attendance_status: ["present", "absent", "late", "excused"],
       dll_status: ["draft", "submitted", "approved", "returned"],
