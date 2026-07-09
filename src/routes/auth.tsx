@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Icon } from "@/components/Icon";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Sign In — AttendCloud" },
