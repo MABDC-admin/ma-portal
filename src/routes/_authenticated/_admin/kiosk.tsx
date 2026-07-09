@@ -324,12 +324,12 @@ function KioskPage() {
 
             {/* Idle overlay */}
             {!isAwake && !greeting && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/40">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-                  <Icon name="touch_app" filled size={56} className="text-white/80" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 bg-black/40 px-4 text-center">
+                <div className="flex h-16 w-16 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
+                  <Icon name="touch_app" filled size={40} className="text-white/80 sm:!text-[56px]" />
                 </div>
-                <p className="font-display text-3xl font-extrabold">Tap to scan</p>
-                <p className="text-sm text-white/60">Camera sleeps between scans</p>
+                <p className="font-display text-xl sm:text-3xl font-extrabold">Tap to scan</p>
+                <p className="text-xs sm:text-sm text-white/60">Camera sleeps between scans</p>
               </div>
             )}
 
