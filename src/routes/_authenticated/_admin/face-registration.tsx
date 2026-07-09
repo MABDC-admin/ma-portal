@@ -112,7 +112,11 @@ function FaceRegistrationPage() {
               </thead>
               <tbody>
                 {filtered.map((l) => (
-                  <tr key={l.user_id} className="border-t border-outline-variant">
+                  <tr
+                    key={l.user_id}
+                    onClick={() => setActive(l)}
+                    className="cursor-pointer border-t border-outline-variant transition hover:bg-surface-container/60"
+                  >
                     <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
                         {l.photo_url || l.avatar_url ? (
@@ -133,7 +137,16 @@ function FaceRegistrationPage() {
                           </div>
                         )}
                         <div>
-                          <p className="font-semibold">{l.full_name || l.email || "Learner"}</p>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActive(l);
+                            }}
+                            className="text-left font-semibold text-foreground hover:text-primary hover:underline"
+                          >
+                            {l.full_name || l.email || "Learner"}
+                          </button>
                           {l.email && (
                             <p className="text-xs text-tertiary">{l.email}</p>
                           )}
@@ -157,7 +170,10 @@ function FaceRegistrationPage() {
                     </td>
                     <td className="px-4 py-2 text-right">
                       <button
-                        onClick={() => setActive(l)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActive(l);
+                        }}
                         className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
                       >
                         {l.has_face ? "Re-enroll" : "Enroll"}
