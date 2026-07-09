@@ -711,3 +711,114 @@ function snapshotFromSource(
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.lineTo(x + w - rr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+  ctx.lineTo(x + w, y + h - rr);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+  ctx.lineTo(x + rr, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+  ctx.lineTo(x, y + rr);
+  ctx.quadraticCurveTo(x, y, x + rr, y);
+  ctx.closePath();
+}
+
+function descriptorDistance(a: Float32Array, b: Float32Array): number {
+  let sum = 0;
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    const d = a[i] - b[i];
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
+}
+
+function evaluateQuality(
+  score: number,
+  box: { x: number; y: number; width: number; height: number },
+  vw: number,
+  vh: number,
+  video: HTMLVideoElement,
+): QualityCheck {
+  const minSide = Math.min(vw, vh);
+  const ratio = box.width / minSide;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  const centerOffset = Math.max(Math.abs(cx / vw - 0.5), Math.abs(cy / vh - 0.5));
+  const sharpness = estimateSharpness(video, box);
+
+  let hint = "Perfect — hold still";
+  let ok = true;
+  if (score < MIN_DETECTION_SCORE) {
+    hint = "Face unclear — improve lighting";
+    ok = false;
+  } else if (ratio < MIN_FACE_RATIO) {
+    hint = "Move closer to the camera";
+    ok = false;
+  } else if (ratio > 0.75) {
+    hint = "Move back a little";
+    ok = false;
+  } else if (centerOffset > MAX_CENTER_OFFSET) {
+    hint = "Center your face in the frame";
+    ok = false;
+  } else if (sharpness < MIN_SHARPNESS) {
+    hint = "Hold still — image is blurry";
+    ok = false;
+  }
+  return { ok, hint, score, ratio, centerOffset, sharpness };
+}
+
+function estimateSharpness(
+  video: HTMLVideoElement,
+  box: { x: number; y: number; width: number; height: number },
+): number {
+  try {
+    const size = 64;
+    const c = document.createElement("canvas");
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return 999;
+    ctx.drawImage(video, box.x, box.y, box.width, box.height, 0, 0, size, size);
+    const { data } = ctx.getImageData(0, 0, size, size);
+    const gray = new Float32Array(size * size);
+    for (let i = 0; i < size * size; i++) {
+      const o = i * 4;
+      gray[i] = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+    }
+    const lap = new Float32Array(size * size);
+    let mean = 0;
+    for (let y = 1; y < size - 1; y++) {
+      for (let x = 1; x < size - 1; x++) {
+        const i = y * size + x;
+        const v = -gray[i - size] - gray[i - 1] + 4 * gray[i] - gray[i + 1] - gray[i + size];
+        lap[i] = v;
+        mean += v;
+      }
+    }
+    const n = (size - 2) * (size - 2);
+    mean /= n;
+    let variance = 0;
+    for (let y = 1; y < size - 1; y++) {
+      for (let x = 1; x < size - 1; x++) {
+        const d = lap[y * size + x] - mean;
+        variance += d * d;
+      }
+    }
+    return variance / n;
+  } catch {
+    return 999;
+  }
+}
+
+
