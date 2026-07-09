@@ -375,16 +375,16 @@ function KioskPage() {
           </div>
 
           {/* Action buttons — always visible */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 wake("in");
               }}
-              className={`flex items-center justify-center gap-3 rounded-2xl px-6 py-5 font-display text-2xl font-extrabold ring-1 transition ${pendingAction === "in" ? "bg-emerald-500 text-white ring-emerald-300 shadow-lg" : "bg-white/5 text-white/80 ring-white/15 hover:bg-white/10"}`}
+              className={`flex items-center justify-center gap-2 sm:gap-3 rounded-2xl px-3 sm:px-6 py-4 sm:py-5 font-display text-lg sm:text-2xl font-extrabold ring-1 transition ${pendingAction === "in" ? "bg-emerald-500 text-white ring-emerald-300 shadow-lg" : "bg-white/5 text-white/80 ring-white/15 hover:bg-white/10"}`}
             >
-              <Icon name="login" filled size={28} />
+              <Icon name="login" filled size={22} className="sm:!text-[28px]" />
               Time In
             </button>
             <button
@@ -393,9 +393,9 @@ function KioskPage() {
                 e.stopPropagation();
                 wake("out");
               }}
-              className={`flex items-center justify-center gap-3 rounded-2xl px-6 py-5 font-display text-2xl font-extrabold ring-1 transition ${pendingAction === "out" ? "bg-rose-500 text-white ring-rose-300 shadow-lg" : "bg-white/5 text-white/80 ring-white/15 hover:bg-white/10"}`}
+              className={`flex items-center justify-center gap-2 sm:gap-3 rounded-2xl px-3 sm:px-6 py-4 sm:py-5 font-display text-lg sm:text-2xl font-extrabold ring-1 transition ${pendingAction === "out" ? "bg-rose-500 text-white ring-rose-300 shadow-lg" : "bg-white/5 text-white/80 ring-white/15 hover:bg-white/10"}`}
             >
-              <Icon name="logout" filled size={28} />
+              <Icon name="logout" filled size={22} className="sm:!text-[28px]" />
               Time Out
             </button>
           </div>
