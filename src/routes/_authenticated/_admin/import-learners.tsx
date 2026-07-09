@@ -30,7 +30,10 @@ function ImportLearnersPage() {
     setBusy(true);
     setError(null);
     try {
-      const res = await run({ data: undefined as never });
+      const res = await run();
+      if (!res || !Array.isArray(res.results)) {
+        throw new Error("Server returned no results. Check server logs (import may have timed out).");
+      }
       setResults(res.results);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
