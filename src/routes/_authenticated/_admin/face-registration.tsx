@@ -221,6 +221,23 @@ function StatCard({
 }
 
 // ---------- Enroll modal ----------
+const TARGET_SAMPLES = 3;
+const MIN_FACE_RATIO = 0.22; // face box vs. min(video w,h)
+const MAX_CENTER_OFFSET = 0.18; // fraction of frame
+const MIN_SHARPNESS = 12; // laplacian variance
+const MIN_DETECTION_SCORE = 0.7;
+const MIN_DESCRIPTOR_DISTANCE = 0.32; // diversity between samples
+const AUTO_CAPTURE_COOLDOWN_MS = 900;
+
+type QualityCheck = {
+  ok: boolean;
+  hint: string;
+  score: number;
+  ratio: number;
+  centerOffset: number;
+  sharpness: number;
+};
+
 function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => void }) {
   const qc = useQueryClient();
   const saveFn = useServerFn(saveFaceDescriptorFn);
@@ -231,11 +248,28 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
   const [snapshots, setSnapshots] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [autoCapture, setAutoCapture] = useState(true);
+  const [liveHint, setLiveHint] = useState<string>("Position your face in the frame");
+  const [liveOk, setLiveOk] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const faceApiRef = useRef<typeof import("face-api.js") | null>(null);
+  const samplesRef = useRef<Float32Array[]>([]);
+  const lastCaptureRef = useRef<number>(0);
+  const loopRef = useRef<number | null>(null);
+  const autoRef = useRef(autoCapture);
 
+  // keep refs in sync with state for the detection loop
+  useEffect(() => {
+    samplesRef.current = samples;
+  }, [samples]);
+  useEffect(() => {
+    autoRef.current = autoCapture;
+  }, [autoCapture]);
+
+  // camera + models bootstrap
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -251,7 +285,11 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         if (cancelled || mode !== "camera") return;
         setStatus("Starting camera…");
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: 640, height: 480 },
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
         });
         streamRef.current = stream;
         if (cancelled) {
@@ -263,16 +301,133 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
           await videoRef.current.play();
         }
         setReady(true);
-        setStatus("Capture 3 samples for a solid enrollment.");
+        setStatus("Hold still — auto-capturing quality samples");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Setup failed");
+        setError(
+          e instanceof Error
+            ? `Camera error: ${e.message}. Grant camera permission and reload.`
+            : "Setup failed",
+        );
       }
     })();
     return () => {
       cancelled = true;
+      if (loopRef.current) cancelAnimationFrame(loopRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
     };
   }, [mode]);
+
+  // continuous detection loop w/ live overlay + auto-capture
+  useEffect(() => {
+    if (mode !== "camera" || !ready) return;
+    let stopped = false;
+
+    const tick = async () => {
+      if (stopped) return;
+      const faceapi = faceApiRef.current;
+      const video = videoRef.current;
+      const canvas = overlayRef.current;
+      if (!faceapi || !video || !canvas || video.readyState < 2) {
+        loopRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      try {
+        const detection = await faceapi
+          .detectSingleFace(
+            video,
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+          )
+          .withFaceLandmarks();
+
+        // sync overlay size to displayed video
+        const rect = video.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          loopRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!detection) {
+          setLiveHint("No face detected — face the camera");
+          setLiveOk(false);
+          loopRef.current = requestAnimationFrame(tick);
+          return;
+        }
+
+        const box = detection.detection.box;
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        const sx = canvas.width / vw;
+        const sy = canvas.height / vh;
+        // mirror the box because the video is mirrored via CSS
+        const drawX = canvas.width - (box.x + box.width) * sx;
+        const drawY = box.y * sy;
+        const drawW = box.width * sx;
+        const drawH = box.height * sy;
+
+        const quality = evaluateQuality(
+          detection.detection.score,
+          box,
+          vw,
+          vh,
+          video,
+        );
+
+        // draw guide rectangle
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = quality.ok ? "#22c55e" : "#f59e0b";
+        roundRect(ctx, drawX, drawY, drawW, drawH, 12);
+        ctx.stroke();
+
+        setLiveHint(quality.hint);
+        setLiveOk(quality.ok);
+
+        const now = performance.now();
+        const cooled = now - lastCaptureRef.current > AUTO_CAPTURE_COOLDOWN_MS;
+        const needMore = samplesRef.current.length < TARGET_SAMPLES;
+
+        if (autoRef.current && quality.ok && cooled && needMore) {
+          const full = await faceapi
+            .detectSingleFace(
+              video,
+              new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+          if (full) {
+            const diverse = samplesRef.current.every(
+              (s) => descriptorDistance(s, full.descriptor) >= MIN_DESCRIPTOR_DISTANCE,
+            );
+            if (diverse) {
+              lastCaptureRef.current = now;
+              const snap = snapshotFromVideo(video, full.detection.box);
+              setSamples((prev) => [...prev, full.descriptor]);
+              setSnapshots((prev) => [...prev, snap]);
+            } else {
+              setLiveHint("Great — now change angle slightly for a diverse sample");
+            }
+          }
+        }
+      } catch {
+        // swallow transient detection errors
+      }
+      loopRef.current = requestAnimationFrame(tick);
+    };
+
+    loopRef.current = requestAnimationFrame(tick);
+    return () => {
+      stopped = true;
+      if (loopRef.current) cancelAnimationFrame(loopRef.current);
+      const ctx = overlayRef.current?.getContext("2d");
+      if (ctx && overlayRef.current)
+        ctx.clearRect(0, 0, overlayRef.current.width, overlayRef.current.height);
+    };
+  }, [mode, ready]);
 
   async function captureFromCamera() {
     if (!videoRef.current || !faceApiRef.current) return;
@@ -282,7 +437,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const detection = await faceApiRef.current
         .detectSingleFace(
           videoRef.current,
-          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }),
+          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
@@ -293,7 +448,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const snap = snapshotFromVideo(videoRef.current, detection.detection?.box);
       setSamples((prev) => [...prev, detection.descriptor]);
       setSnapshots((prev) => [...prev, snap]);
-      setStatus(`Captured ${samples.length + 1} of 3 recommended samples.`);
+      setStatus(`Captured ${samples.length + 1} of ${TARGET_SAMPLES} recommended samples.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Detection failed");
     }
@@ -311,7 +466,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       const detection = await faceApiRef.current
         .detectSingleFace(
           img,
-          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }),
+          new faceApiRef.current.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.5 }),
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
@@ -346,6 +501,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
       setSaving(false);
     }
   }
+
 
   const name = learner.full_name || learner.email || "Learner";
 
@@ -382,14 +538,45 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
         </div>
 
         {mode === "camera" ? (
-          <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="h-full w-full object-cover [transform:scaleX(-1)]"
-            />
+          <div className="space-y-2">
+            <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="h-full w-full object-cover [transform:scaleX(-1)]"
+              />
+              <canvas
+                ref={overlayRef}
+                className="pointer-events-none absolute inset-0 h-full w-full"
+              />
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 px-3 py-2 text-center text-xs font-semibold text-white ${liveOk ? "bg-emerald-600/80" : "bg-black/60"}`}
+              >
+                <Icon
+                  name={liveOk ? "check_circle" : "info"}
+                  size={14}
+                  filled
+                />
+                {liveHint}
+              </div>
+              <div className="pointer-events-none absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-bold text-white">
+                {samples.length} / {TARGET_SAMPLES}
+              </div>
+            </div>
+            <label className="flex cursor-pointer items-center justify-between rounded-lg bg-surface-container px-3 py-2 text-xs font-semibold">
+              <span className="flex items-center gap-2">
+                <Icon name="bolt" size={16} filled />
+                Auto-capture quality samples
+              </span>
+              <input
+                type="checkbox"
+                checked={autoCapture}
+                onChange={(e) => setAutoCapture(e.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+            </label>
           </div>
         ) : (
           <label className="flex aspect-video cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-outline-variant bg-surface-container text-tertiary hover:border-primary hover:text-primary">
@@ -523,4 +710,115 @@ function snapshotFromSource(
   ctx.drawImage(source, sx, sy, sSize, sSize, 0, 0, size, size);
   return canvas.toDataURL("image/jpeg", 0.85);
 }
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.lineTo(x + w - rr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+  ctx.lineTo(x + w, y + h - rr);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+  ctx.lineTo(x + rr, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+  ctx.lineTo(x, y + rr);
+  ctx.quadraticCurveTo(x, y, x + rr, y);
+  ctx.closePath();
+}
+
+function descriptorDistance(a: Float32Array, b: Float32Array): number {
+  let sum = 0;
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    const d = a[i] - b[i];
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
+}
+
+function evaluateQuality(
+  score: number,
+  box: { x: number; y: number; width: number; height: number },
+  vw: number,
+  vh: number,
+  video: HTMLVideoElement,
+): QualityCheck {
+  const minSide = Math.min(vw, vh);
+  const ratio = box.width / minSide;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  const centerOffset = Math.max(Math.abs(cx / vw - 0.5), Math.abs(cy / vh - 0.5));
+  const sharpness = estimateSharpness(video, box);
+
+  let hint = "Perfect — hold still";
+  let ok = true;
+  if (score < MIN_DETECTION_SCORE) {
+    hint = "Face unclear — improve lighting";
+    ok = false;
+  } else if (ratio < MIN_FACE_RATIO) {
+    hint = "Move closer to the camera";
+    ok = false;
+  } else if (ratio > 0.75) {
+    hint = "Move back a little";
+    ok = false;
+  } else if (centerOffset > MAX_CENTER_OFFSET) {
+    hint = "Center your face in the frame";
+    ok = false;
+  } else if (sharpness < MIN_SHARPNESS) {
+    hint = "Hold still — image is blurry";
+    ok = false;
+  }
+  return { ok, hint, score, ratio, centerOffset, sharpness };
+}
+
+function estimateSharpness(
+  video: HTMLVideoElement,
+  box: { x: number; y: number; width: number; height: number },
+): number {
+  try {
+    const size = 64;
+    const c = document.createElement("canvas");
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return 999;
+    ctx.drawImage(video, box.x, box.y, box.width, box.height, 0, 0, size, size);
+    const { data } = ctx.getImageData(0, 0, size, size);
+    const gray = new Float32Array(size * size);
+    for (let i = 0; i < size * size; i++) {
+      const o = i * 4;
+      gray[i] = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+    }
+    const lap = new Float32Array(size * size);
+    let mean = 0;
+    for (let y = 1; y < size - 1; y++) {
+      for (let x = 1; x < size - 1; x++) {
+        const i = y * size + x;
+        const v = -gray[i - size] - gray[i - 1] + 4 * gray[i] - gray[i + 1] - gray[i + size];
+        lap[i] = v;
+        mean += v;
+      }
+    }
+    const n = (size - 2) * (size - 2);
+    mean /= n;
+    let variance = 0;
+    for (let y = 1; y < size - 1; y++) {
+      for (let x = 1; x < size - 1; x++) {
+        const d = lap[y * size + x] - mean;
+        variance += d * d;
+      }
+    }
+    return variance / n;
+  } catch {
+    return 999;
+  }
+}
+
 
