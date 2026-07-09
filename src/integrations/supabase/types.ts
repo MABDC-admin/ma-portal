@@ -14,6 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          recorded_by: string | null
+          section_id: string
+          status: Database["public"]["Enums"]["attendance_status"]
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          recorded_by?: string | null
+          section_id: string
+          status: Database["public"]["Enums"]["attendance_status"]
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          recorded_by?: string | null
+          section_id?: string
+          status?: Database["public"]["Enums"]["attendance_status"]
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      dlls: {
+        Row: {
+          assessment: string
+          content: string
+          created_at: string
+          feedback: string | null
+          id: string
+          lesson_date: string
+          objectives: string
+          procedures: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          section_id: string | null
+          status: Database["public"]["Enums"]["dll_status"]
+          subject: string
+          submitted_at: string | null
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          assessment?: string
+          content?: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          lesson_date: string
+          objectives?: string
+          procedures?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          section_id?: string | null
+          status?: Database["public"]["Enums"]["dll_status"]
+          subject: string
+          submitted_at?: string | null
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          assessment?: string
+          content?: string
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          lesson_date?: string
+          objectives?: string
+          procedures?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          section_id?: string | null
+          status?: Database["public"]["Enums"]["dll_status"]
+          subject?: string
+          submitted_at?: string | null
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dlls_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dlls_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "dlls_teacher_profile_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -43,6 +173,124 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sections: {
+        Row: {
+          academic_year: string
+          adviser_id: string | null
+          created_at: string
+          grade_level: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          academic_year: string
+          adviser_id?: string | null
+          created_at?: string
+          grade_level: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          academic_year?: string
+          adviser_id?: string | null
+          created_at?: string
+          grade_level?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_adviser_id_fkey"
+            columns: ["adviser_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          created_at: string
+          section_id: string | null
+          status: string
+          student_number: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          section_id?: string | null
+          status?: string
+          student_number: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          section_id?: string | null
+          status?: string
+          student_number?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teachers: {
+        Row: {
+          created_at: string
+          department: string
+          employee_id: string
+          status: Database["public"]["Enums"]["teacher_status"]
+          subjects: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string
+          employee_id: string
+          status?: Database["public"]["Enums"]["teacher_status"]
+          subjects?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          employee_id?: string
+          status?: Database["public"]["Enums"]["teacher_status"]
+          subjects?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teachers_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -77,6 +325,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "academic_director" | "teacher" | "student"
+      attendance_status: "present" | "absent" | "late" | "excused"
+      dll_status: "draft" | "submitted" | "approved" | "returned"
+      teacher_status: "active" | "inactive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -205,6 +456,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "academic_director", "teacher", "student"],
+      attendance_status: ["present", "absent", "late", "excused"],
+      dll_status: ["draft", "submitted", "approved", "returned"],
+      teacher_status: ["active", "inactive"],
     },
   },
 } as const

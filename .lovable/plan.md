@@ -1,109 +1,57 @@
-# Role-Based Auth Plan for AttendCloud
 
-## Goal
-Add email/password authentication and four role-based portals: **Admin**, **Academic Director**, **Teacher**, and **Student**. Admin assigns roles manually. Existing screens will be gated by role.
+# Wire all portals to real data
 
-## Roles & Portal Mapping
+## Schema (new tables in `public`)
 
-| Role | Screens / Access |
-|------|------------------|
-| **Admin** | Teacher Management, Faculty Directory, User Management (assign roles), all read access |
-| **Academic Director** | DLL Review Portal, DLL Review Detail, Faculty Directory (read), DLL approval/feedback |
-| **Teacher** | Live Attendance, New DLL Entry, own Teacher/Faculty view, submit lesson logs |
-| **Student** | Student Profile, Student Attendance (own records only) |
+- **teachers** — `user_id` (PK/FK auth.users), `employee_id`, `department`, `subjects` text[], `status` (active/inactive)
+- **sections** — `id`, `name` (e.g. "Grade 10 - Rizal"), `grade_level`, `adviser_id` (FK teachers), `academic_year`
+- **students** — `user_id` (PK/FK auth.users), `student_number` (LRN), `section_id`, `status`
+- **attendance** — `id`, `student_id`, `section_id`, `date`, `status` (present/absent/late/excused), `recorded_by` (teacher), unique(student, date)
+- **dlls** — `id`, `teacher_id`, `section_id`, `subject`, `lesson_date`, `objectives`, `content`, `procedures`, `assessment`, `status` (draft/submitted/approved/returned), `submitted_at`, `reviewed_by`, `reviewed_at`, `feedback`
 
-## Database Schema
+Enums: `attendance_status`, `dll_status`, `teacher_status`.
 
-1. **Enum**: `app_role` (`admin`, `academic_director`, `teacher`, `student`).
-2. **Table**: `public.profiles`
-   - `id uuid` (PK, refs `auth.users` on delete cascade)
-   - `email text`
-   - `full_name text`
-   - `avatar_url text` (optional)
-   - `role app_role` (default `student` until admin changes)
-   - `created_at`, `updated_at` timestamps
-   - GRANTs + RLS: users read own profile; admins read all; admins update role.
-3. **Table**: `public.user_roles`
-   - `id uuid` PK
-   - `user_id uuid` (refs `auth.users`)
-   - `role app_role`
-   - unique `(user_id, role)`
-   - GRANTs + RLS: authenticated select; service_role all.
-4. **Function**: `public.has_role(_user_id uuid, _role app_role)` — security definer for RLS/policy checks.
-5. **Trigger**: auto-create `profiles` row on `auth.users` insert with default role `student`.
+All tables: `created_at`/`updated_at`, GRANTs to `authenticated`+`service_role`, RLS on.
 
-## Auth Flow
+## RLS policies
 
-1. **Sign-up / Sign-in page** at `/auth`
-   - Tabs for login and register.
-   - Uses `supabase.auth.signInWithPassword` and `supabase.auth.signUp`.
-   - Email confirmation required (no auto-confirm unless requested).
-2. **Reset password page** at `/reset-password`
-   - Handles `type=recovery` hash param.
-   - Calls `supabase.auth.updateUser({ password })`.
-3. **Protected layout** `src/routes/_authenticated/route.tsx`
-   - Integration-managed, `ssr: false`, redirects to `/auth` if no session.
-4. **Role-gated pathless layouts**
-   - `/_authenticated/_admin`
-   - `/_authenticated/_director`
-   - `/_authenticated/_teacher`
-   - `/_authenticated/_student`
-   - Each uses `beforeLoad` + `hasRole` check, redirecting to `/unauthorized` if role mismatch.
-5. **Sign-out affordance**
-   - Update `AppShell` header to show user avatar/menu with sign-out when authenticated.
-   - Sign-out clears TanStack Query cache, calls `supabase.auth.signOut()`, then navigates to `/auth`.
+- **teachers**: admin manages all; teacher reads own; director reads all.
+- **sections**: admin manages; teacher/director/student can read.
+- **students**: admin manages; student reads own; teacher reads students in their sections; director reads all.
+- **attendance**: admin all; student reads own; teacher inserts/reads for their section.
+- **dlls**: admin all; teacher CRUD own drafts, read own; director reads all + updates status/feedback.
 
-## Server Functions
+## Seed (one-time, in a migration)
 
-Create `src/lib/auth.functions.ts` (client-safe path):
+- 3 demo auth users are already created; add 2 more teachers, 8 students, 2 sections, ~2 weeks of attendance, 6 DLLs across statuses. Idempotent — only inserts if the email exists in `profiles`.
 
-- `getCurrentUser()` — returns current `profiles` row + roles; uses `requireSupabaseAuth`.
-- `listUsers()` — admin only; returns all profiles with roles.
-- `assignRole({ userId, role })` — admin only; updates `profiles.role` and upserts `user_roles`.
-- `updateProfile({ fullName, avatarUrl })` — own profile only.
+## Server functions (`src/lib/*.functions.ts`)
 
-Admin-only functions verify caller via `context.supabase.rpc('has_role', ...)` before using `supabaseAdmin` where needed.
+- `teachers.functions.ts` — list/create/update/deactivate
+- `students.functions.ts` — list, get by id, list-my-section
+- `attendance.functions.ts` — mark bulk, get by student, get by section+date
+- `dlls.functions.ts` — list (filtered by role), get, create draft, submit, review (approve/return with feedback)
+- `faculty.functions.ts` — compliance aggregate: submissions per teacher over date range
 
-## UI Additions
+All use `requireSupabaseAuth`; RLS enforces the access.
 
-1. **Auth page** (`src/routes/auth.tsx`) — login/register form.
-2. **Reset password page** (`src/routes/reset-password.tsx`).
-3. **User Management page** (`src/routes/_authenticated/_admin/users.tsx`) — table of users, role dropdown per row, save action.
-4. **Unauthorized page** (`src/routes/unauthorized.tsx`) — friendly message + link back.
-5. **Update AppShell**
-   - Replace static header with session-aware user menu.
-   - Show role badge.
-   - Add sign-out button.
+## UI rewiring (existing files, keep design)
 
-## Route Reorganization
+- **Admin → Teachers** — replace mock with `listTeachers()` + create dialog (creates auth user + profile + role + teacher row via admin fn).
+- **Teacher → Home (index)** — today's schedule = sections adviser-of, quick "Mark attendance" + "New DLL" using real sections.
+- **Teacher → New DLL** — dropdowns from real sections; save as draft or submit.
+- **Director → DLL index / DLL detail** — real list filtered by status; approve/return with feedback.
+- **Director → Faculty compliance** — real aggregate.
+- **Student → Me / Profile / Attendance** — real profile + attendance history.
 
-Move existing screens under the correct role-gated layouts:
+## Out of scope this turn
 
-- `/` Live Attendance → `/_authenticated/_teacher/`
-- `/teachers` → `/_authenticated/_admin/teachers.tsx`
-- `/faculty` → `/_authenticated/_director/faculty.tsx` (also readable by admin)
-- `/students/:id` → `/_authenticated/_student/students.$id.tsx`
-- `/students/:id/attendance` → `/_authenticated/_student/students.$id.attendance.tsx`
-- `/dll` → `/_authenticated/_director/dll.index.tsx`
-- `/dll/new` → `/_authenticated/_teacher/dll.new.tsx`
-- `/dll/:id` → `/_authenticated/_director/dll.$id.tsx`
+- Bulk import, notifications, calendar UI beyond a simple date picker, exports.
 
-Admin routes will also allow director/teacher views where appropriate via `hasAnyRole(['admin', ...])`.
+## Sequencing (one turn each, in order)
 
-## Configuration
+1. Schema migration (tables + enums + RLS + grants).
+2. Seed migration.
+3. Server functions + UI rewiring.
 
-- Enable email auth in Lovable Cloud.
-- Keep HIBP password protection enabled.
-- Ensure `attachSupabaseAuth` is registered in `src/start.ts` (already present).
-- Update `src/integrations/supabase/types.ts` by regenerating types after schema changes.
-
-## Out of Scope (unless requested)
-
-- Social login (Google/Apple).
-- Auto role assignment by email domain.
-- Email customization / custom auth templates.
-- Profile avatars upload (URL only for now).
-
-## Next Step
-
-Approve this plan and I will implement the schema, auth pages, role gates, and user management screen.
+Step 1 posts a migration for your approval first.
