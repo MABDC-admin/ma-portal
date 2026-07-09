@@ -22,6 +22,7 @@ import { Route as AuthenticatedDirectorFacultyRouteImport } from './routes/_auth
 import { Route as AuthenticatedDirectorAnecdotalRouteImport } from './routes/_authenticated/_director/anecdotal'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/_admin/users'
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/_admin/teachers'
+import { Route as AuthenticatedAdminSeedFacultyRouteImport } from './routes/_authenticated/_admin/seed-faculty'
 import { Route as AuthenticatedTeacherMyDllsIndexRouteImport } from './routes/_authenticated/_teacher/my-dlls.index'
 import { Route as AuthenticatedDirectorDllIndexRouteImport } from './routes/_authenticated/_director/dll.index'
 import { Route as AuthenticatedTeacherSectionsIdRouteImport } from './routes/_authenticated/_teacher/sections.$id'
@@ -102,6 +103,12 @@ const AuthenticatedAdminTeachersRoute =
     path: '/teachers',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminSeedFacultyRoute =
+  AuthenticatedAdminSeedFacultyRouteImport.update({
+    id: '/seed-faculty',
+    path: '/seed-faculty',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedTeacherMyDllsIndexRoute =
   AuthenticatedTeacherMyDllsIndexRouteImport.update({
     id: '/my-dlls/',
@@ -180,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/teachers': typeof AuthenticatedAdminTeachersRoute
   '/users': typeof AuthenticatedAdminUsersRoute
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/teachers': typeof AuthenticatedAdminTeachersRoute
   '/users': typeof AuthenticatedAdminUsersRoute
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
@@ -229,6 +238,7 @@ export interface FileRoutesById {
   '/_authenticated/_director': typeof AuthenticatedDirectorRouteRouteWithChildren
   '/_authenticated/_student': typeof AuthenticatedStudentRouteRouteWithChildren
   '/_authenticated/_teacher': typeof AuthenticatedTeacherRouteRouteWithChildren
+  '/_authenticated/_admin/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/_authenticated/_admin/teachers': typeof AuthenticatedAdminTeachersRoute
   '/_authenticated/_admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/_director/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
+    | '/seed-faculty'
     | '/teachers'
     | '/users'
     | '/anecdotal'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/unauthorized'
+    | '/seed-faculty'
     | '/teachers'
     | '/users'
     | '/anecdotal'
@@ -302,6 +314,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_director'
     | '/_authenticated/_student'
     | '/_authenticated/_teacher'
+    | '/_authenticated/_admin/seed-faculty'
     | '/_authenticated/_admin/teachers'
     | '/_authenticated/_admin/users'
     | '/_authenticated/_director/anecdotal'
@@ -421,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTeachersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/seed-faculty': {
+      id: '/_authenticated/_admin/seed-faculty'
+      path: '/seed-faculty'
+      fullPath: '/seed-faculty'
+      preLoaderRoute: typeof AuthenticatedAdminSeedFacultyRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_teacher/my-dlls/': {
       id: '/_authenticated/_teacher/my-dlls/'
       path: '/my-dlls'
@@ -509,12 +529,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminSeedFacultyRoute: typeof AuthenticatedAdminSeedFacultyRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminSeedFacultyRoute: AuthenticatedAdminSeedFacultyRoute,
     AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   }
