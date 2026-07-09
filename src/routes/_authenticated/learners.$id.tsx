@@ -279,165 +279,90 @@ function LearnerProfilePage() {
           </Card>
 
           <Card className="p-5 border-l-4 border-l-status-present">
-            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">GPA / Rank</p>
+            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Present Days</p>
             <div className="flex items-end gap-2 mb-1">
-              <span className="text-3xl font-bold font-heading">3.2</span>
-              <span className="bg-status-present/10 text-status-present px-1.5 py-0.5 rounded text-[10px] font-bold mb-1.5">
-                TOP 15%
-              </span>
+              <span className="text-3xl font-bold font-heading">{presentDays}</span>
+              <span className="text-sm font-medium text-tertiary mb-1">of {totalDays}</span>
             </div>
-            <p className="text-sm text-tertiary">Consistent in STEM</p>
+            <p className="text-sm text-tertiary">All recorded attendance</p>
           </Card>
 
           <Card className="p-5 border-l-4 border-l-primary">
-            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Classes Enrolled</p>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-3xl font-bold font-heading">6</span>
-              <span className="text-sm font-medium text-tertiary mb-1">Core subjects</span>
+            <p className="text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Section</p>
+            <div className="flex items-end gap-2 mb-1">
+              <span className="text-lg font-bold font-heading">
+                {student.sections ? `${gradeLabel(student.sections.grade_level)}` : "—"}
+              </span>
             </div>
-            <div className="flex gap-1 h-1.5 w-full">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="flex-1 bg-primary rounded-full" />
-              ))}
-            </div>
+            <p className="text-sm text-tertiary">{student.sections?.name || "Unassigned"}</p>
           </Card>
         </div>
+
 
         {/* MAIN CONTENT GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT COL (Graphs & Logs) */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             
-            {/* ATTENDANCE TRENDS (Mock Chart) */}
+            {/* ATTENDANCE TRENDS — real data */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold font-heading">Attendance Trends</h3>
-                <div className="flex bg-surface-container border border-outline-variant/30 rounded-lg p-1">
-                  <button className="px-3 py-1 text-xs font-bold bg-white text-primary rounded-md shadow-sm">30 Days</button>
-                  <button className="px-3 py-1 text-xs font-bold text-tertiary hover:text-foreground transition">90 Days</button>
+                <span className="text-xs text-tertiary">Last 30 records</span>
+              </div>
+              {attendance && attendance.length > 0 ? (
+                <div className="h-48 flex items-end justify-between gap-2">
+                  {attendance.slice(0, 30).reverse().map((a, i) => {
+                    const h = a.status === "present" ? 100 : a.status === "late" ? 60 : a.status === "excused" ? 80 : 20;
+                    const color = a.status === "absent" ? "bg-status-absent" : a.status === "late" ? "bg-status-late" : "bg-primary";
+                    return (
+                      <div key={i} className="w-full relative group flex flex-col justify-end h-full">
+                        <div className={`w-full rounded-t-sm transition-all ${color}`} style={{ height: `${h}%` }} />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">
+                          {a.date} · {a.status}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-              <div className="h-48 flex items-end justify-between gap-2">
-                {/* Mock bars for the chart */}
-                {[80, 90, 100, 40, 100, 100, 95, 85, 90, 100, 40, 90, 100].map((h, i) => (
-                  <div key={i} className="w-full relative group flex flex-col justify-end h-full">
-                    <div 
-                      className={`w-full rounded-t-sm transition-all duration-300 ${h < 50 ? 'bg-status-absent' : h === 100 ? 'bg-primary' : 'bg-status-present/60'}`} 
-                      style={{ height: `${h}%` }}
-                    />
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                      {h}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between text-[10px] text-tertiary mt-2 font-bold uppercase tracking-wider">
-                <span>Nov 01</span>
-                <span>Nov 15</span>
-                <span>Nov 30</span>
-              </div>
+              ) : (
+                <div className="h-48 flex items-center justify-center text-sm text-tertiary">No attendance recorded yet.</div>
+              )}
             </Card>
 
-            {/* ATTENDANCE LOG (Mock Calendar) */}
+            {/* ATTENDANCE LOG — real records */}
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold font-heading">Attendance Log: November</h3>
+                <h3 className="text-lg font-bold font-heading">Attendance Log</h3>
                 <div className="flex gap-3 text-xs font-semibold text-tertiary">
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-present" /> Present</span>
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-late" /> Late</span>
                   <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-status-absent" /> Absent</span>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-7 gap-2">
-                {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
-                  <div key={d} className="text-[10px] font-bold text-center text-tertiary py-2">{d}</div>
-                ))}
-                
-                {/* Mock Days */}
-                {Array.from({ length: 28 }).map((_, i) => {
-                  const day = i + 1;
-                  const isWeekend = i % 7 === 5 || i % 7 === 6;
-                  const isSelected = day === 9;
-                  
-                  let status: string | null = "present";
-                  if (day === 5 || day === 12) status = "absent";
-                  if (day === 8 || day === 17) status = "late";
-                  if (isWeekend) status = null;
-
-                  return (
-                    <div 
-                      key={i} 
-                      className={`
-                        flex flex-col items-center justify-center p-2 rounded-xl border h-16
-                        ${isWeekend ? 'border-transparent bg-transparent opacity-30' : 'border-outline-variant/30 bg-surface/30'}
-                        ${isSelected ? 'border-primary shadow-sm bg-primary/5' : ''}
-                      `}
-                    >
-                      <span className={`text-sm font-semibold mb-2 ${isSelected ? 'text-primary' : 'text-foreground'}`}>{day}</span>
-                      {status && (
-                        <div className={`w-1.5 h-1.5 rounded-full ${status === 'present' ? 'bg-status-present' : status === 'absent' ? 'bg-status-absent' : 'bg-status-late'}`} />
-                      )}
+              {attendance && attendance.length > 0 ? (
+                <div className="divide-y divide-outline-variant/20">
+                  {attendance.slice(0, 20).map(a => (
+                    <div key={a.id} className="flex items-center justify-between py-2.5 text-sm">
+                      <span className="font-mono text-xs text-tertiary">{a.date}</span>
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold capitalize ${
+                        a.status === "present" ? "bg-status-present/10 text-status-present" :
+                        a.status === "late" ? "bg-status-late/10 text-status-late" :
+                        a.status === "absent" ? "bg-status-absent/10 text-status-absent" :
+                        "bg-slate-100 text-slate-600"
+                      }`}>
+                        {a.status}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-tertiary text-center py-8">No attendance records yet.</p>
+              )}
             </Card>
 
-            {/* ENROLLED CLASSES */}
-            <div className="mt-2">
-              <h3 className="text-lg font-bold font-heading mb-4 px-2">Enrolled Classes</h3>
-              <Card className="overflow-hidden">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-surface-container/50 border-b border-outline-variant/30">
-                    <tr>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Class Name</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Instructor</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Attendance</th>
-                      <th className="px-4 py-3 text-xs font-bold text-tertiary">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20">
-                    <tr>
-                      <td className="px-4 py-4">
-                        <p className="font-bold">Physics Honors</p>
-                        <p className="text-[10px] text-tertiary mt-0.5">PHY-A</p>
-                      </td>
-                      <td className="px-4 py-4 text-tertiary">Dr. Arthur Vance</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-status-absent w-8">64%</span>
-                          <div className="h-1.5 w-16 bg-outline-variant/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-status-absent rounded-full w-[64%]" />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="bg-status-absent/10 text-status-absent text-[10px] font-bold px-2 py-1 rounded-md">WARNING</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4">
-                        <p className="font-bold">Calculus II</p>
-                        <p className="text-[10px] text-tertiary mt-0.5">MA22-C</p>
-                      </td>
-                      <td className="px-4 py-4 text-tertiary">Ms. Clara Smith</td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-primary w-8">88%</span>
-                          <div className="h-1.5 w-16 bg-outline-variant/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full w-[88%]" />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded-md">STABLE</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </Card>
-            </div>
+
+
           </div>
 
           {/* RIGHT COL (Sidebars) */}
@@ -494,41 +419,6 @@ function LearnerProfilePage() {
                 ) : (
                   <div className="text-center text-sm text-tertiary py-8">No records found.</div>
                 )}
-                
-                {/* MOCK EXTRA CARDS FOR VISUAL PURPOSES IF NO DATA */}
-                {(!anecdotals || anecdotals.length === 0) && (
-                  <>
-                    <div className="bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-status-absent/10 text-status-absent">
-                          URGENT
-                        </span>
-                        <span className="text-[10px] font-semibold text-tertiary">Nov 29, 2023</span>
-                      </div>
-                      <h4 className="text-sm font-bold mb-1">Repeated Unexcused Absence</h4>
-                      <p className="text-xs text-tertiary line-clamp-2 mb-3">Marcus missed the Physics lab for the 3rd time this month without providing a doctor's note...</p>
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-tertiary bg-surface-container/50 self-start px-2 py-1 rounded w-fit">
-                        <Icon name="person" size={12} />
-                        Reported by Dr. Vance
-                      </div>
-                    </div>
-                    
-                    <div className="bg-surface-container-low border border-outline-variant/50 rounded-2xl p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-tertiary/10 text-tertiary">
-                          MONITOR
-                        </span>
-                        <span className="text-[10px] font-semibold text-tertiary">Nov 22, 2023</span>
-                      </div>
-                      <h4 className="text-sm font-bold mb-1">Late to Morning Assembly</h4>
-                      <p className="text-xs text-tertiary line-clamp-2 mb-3">Arrived 20 minutes late citing transportation issues. This is the fourth instance this term.</p>
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-tertiary bg-surface-container/50 self-start px-2 py-1 rounded w-fit">
-                        <Icon name="person" size={12} />
-                        Reported by Mr. Sarah
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
               <button className="flex items-center justify-center gap-2 py-4 border-t border-outline-variant/30 text-xs font-bold text-tertiary hover:bg-surface-container-low/50 transition mt-auto">
                 <Icon name="history" size={16} />
@@ -536,23 +426,6 @@ function LearnerProfilePage() {
               </button>
             </Card>
 
-            {/* RESIDENTIAL ZONE (Map Placeholder) */}
-            <Card className="overflow-hidden">
-              <div className="p-4 border-b border-outline-variant/30">
-                <h3 className="text-sm font-bold font-heading">Residential Zone</h3>
-              </div>
-              <div className="h-32 bg-primary/10 relative flex flex-col items-center justify-center border-b border-outline-variant/30">
-                 {/* Decorative map illustration */}
-                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0wIDIwaDQwTTIwIDB2NDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW9wYWNpdHk9Ii4wNSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+PC9zdmc+')", backgroundSize: '20px' }} />
-                 <div className="w-8 h-8 bg-primary rounded-full border-4 border-white shadow-md z-10 flex items-center justify-center animate-bounce">
-                    <Icon name="home" size={14} className="text-white" />
-                 </div>
-              </div>
-              <div className="p-4">
-                <p className="text-[10px] font-bold text-tertiary uppercase tracking-wider mb-1">Registered Address</p>
-                <p className="text-sm font-semibold">822 Oakwood Heights, North Wing</p>
-              </div>
-            </Card>
             
           </div>
         </div>

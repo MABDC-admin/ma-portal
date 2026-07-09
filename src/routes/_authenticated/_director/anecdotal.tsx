@@ -28,33 +28,19 @@ type AnecdotalRow = {
   } | null;
 };
 
-// Deterministic mocks based on ID since they don't exist in the DB schema
-function getMockConcernLevel(id: string): { label: string; tone: string; dot: string } {
-  const char = id.charCodeAt(0);
-  if (char % 3 === 0) return { label: "Urgent", tone: "bg-red-50 text-red-600 border-red-100", dot: "bg-red-500" };
-  if (char % 3 === 1) return { label: "Monitor", tone: "bg-yellow-50 text-yellow-700 border-yellow-200", dot: "bg-yellow-500" };
-  return { label: "Normal", tone: "bg-slate-100 text-slate-600 border-slate-200", dot: "bg-slate-400" };
-}
-
-function getMockStatus(id: string): { label: string; tone: string } {
-  const char = id.charCodeAt(id.length - 1);
-  if (char % 2 === 0) return { label: "Open", tone: "bg-white text-slate-600 border-slate-200" };
-  return { label: "Resolved", tone: "bg-emerald-50 text-emerald-600 border-emerald-100" };
-}
-
 function getCategoryPill(cat: string) {
   const c = cat.toLowerCase();
   if (c === "academic") return "bg-blue-100 text-blue-700";
   if (c === "behavioral" || c === "discipline") return "bg-slate-100 text-slate-600";
   if (c === "social") return "bg-slate-100 text-slate-600";
   if (c === "emotional") return "bg-blue-100 text-blue-700";
-  return "bg-slate-100 text-slate-600"; // fallback
+  return "bg-slate-100 text-slate-600";
 }
+
 
 function DirectorAnecdotalPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
-  const [concernFilter, setConcernFilter] = useState("All Levels");
-  
+
   const q = useQuery({
     queryKey: ["director-anecdotals"],
     queryFn: async () => {
@@ -68,7 +54,7 @@ function DirectorAnecdotalPage() {
           )
         `)
         .order("occurred_on", { ascending: false });
-        
+
       if (error) throw error;
       return (data ?? []) as unknown as AnecdotalRow[];
     },
@@ -79,16 +65,13 @@ function DirectorAnecdotalPage() {
     if (categoryFilter !== "All Categories") {
       all = all.filter(r => r.category.toLowerCase() === categoryFilter.toLowerCase());
     }
-    if (concernFilter !== "All Levels") {
-      all = all.filter(r => getMockConcernLevel(r.id).label === concernFilter);
-    }
     return all;
-  }, [q.data, categoryFilter, concernFilter]);
+  }, [q.data, categoryFilter]);
 
-  // Aggregate mock metrics
   const totalEntries = q.data?.length ?? 0;
-  const urgentConcerns = q.data?.filter(r => getMockConcernLevel(r.id).label === "Urgent").length ?? 0;
-  const pendingRes = q.data?.filter(r => getMockStatus(r.id).label === "Open").length ?? 0;
+  const behavioralCount = q.data?.filter(r => r.category.toLowerCase() === "behavioral").length ?? 0;
+  const academicCount = q.data?.filter(r => r.category.toLowerCase() === "academic").length ?? 0;
+
 
   return (
     <AppShell>
@@ -123,8 +106,8 @@ function DirectorAnecdotalPage() {
               <Icon name="error" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">URGENT CONCERNS</p>
-              <h4 className="text-2xl font-extrabold text-red-600">{urgentConcerns}</h4>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">BEHAVIORAL</p>
+              <h4 className="text-2xl font-extrabold text-red-600">{behavioralCount}</h4>
             </div>
           </div>
 
@@ -133,10 +116,11 @@ function DirectorAnecdotalPage() {
               <Icon name="assignment_late" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PENDING RESOLUTIONS</p>
-              <h4 className="text-2xl font-extrabold text-[#3575da]">{pendingRes}</h4>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">ACADEMIC</p>
+              <h4 className="text-2xl font-extrabold text-[#3575da]">{academicCount}</h4>
             </div>
           </div>
+
         </div>
 
         {/* Filters Section */}
@@ -159,44 +143,16 @@ function DirectorAnecdotalPage() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-1.5 flex-1 min-w-[150px]">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">CONCERN LEVEL</label>
-            <div className="relative">
-              <select 
-                value={concernFilter}
-                onChange={e => setConcernFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg px-4 py-2 outline-none focus:border-primary"
-              >
-                <option>All Levels</option>
-                <option>Urgent</option>
-                <option>Monitor</option>
-                <option>Normal</option>
-              </select>
-              <Icon name="expand_more" size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 flex-[1.5] min-w-[200px]">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">DATE RANGE</label>
-            <div className="relative">
-              <Icon name="calendar_today" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                defaultValue="Oct 01 - Oct 31"
-                className="w-full bg-white border border-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg pl-9 pr-4 py-2 outline-none focus:border-primary"
-              />
-            </div>
-          </div>
-
           <div className="ml-auto">
-            <button 
-              onClick={() => { setCategoryFilter("All Categories"); setConcernFilter("All Levels"); }}
+            <button
+              onClick={() => { setCategoryFilter("All Categories"); }}
               className="bg-[#e4ebfb] text-[#2c65cc] font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-blue-100 transition"
             >
               Reset Filters
             </button>
           </div>
         </div>
+
 
         {/* Data Table */}
         <div className="glass-panel rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.25s' }}>
@@ -207,9 +163,7 @@ function DirectorAnecdotalPage() {
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">STUDENT</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">DATE</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">CATEGORY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">CONCERN LEVEL</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">OBSERVATION SUMMARY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">STATUS</th>
                   <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">ACTIONS</th>
                 </tr>
               </thead>
@@ -218,14 +172,8 @@ function DirectorAnecdotalPage() {
                   const s = r.student?.profiles;
                   const studentName = s?.full_name || s?.email || "Unknown Student";
                   const initial = studentName.charAt(0).toUpperCase();
-                  
-                  const concern = getMockConcernLevel(r.id);
-                  const status = getMockStatus(r.id);
-                  
-                  // For the sake of matching the screenshot perfectly, we'll map category strings to those exact terms if possible, or just use DB category
-                  let displayCategory = r.category.toUpperCase();
-                  if (displayCategory === 'BEHAVIORAL') displayCategory = 'DISCIPLINE'; // Mock mapping to match screenshot style
-                  
+                  const displayCategory = r.category.toUpperCase();
+
                   return (
                     <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
@@ -239,7 +187,7 @@ function DirectorAnecdotalPage() {
                           )}
                           <div>
                             <p className="text-[13px] font-bold text-slate-800">{studentName}</p>
-                            <p className="text-[11px] font-medium text-slate-400">ID: #{r.student?.student_number || "0000"}</p>
+                            <p className="text-[11px] font-medium text-slate-400">ID: #{r.student?.student_number || "—"}</p>
                           </div>
                         </div>
                       </td>
@@ -254,41 +202,22 @@ function DirectorAnecdotalPage() {
                           {displayCategory}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${concern.tone}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${concern.dot}`} />
-                          {concern.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 max-w-[250px]">
+                      <td className="px-6 py-4 max-w-[350px]">
                         <p className="text-[12px] text-slate-500 leading-snug truncate" title={r.note}>
-                          {r.note.length > 60 ? r.note.substring(0, 60) + '...' : r.note}
+                          {r.note.length > 80 ? r.note.substring(0, 80) + '...' : r.note}
                         </p>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded text-[11px] font-bold border ${status.tone}`}>
-                          {status.label}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition" aria-label="Edit">
-                            <Icon name="edit" size={16} />
-                          </button>
-                          <button className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition" aria-label="Document">
-                            <Icon name="save" size={16} />
-                          </button>
-                          <button className="w-7 h-7 rounded-full bg-[#e8f1fc] text-[#3575da] flex items-center justify-center hover:bg-blue-100 transition" aria-label="View">
-                            <Icon name="visibility" size={16} />
-                          </button>
-                        </div>
+                        <button className="w-7 h-7 rounded-full bg-[#e8f1fc] text-[#3575da] flex items-center justify-center hover:bg-blue-100 transition" aria-label="View">
+                          <Icon name="visibility" size={16} />
+                        </button>
                       </td>
                     </tr>
                   )
                 })}
                 {!q.isLoading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
                       No anecdotal entries found.
                     </td>
                   </tr>
@@ -296,19 +225,12 @@ function DirectorAnecdotalPage() {
               </tbody>
             </table>
           </div>
-          
-          {/* Pagination */}
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-[12px] text-slate-500 font-medium">Showing <strong className="text-slate-700 font-bold">1 - {Math.min(4, rows.length)}</strong> of <strong className="text-slate-700 font-bold">{totalEntries}</strong> entries</span>
-            <div className="flex gap-1.5">
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50"><Icon name="chevron_left" size={16} /></button>
-              <button className="w-7 h-7 rounded bg-[#0e52db] text-white text-[12px] font-bold flex items-center justify-center">1</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">2</button>
-              <button className="w-7 h-7 rounded border border-slate-200 text-slate-600 text-[12px] font-bold flex items-center justify-center hover:bg-slate-50">3</button>
-              <button className="w-7 h-7 rounded border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50"><Icon name="chevron_right" size={16} /></button>
-            </div>
+
+          <div className="px-6 py-4 border-t border-slate-100">
+            <span className="text-[12px] text-slate-500 font-medium">{rows.length} of {totalEntries} entries</span>
           </div>
         </div>
+
 
       </div>
     </AppShell>
