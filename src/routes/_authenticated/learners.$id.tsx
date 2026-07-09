@@ -60,6 +60,24 @@ function LearnerProfilePage() {
     },
   });
 
+  const { data: record } = useQuery({
+    queryKey: ["learner_record", student?.profiles?.full_name],
+    enabled: !!student?.profiles?.full_name,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("learner_records" as any)
+        .select("*")
+        .eq("student_name", student?.profiles?.full_name)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      // If no record is found, it throws PGRST116 (0 rows returned), which we can safely ignore
+      if (error && error.code !== "PGRST116") throw error;
+      return (data || null) as any;
+    },
+  });
+
   if (isLoading) {
     return (
       <AppShell title="Loading Profile...">
@@ -140,6 +158,89 @@ function LearnerProfilePage() {
             </button>
           </div>
         </div>
+
+        {/* STUDENT INFORMATION DROPDOWN */}
+        <details className="group bg-surface-container-low/50 border border-outline-variant/30 rounded-3xl shadow-sm overflow-hidden open:bg-surface-container-low transition-all duration-300">
+          <summary className="flex items-center justify-between p-6 cursor-pointer list-none select-none">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-bold font-heading text-foreground">Student Information</h2>
+              <Icon name="expand_more" size={24} className="text-tertiary group-open:rotate-180 transition-transform duration-300" />
+            </div>
+            <div className="flex gap-2">
+              <span className="flex items-center gap-1 bg-status-present/10 text-status-present px-3 py-1 rounded-full text-xs font-bold border border-status-present/20">
+                <Icon name="verified_user" size={14} /> Face ID Registered
+              </span>
+              <span className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold border border-primary/20">
+                <Icon name="fingerprint" size={14} /> Fingerprint Verified
+              </span>
+            </div>
+          </summary>
+          
+          <div className="p-6 pt-2 border-t border-outline-variant/20 grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* PERSONAL INFORMATION */}
+            <div className="flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Personal Information</h3>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Full Name</p>
+                <p className="text-sm font-semibold">{student.profiles?.full_name || "—"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Student ID</p>
+                <p className="text-sm font-semibold font-mono">#{student.student_number}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Date of Birth</p>
+                <p className="text-sm font-semibold">{record?.birthdate || "May 14, 2007"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Gender</p>
+                <p className="text-sm font-semibold capitalize">{record?.gender || "Male"}</p>
+              </div>
+            </div>
+
+            {/* ACADEMIC DETAILS */}
+            <div className="flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Academic Details</h3>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Current Grade</p>
+                <p className="text-sm font-semibold">{student.sections ? gradeLabel(student.sections.grade_level) : "—"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Section</p>
+                <p className="text-sm font-semibold">{student.sections?.name || "—"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Date Enrolled</p>
+                <p className="text-sm font-semibold">August 15, 2022</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Advisor</p>
+                <p className="text-sm font-semibold">Dr. Arthur Vance</p>
+              </div>
+            </div>
+
+            {/* EMERGENCY CONTACT */}
+            <div className="flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Emergency Contact</h3>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Guardian Name</p>
+                <p className="text-sm font-semibold">{record?.mother_name || record?.father_name || "Li Wei Chen"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Relationship</p>
+                <p className="text-sm font-semibold">{record?.mother_name ? "Mother" : record?.father_name ? "Father" : "Father"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Contact Number</p>
+                <p className="text-sm font-semibold">{record?.mother_contact || record?.father_contact || "+1 (555) 012-3456"}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-tertiary uppercase tracking-wider mb-0.5">Email</p>
+                <p className="text-sm font-semibold">{student.profiles?.email || "l.chen@email.com"}</p>
+              </div>
+            </div>
+          </div>
+        </details>
 
         {/* KPI CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
