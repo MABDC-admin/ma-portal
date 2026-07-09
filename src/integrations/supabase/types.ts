@@ -405,6 +405,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_student_of_section: {
+        Args: { _section_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       anecdotal_category: "academic" | "behavioral" | "social" | "achievement"
