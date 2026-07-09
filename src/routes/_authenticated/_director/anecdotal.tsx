@@ -40,10 +40,7 @@ function getCategoryPill(cat: string) {
 
 function DirectorAnecdotalPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
-  const [concernFilter, setConcernFilter] = useState("All Levels");
-  
-  const q = useQuery({
-    queryKey: ["director-anecdotals"],
+
     queryFn: async () => {
       const { data, error } = await supabase
         .from("anecdotal_entries")
