@@ -214,9 +214,9 @@ function StatCard({
 }
 
 // ---------- Enroll modal ----------
-const TARGET_SAMPLES = 3;
-const MIN_FACE_RATIO = 0.22; // face box vs. min(video w,h)
-const MAX_CENTER_OFFSET = 0.18; // fraction of frame
+const TARGET_SAMPLES = 5;
+const MIN_FACE_RATIO = 0.15; // face box vs. min(video w,h)
+const MAX_CENTER_OFFSET = 0.30; // relax to allow side/tilted views
 const MIN_SHARPNESS = 12; // laplacian variance
 const MIN_DETECTION_SCORE = 0.7;
 const MIN_DESCRIPTOR_DISTANCE = 0.32; // diversity between samples
@@ -396,7 +396,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
               setSamples((prev) => [...prev, full.descriptor]);
               setSnapshots((prev) => [...prev, snap]);
             } else {
-              setLiveHint("Great — now change angle slightly for a diverse sample");
+              setLiveHint("Turn your head slightly for a side or tilted view");
             }
           }
         }
@@ -493,7 +493,7 @@ function EnrollModal({ learner, onClose }: { learner: Learner; onClose: () => vo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <Card className="w-full max-w-lg overflow-hidden p-6">
+      <Card className="w-full max-w-2xl overflow-hidden p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h3 className="font-display text-xl font-bold">Register face</h3>
