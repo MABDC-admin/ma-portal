@@ -13,6 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -103,74 +104,75 @@ function UsersPage() {
       title="User Management"
       subtitle="Assign roles and manage portal access."
       actions={
-        <button
-          type="button"
-          onClick={() => setInviteOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
-        >
-          <Icon name="person_add" size={18} />
-          <span>Invite User</span>
-        </button>
+        <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
+            >
+              <Icon name="person_add" size={18} />
+              <span>Invite User</span>
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Invite User</DialogTitle>
+              <DialogDescription>
+                Send an account setup link to the user's email address.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={submitInvite} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="invite-name">Full name</Label>
+                <Input
+                  id="invite-name"
+                  value={inviteName}
+                  onChange={(event) => setInviteName(event.target.value)}
+                  autoComplete="name"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="invite-email">Email</Label>
+                <Input
+                  id="invite-email"
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(event) => setInviteEmail(event.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="invite-role">Role</Label>
+                <Select value={inviteRole} onValueChange={(value) => setInviteRole(value as AppRole)}>
+                  <SelectTrigger id="invite-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roleOptions
+                      .filter((role) => role !== "kiosk")
+                      .map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {roleLabels[role]}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={inviteMutation.isPending}>
+                  {inviteMutation.isPending ? "Sending..." : "Send Invite"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       }
     >
-      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Invite User</DialogTitle>
-            <DialogDescription>
-              Send an account setup link to the user's email address.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={submitInvite} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="invite-name">Full name</Label>
-              <Input
-                id="invite-name"
-                value={inviteName}
-                onChange={(event) => setInviteName(event.target.value)}
-                autoComplete="name"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="invite-email">Email</Label>
-              <Input
-                id="invite-email"
-                type="email"
-                value={inviteEmail}
-                onChange={(event) => setInviteEmail(event.target.value)}
-                autoComplete="email"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="invite-role">Role</Label>
-              <Select value={inviteRole} onValueChange={(value) => setInviteRole(value as AppRole)}>
-                <SelectTrigger id="invite-role">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {roleOptions
-                    .filter((role) => role !== "kiosk")
-                    .map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {roleLabels[role]}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={inviteMutation.isPending}>
-                {inviteMutation.isPending ? "Sending..." : "Send Invite"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
