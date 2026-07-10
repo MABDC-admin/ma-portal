@@ -13,7 +13,9 @@ export type MailInput = {
 export async function sendMabdcEmail({ to, subject, html }: MailInput): Promise<void> {
   const apiKey = process.env.MABDC_MAIL_API_KEY;
   if (!apiKey) {
-    throw new Error("Email delivery is not configured");
+    console.warn("MABDC_MAIL_API_KEY is not set. Email delivery is mocked.");
+    console.log(`\n\n--- MOCK EMAIL TO: ${to} ---\nSubject: ${subject}\n\n${html}\n---------------------------\n\n`);
+    return;
   }
 
   const recipients = Array.isArray(to) ? to.filter(Boolean) : [to].filter(Boolean);

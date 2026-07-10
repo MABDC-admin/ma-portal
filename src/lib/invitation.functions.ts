@@ -49,8 +49,8 @@ export const createInvitation = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((input: CreateInvitationInput) => input)
   .handler(async ({ data, context }) => {
-    if (context.user.role !== "admin") {
-      throw new Error("Forbidden: admin access required");
+    if (context.user.role !== "admin" && context.user.role !== "academic_director") {
+      throw new Error("Forbidden: admin or director access required");
     }
 
     const email = normalizeInviteEmail(data.email);
