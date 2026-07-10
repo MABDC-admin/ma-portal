@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminImportLearnersRouteImport } from './routes/_
 import { Route as AuthenticatedAdminFaceRegistrationRouteImport } from './routes/_authenticated/_admin/face-registration'
 import { Route as AuthenticatedTeacherMyDllsIndexRouteImport } from './routes/_authenticated/_teacher/my-dlls.index'
 import { Route as AuthenticatedDirectorDllIndexRouteImport } from './routes/_authenticated/_director/dll.index'
+import { Route as AuthenticatedLearnersIdPortalRouteImport } from './routes/_authenticated/learners.$id.portal'
 import { Route as AuthenticatedTeacherSectionsIdRouteImport } from './routes/_authenticated/_teacher/sections.$id'
 import { Route as AuthenticatedTeacherMyDllsIdRouteImport } from './routes/_authenticated/_teacher/my-dlls.$id'
 import { Route as AuthenticatedTeacherDllNewRouteImport } from './routes/_authenticated/_teacher/dll.new'
@@ -166,6 +167,12 @@ const AuthenticatedDirectorDllIndexRoute =
     path: '/dll/',
     getParentRoute: () => AuthenticatedDirectorRouteRoute,
   } as any)
+const AuthenticatedLearnersIdPortalRoute =
+  AuthenticatedLearnersIdPortalRouteImport.update({
+    id: '/portal',
+    path: '/portal',
+    getParentRoute: () => AuthenticatedLearnersIdRoute,
+  } as any)
 const AuthenticatedTeacherSectionsIdRoute =
   AuthenticatedTeacherSectionsIdRouteImport.update({
     id: '/sections/$id',
@@ -242,13 +249,14 @@ export interface FileRoutesByFullPath {
   '/users': typeof AuthenticatedAdminUsersRoute
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
   '/faculty': typeof AuthenticatedDirectorFacultyRoute
-  '/learners/$id': typeof AuthenticatedLearnersIdRoute
+  '/learners/$id': typeof AuthenticatedLearnersIdRouteWithChildren
   '/learners/': typeof AuthenticatedLearnersIndexRoute
   '/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/dll/new': typeof AuthenticatedTeacherDllNewRoute
   '/my-dlls/$id': typeof AuthenticatedTeacherMyDllsIdRoute
   '/sections/$id': typeof AuthenticatedTeacherSectionsIdRouteWithChildren
+  '/learners/$id/portal': typeof AuthenticatedLearnersIdPortalRoute
   '/dll/': typeof AuthenticatedDirectorDllIndexRoute
   '/my-dlls/': typeof AuthenticatedTeacherMyDllsIndexRoute
   '/students/$id/attendance': typeof AuthenticatedStudentStudentsIdAttendanceRoute
@@ -272,13 +280,14 @@ export interface FileRoutesByTo {
   '/users': typeof AuthenticatedAdminUsersRoute
   '/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
   '/faculty': typeof AuthenticatedDirectorFacultyRoute
-  '/learners/$id': typeof AuthenticatedLearnersIdRoute
+  '/learners/$id': typeof AuthenticatedLearnersIdRouteWithChildren
   '/learners': typeof AuthenticatedLearnersIndexRoute
   '/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/dll/new': typeof AuthenticatedTeacherDllNewRoute
   '/my-dlls/$id': typeof AuthenticatedTeacherMyDllsIdRoute
   '/sections/$id': typeof AuthenticatedTeacherSectionsIdRouteWithChildren
+  '/learners/$id/portal': typeof AuthenticatedLearnersIdPortalRoute
   '/dll': typeof AuthenticatedDirectorDllIndexRoute
   '/my-dlls': typeof AuthenticatedTeacherMyDllsIndexRoute
   '/students/$id/attendance': typeof AuthenticatedStudentStudentsIdAttendanceRoute
@@ -308,13 +317,14 @@ export interface FileRoutesById {
   '/_authenticated/_admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/_director/anecdotal': typeof AuthenticatedDirectorAnecdotalRoute
   '/_authenticated/_director/faculty': typeof AuthenticatedDirectorFacultyRoute
-  '/_authenticated/learners/$id': typeof AuthenticatedLearnersIdRoute
+  '/_authenticated/learners/$id': typeof AuthenticatedLearnersIdRouteWithChildren
   '/_authenticated/learners/': typeof AuthenticatedLearnersIndexRoute
   '/_authenticated/_director/dll/$id': typeof AuthenticatedDirectorDllIdRoute
   '/_authenticated/_student/students/me': typeof AuthenticatedStudentStudentsMeRoute
   '/_authenticated/_teacher/dll/new': typeof AuthenticatedTeacherDllNewRoute
   '/_authenticated/_teacher/my-dlls/$id': typeof AuthenticatedTeacherMyDllsIdRoute
   '/_authenticated/_teacher/sections/$id': typeof AuthenticatedTeacherSectionsIdRouteWithChildren
+  '/_authenticated/learners/$id/portal': typeof AuthenticatedLearnersIdPortalRoute
   '/_authenticated/_director/dll/': typeof AuthenticatedDirectorDllIndexRoute
   '/_authenticated/_teacher/my-dlls/': typeof AuthenticatedTeacherMyDllsIndexRoute
   '/_authenticated/_student/students/$id/attendance': typeof AuthenticatedStudentStudentsIdAttendanceRoute
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/dll/new'
     | '/my-dlls/$id'
     | '/sections/$id'
+    | '/learners/$id/portal'
     | '/dll/'
     | '/my-dlls/'
     | '/students/$id/attendance'
@@ -377,6 +388,7 @@ export interface FileRouteTypes {
     | '/dll/new'
     | '/my-dlls/$id'
     | '/sections/$id'
+    | '/learners/$id/portal'
     | '/dll'
     | '/my-dlls'
     | '/students/$id/attendance'
@@ -412,6 +424,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_teacher/dll/new'
     | '/_authenticated/_teacher/my-dlls/$id'
     | '/_authenticated/_teacher/sections/$id'
+    | '/_authenticated/learners/$id/portal'
     | '/_authenticated/_director/dll/'
     | '/_authenticated/_teacher/my-dlls/'
     | '/_authenticated/_student/students/$id/attendance'
@@ -590,6 +603,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dll/'
       preLoaderRoute: typeof AuthenticatedDirectorDllIndexRouteImport
       parentRoute: typeof AuthenticatedDirectorRouteRoute
+    }
+    '/_authenticated/learners/$id/portal': {
+      id: '/_authenticated/learners/$id/portal'
+      path: '/portal'
+      fullPath: '/learners/$id/portal'
+      preLoaderRoute: typeof AuthenticatedLearnersIdPortalRouteImport
+      parentRoute: typeof AuthenticatedLearnersIdRoute
     }
     '/_authenticated/_teacher/sections/$id': {
       id: '/_authenticated/_teacher/sections/$id'
@@ -774,6 +794,20 @@ const AuthenticatedTeacherRouteRouteWithChildren =
     AuthenticatedTeacherRouteRouteChildren,
   )
 
+interface AuthenticatedLearnersIdRouteChildren {
+  AuthenticatedLearnersIdPortalRoute: typeof AuthenticatedLearnersIdPortalRoute
+}
+
+const AuthenticatedLearnersIdRouteChildren: AuthenticatedLearnersIdRouteChildren =
+  {
+    AuthenticatedLearnersIdPortalRoute: AuthenticatedLearnersIdPortalRoute,
+  }
+
+const AuthenticatedLearnersIdRouteWithChildren =
+  AuthenticatedLearnersIdRoute._addFileChildren(
+    AuthenticatedLearnersIdRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDirectorRouteRoute: typeof AuthenticatedDirectorRouteRouteWithChildren
@@ -781,7 +815,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTeacherRouteRoute: typeof AuthenticatedTeacherRouteRouteWithChildren
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedLearnersIdRoute: typeof AuthenticatedLearnersIdRoute
+  AuthenticatedLearnersIdRoute: typeof AuthenticatedLearnersIdRouteWithChildren
   AuthenticatedLearnersIndexRoute: typeof AuthenticatedLearnersIndexRoute
 }
 
@@ -792,7 +826,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTeacherRouteRoute: AuthenticatedTeacherRouteRouteWithChildren,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedLearnersIdRoute: AuthenticatedLearnersIdRoute,
+  AuthenticatedLearnersIdRoute: AuthenticatedLearnersIdRouteWithChildren,
   AuthenticatedLearnersIndexRoute: AuthenticatedLearnersIndexRoute,
 }
 
@@ -808,13 +842,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

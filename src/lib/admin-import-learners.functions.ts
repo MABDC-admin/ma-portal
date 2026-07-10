@@ -270,3 +270,39 @@ function parseBirthdate(value: unknown) {
   const date = new Date(`${month} ${day}, ${fullYear}`);
   return Number.isNaN(date.getTime()) ? null : date;
 }
+
+export const assignLearnerSectionFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((input: { data: { studentId: string; sectionId: string } }) => input)
+  .handler(async ({ data, context }) => {
+    if (context.user.role !== "admin" && context.user.role !== "academic_director") {
+      throw new Error("Forbidden: requires admin or academic_director role");
+    }
+
+    const { studentId, sectionId } = data.data;
+    
+    // Verify student exists
+    const student = await db.student.findUnique({
+      where: { user_id: studentId }
+    });
+    
+    if (!student) {
+      throw new Error("Student not found");
+    }
+    
+    // Verify section exists
+    const section = await db.section.findUnique({
+      where: { id: sectionId }
+    });
+    
+    if (!section) {
+      throw new Error("Section not found");
+    }
+
+    await db.student.update({
+      where: { user_id: studentId },
+      data: { section_id: sectionId }
+    });
+
+    return { success: true };
+  });

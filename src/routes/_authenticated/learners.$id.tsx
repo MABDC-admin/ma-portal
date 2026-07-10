@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/learners/$id")({
   component: LearnerProfilePage,
@@ -15,6 +17,12 @@ function gradeLabel(g: number) {
 
 function LearnerProfilePage() {
   const { id } = Route.useParams();
+  const { hasAnyRole } = useAuth();
+  const isPrivileged = hasAnyRole(["admin", "academic_director"]);
+  const queryClient = useQueryClient();
+
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState("");
 
   const {
     data: student,
@@ -45,6 +53,26 @@ function LearnerProfilePage() {
       const data = await getStudentAttendanceFn({ data: { studentId: id } });
       return data;
     },
+  });
+
+  const { data: allSections } = useQuery({
+    queryKey: ["all_sections"],
+    queryFn: async () => {
+      const { getAllSectionsFn } = await import("@/lib/teacher.functions");
+      return await getAllSectionsFn();
+    },
+    enabled: isPrivileged && isAssignModalOpen,
+  });
+
+  const assignSectionMutation = useMutation({
+    mutationFn: async (sectionId: string) => {
+      const { assignLearnerSectionFn } = await import("@/lib/admin-import-learners.functions");
+      await assignLearnerSectionFn({ data: { studentId: id, sectionId } });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student_profile", id] });
+      setIsAssignModalOpen(false);
+    }
   });
 
   const studentName = student?.profiles?.full_name;
@@ -440,6 +468,23 @@ function LearnerProfilePage() {
             <div className="bg-primary text-white rounded-3xl p-6 shadow-md shadow-primary/20">
               <h3 className="font-bold mb-4">Quick Actions</h3>
               <div className="flex flex-col gap-2">
+                {isPrivileged && (
+                  <button 
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/20 hover:bg-white/30 transition rounded-xl text-sm font-semibold border border-white/20 mb-2"
+                  >
+                    <Icon name="swap_horiz" size={18} />
+                    Assign Section
+                  </button>
+                )}
+                <Link
+                  to="/learners/$id/portal"
+                  params={{ id }}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/20 hover:bg-white/30 transition rounded-xl text-sm font-semibold border border-white/20 mb-2"
+                >
+                  <Icon name="visibility" size={18} />
+                  View Learner Portal
+                </Link>
                 <button className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/10 hover:bg-white/20 transition rounded-xl text-sm font-semibold border border-white/10">
                   <Icon name="add_circle" size={18} />
                   Add Anecdotal Entry
@@ -508,6 +553,50 @@ function LearnerProfilePage() {
           </div>
         </div>
       </div>
+
+      {isAssignModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-xl font-bold mb-4">Assign Section</h2>
+            <p className="text-sm text-tertiary mb-6">
+              Select a new section for {studentName}.
+            </p>
+            <div className="flex flex-col gap-4">
+              <select
+                className="w-full bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                value={selectedSectionId}
+                onChange={(e) => setSelectedSectionId(e.target.value)}
+              >
+                <option value="">Select a section...</option>
+                {allSections?.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {gradeLabel(s.grade_level)} - {s.name} ({s.academic_year})
+                  </option>
+                ))}
+              </select>
+              
+              <div className="flex gap-3 justify-end mt-4">
+                <button 
+                  onClick={() => setIsAssignModalOpen(false)}
+                  className="px-4 py-2 text-sm font-bold text-tertiary hover:bg-surface-container rounded-xl transition"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => selectedSectionId && assignSectionMutation.mutate(selectedSectionId)}
+                  disabled={!selectedSectionId || assignSectionMutation.isPending}
+                  className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                >
+                  {assignSectionMutation.isPending ? (
+                    <Icon name="progress_activity" size={18} className="animate-spin" />
+                  ) : null}
+                  Save Assignment
+                </button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </AppShell>
   );
 }

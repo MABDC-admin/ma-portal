@@ -64,7 +64,7 @@ model Section {
   students      Student[]
   dlls          Dll[]
 
-  @@unique([name, academic_year])
+  @@unique([name, grade_level, academic_year])
 }
 
 model Student {

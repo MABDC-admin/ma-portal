@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMemo } from "react";
 import { subDays, format } from "date-fns";
 import { OverviewDashboard } from "@/components/dashboard/OverviewDashboard";
+import { StudentDashboard } from "@/components/dashboard/StudentDashboard";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -38,6 +39,14 @@ function DashboardDispatcher() {
     return (
       <AppShell>
         <OverviewDashboard />
+      </AppShell>
+    );
+  }
+
+  if (roles.includes("student")) {
+    return (
+      <AppShell>
+        <StudentDashboard />
       </AppShell>
     );
   }

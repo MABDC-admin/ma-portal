@@ -326,8 +326,8 @@ export const getAllSectionsFn = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(async () => {
     return await db.section.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: "asc" }
+      select: { id: true, name: true, grade_level: true, academic_year: true },
+      orderBy: [{ grade_level: "asc" }, { name: "asc" }]
     });
   });
 
