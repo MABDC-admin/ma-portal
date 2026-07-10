@@ -7,6 +7,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(async ({ context }) => {
     const today = new Date();
+    const startOfTodayUTC = new Date(today.toISOString().split("T")[0] + "T00:00:00.000Z");
     const sixMonthsAgo = subMonths(today, 5);
 
     const [
@@ -27,7 +28,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" })
         select: { status: true, date: true }
       }),
       db.schoolEvent.findMany({
-        where: { start_date: { gte: today } },
+        where: { end_date: { gte: startOfTodayUTC } },
         orderBy: { start_date: "asc" },
         take: 3
       }),
