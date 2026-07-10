@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -116,10 +116,13 @@ export function CalendarView() {
 
   // Group events by day
   const getEventsForDay = (day: Date) => {
+    const dayStr = format(day, "yyyy-MM-dd");
     return events.filter(e => {
-      const eStart = parseISO(e.start_date);
-      const eEnd = parseISO(e.end_date);
-      return day >= eStart && day <= eEnd;
+      // Prisma dates come back as ISO strings like "2026-07-10T00:00:00.000Z"
+      // We slice the first 10 characters to get the exact "yyyy-MM-dd"
+      const eStartStr = e.start_date.substring(0, 10);
+      const eEndStr = e.end_date.substring(0, 10);
+      return dayStr >= eStartStr && dayStr <= eEndStr;
     });
   };
 
@@ -268,14 +271,16 @@ function CreateEventDialog({ isOpen, onOpenChange, defaultDate }: { isOpen: bool
     }
   });
 
-  // Update default dates if the prop changes
-  useState(() => {
-    reset({
-      start_date: format(defaultDate, "yyyy-MM-dd"),
-      end_date: format(defaultDate, "yyyy-MM-dd"),
-      category: "academic",
-    });
-  });
+  // Update default dates if the prop changes or dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      reset({
+        start_date: format(defaultDate, "yyyy-MM-dd"),
+        end_date: format(defaultDate, "yyyy-MM-dd"),
+        category: "academic",
+      });
+    }
+  }, [defaultDate, isOpen, reset]);
 
   const mutation = useMutation({
     mutationFn: async (values: any) => {

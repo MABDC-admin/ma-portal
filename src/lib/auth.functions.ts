@@ -3,6 +3,7 @@ import { getRequest, setResponseHeader } from "@tanstack/react-start/server";
 import { requireAuth } from "./auth-middleware";
 import { db } from "./db";
 import { lucia } from "./auth";
+import { verify } from "@node-rs/argon2";
 
 export type AppRole = "admin" | "academic_director" | "teacher" | "student" | "kiosk";
 
@@ -53,7 +54,15 @@ export const loginUser = createServerFn({ method: "POST" })
     // In production, use oslo/password for hashing. For now we do a simple check or wait until we implement oslo.
     // Let's use simple match for migration logic or implement oslo.
     // TODO: proper hash validation
-    if (user.password !== data.password) throw new Error("Invalid email or password");
+    let validPassword = false;
+    try {
+      validPassword = await verify(user.password, data.password, { memoryCost: 19456, timeCost: 2, outputLen: 32, parallelism: 1 });
+    } catch (e) {
+      // Fallback if not a valid argon2 hash
+      validPassword = user.password === data.password;
+    }
+    
+    if (!validPassword) throw new Error("Invalid email or password");
 
     const session = await lucia.createSession(user.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
