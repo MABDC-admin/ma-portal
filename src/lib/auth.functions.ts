@@ -78,28 +78,8 @@ export const loginUser = createServerFn({ method: "POST" })
 
 export const registerUser = createServerFn({ method: "POST" })
   .validator((input: { email: string; password: string; full_name: string }) => input)
-  .handler(async ({ data }) => {
-    const existing = await db.user.findUnique({ where: { email: data.email } });
-    if (existing) throw new Error("User already exists");
-
-    const { generateIdFromEntropySize } = await import("lucia");
-    const userId = generateIdFromEntropySize(10); // 16 characters
-
-    await db.user.create({
-      data: {
-        id: userId,
-        email: data.email,
-        full_name: data.full_name,
-        password: data.password, // TODO: Hash password
-        role: "student",
-      },
-    });
-
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    setResponseHeader("Set-Cookie", sessionCookie.serialize());
-
-    return { ok: true };
+  .handler(async () => {
+    throw new Error("Registration is by invitation only. Please use your email invitation link.");
   });
 
 export const logoutUser = createServerFn({ method: "POST" }).handler(async () => {
