@@ -54,37 +54,38 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.985 0.005 250);
-  --foreground: oklch(0.18 0.05 260);
-  --surface: oklch(1 0 0);
-  --surface-container: oklch(0.97 0.01 250);
-  --surface-container-low: oklch(0.98 0.005 250);
-  --surface-container-high: oklch(0.95 0.015 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.05 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.05 260);
-  --primary: oklch(0.55 0.25 260); /* Vibrant Indigo */
-  --primary-foreground: oklch(0.99 0.01 250);
-  --primary-container: oklch(0.92 0.08 260);
-  --secondary: oklch(0.65 0.20 210); /* Sleek Cyan */
-  --secondary-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.5 0.04 260);
-  --accent: oklch(0.65 0.22 15); /* Warm Coral */
-  --accent-foreground: oklch(0.99 0.01 15);
-  --tertiary: oklch(0.6 0.05 260);
+  /* SingRoom KTV Dark Neon Theme */
+  --background: oklch(0.15 0.03 270); /* Deep dark navy/black #090b14 */
+  --foreground: oklch(0.98 0 0); /* Pure white text */
+  --surface: oklch(0.20 0.04 270); /* Slightly lighter dark panel #1a1d36 */
+  --surface-container: oklch(0.22 0.04 270);
+  --surface-container-low: oklch(0.18 0.03 270);
+  --surface-container-high: oklch(0.25 0.04 270);
+  --card: oklch(0.20 0.04 270);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.20 0.04 270);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.26 10); /* Neon Pink #FF3366 */
+  --primary-foreground: oklch(0.98 0 0);
+  --primary-container: oklch(0.3 0.1 10);
+  --secondary: oklch(0.8 0.15 220); /* Neon Cyan #00F0FF */
+  --secondary-foreground: oklch(0.15 0.03 270);
+  --muted: oklch(0.25 0.02 270);
+  --muted-foreground: oklch(0.7 0.02 270);
+  --accent: oklch(0.8 0.15 220); /* Use Cyan for accents */
+  --accent-foreground: oklch(0.15 0.03 270);
+  --tertiary: oklch(0.7 0.1 300); /* Purple accent */
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.9 0.02 250);
-  --input: oklch(0.9 0.02 250);
-  --ring: oklch(0.55 0.25 260);
-  --outline-variant: oklch(0.88 0.02 250);
+  --border: oklch(0.3 0.05 270);
+  --input: oklch(0.25 0.04 270);
+  --ring: oklch(0.65 0.26 10); /* Pink ring */
+  --outline-variant: oklch(0.3 0.05 270);
 
-  --status-present: oklch(0.68 0.16 155);
-  --status-late: oklch(0.78 0.15 75);
-  --status-absent: oklch(0.62 0.22 25);
-  --status-excused: oklch(0.65 0.13 250);
+  --status-present: oklch(0.8 0.15 220); /* Cyan for present */
+  --status-late: oklch(0.85 0.15 80); /* Yellow for late */
+  --status-absent: oklch(0.65 0.26 10); /* Pink for absent */
+  --status-excused: oklch(0.7 0.1 300); /* Purple for excused */
 }
 
 .dark {
@@ -98,21 +99,21 @@
   --card-foreground: oklch(0.97 0.01 250);
   --popover: oklch(0.22 0.04 260);
   --popover-foreground: oklch(0.97 0.01 250);
-  --primary: oklch(0.70 0.20 260);
+  --primary: oklch(0.7 0.2 260);
   --primary-foreground: oklch(0.15 0.05 260);
   --primary-container: oklch(0.35 0.12 260);
   --secondary: oklch(0.75 0.18 210);
   --secondary-foreground: oklch(0.15 0.05 210);
   --muted: oklch(0.26 0.03 260);
   --muted-foreground: oklch(0.7 0.03 260);
-  --accent: oklch(0.75 0.20 15);
+  --accent: oklch(0.75 0.2 15);
   --accent-foreground: oklch(0.15 0.05 15);
   --tertiary: oklch(0.65 0.04 260);
   --destructive: oklch(0.65 0.2 25);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.70 0.20 260);
+  --ring: oklch(0.7 0.2 260);
   --outline-variant: oklch(1 0 0 / 10%);
 }
 
@@ -198,11 +199,44 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
+@utility neon-border-pink {
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 10px 0 color-mix(in oklch, var(--color-primary) 50%, transparent),
+              inset 0 0 10px 0 color-mix(in oklch, var(--color-primary) 20%, transparent);
+}
+
+@utility neon-border-cyan {
+  border: 1px solid var(--color-secondary);
+  box-shadow: 0 0 10px 0 color-mix(in oklch, var(--color-secondary) 50%, transparent),
+              inset 0 0 10px 0 color-mix(in oklch, var(--color-secondary) 20%, transparent);
+}
+
+@utility neon-text-pink {
+  color: var(--color-primary);
+  text-shadow: 0 0 8px color-mix(in oklch, var(--color-primary) 60%, transparent);
+}
+
+@utility neon-text-cyan {
+  color: var(--color-secondary);
+  text-shadow: 0 0 8px color-mix(in oklch, var(--color-secondary) 60%, transparent);
+}
+

@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -18,18 +17,28 @@ export const Route = createFileRoute("/_authenticated/_admin/import-learners")({
 });
 
 type ExcelRow = {
+  "Student Number"?: string;
+  Email?: string;
   "Grade Level": string;
   "Student Name": string;
   Birthdate: string;
   Age: number;
   Gender: string;
-  "MOTHER CONTACT": string;
-  "MOTHER NAME": string;
-  "FATHER CONTACT": string;
-  "FATHER NAME": string;
+  "MOTHER CONTACT"?: string;
+  "MOTHER NAME"?: string;
+  "FATHER CONTACT"?: string;
+  "FATHER NAME"?: string;
+  Contact?: string;
+  Mother?: string;
+  "Father Contact"?: string;
+  Father?: string;
   "Philippine Address": string;
   "UAE Address": string;
 };
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
 
 function ImportLearnersPage() {
   const [busy, setBusy] = useState(false);
@@ -45,14 +54,11 @@ function ImportLearnersPage() {
     setResults(null);
 
     try {
-      // Fetch active school year
-      const { data: activeYear, error: syError } = await supabase
-        .from("school_years")
-        .select("id")
-        .eq("is_active", true)
-        .single();
+      const { getActiveSchoolYearFn, importExcelLearnersFn } =
+        await import("@/lib/admin-import-learners.functions");
+      const activeYear = await getActiveSchoolYearFn();
 
-      if (syError || !activeYear) {
+      if (!activeYear) {
         throw new Error("No active school year found. Please activate one in School Years first.");
       }
 
@@ -70,29 +76,28 @@ function ImportLearnersPage() {
 
           const recordsToInsert = rows.map((row) => ({
             school_year_id: activeYear.id,
+            student_number: String(row["Student Number"] || ""),
+            email: String(row["Email"] || ""),
             grade_level: String(row["Grade Level"] || ""),
             student_name: String(row["Student Name"] || ""),
             birthdate: String(row["Birthdate"] || ""),
             age: parseInt(String(row["Age"])) || null,
             gender: String(row["Gender"] || ""),
-            mother_contact: String(row["MOTHER CONTACT"] || ""),
-            mother_name: String(row["MOTHER NAME"] || ""),
-            father_contact: String(row["FATHER CONTACT"] || ""),
-            father_name: String(row["FATHER NAME"] || ""),
+            mother_contact: String(row["MOTHER CONTACT"] || row["Contact"] || ""),
+            mother_name: String(row["MOTHER NAME"] || row["Mother"] || ""),
+            father_contact: String(row["FATHER CONTACT"] || row["Father Contact"] || ""),
+            father_name: String(row["FATHER NAME"] || row["Father"] || ""),
             philippine_address: String(row["Philippine Address"] || ""),
             uae_address: String(row["UAE Address"] || ""),
           }));
 
-          const { error: insertError } = await supabase
-            .from("learner_records" as any)
-            .insert(recordsToInsert);
-
-          if (insertError) throw insertError;
+          const res = await importExcelLearnersFn({ data: { records: recordsToInsert } });
+          if (res.status === "error") throw new Error("Failed to import learners");
 
           setResults({ status: "success", count: recordsToInsert.length });
           toast.success(`Successfully imported ${recordsToInsert.length} learners!`);
-        } catch (err: any) {
-          setError(err.message || String(err));
+        } catch (err: unknown) {
+          setError(errorMessage(err));
         } finally {
           setBusy(false);
         }
@@ -102,8 +107,8 @@ function ImportLearnersPage() {
         setBusy(false);
       };
       reader.readAsArrayBuffer(file);
-    } catch (e: any) {
-      setError(e.message || String(e));
+    } catch (e: unknown) {
+      setError(errorMessage(e));
       setBusy(false);
     }
   }
@@ -134,15 +139,17 @@ function ImportLearnersPage() {
           <Icon name="upload_file" size={48} className="text-tertiary mb-4" />
           <h3 className="text-lg font-bold mb-2">Upload Excel File</h3>
           <p className="text-sm text-tertiary mb-6 text-center max-w-md">
-            The Excel file must contain headers: Grade Level, Student Name, Birthdate, Age, Gender, MOTHER CONTACT, MOTHER NAME, FATHER CONTACT, FATHER NAME, Philippine Address, UAE Address.
+            The Excel file must contain headers: Grade Level, Student Name, Birthdate, Age, Gender,
+            MOTHER CONTACT, MOTHER NAME, FATHER CONTACT, FATHER NAME, Philippine Address, UAE
+            Address.
           </p>
-          
+
           <label className="relative cursor-pointer bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold text-sm shadow hover:brightness-110 transition disabled:opacity-50">
             {busy ? "Importing..." : "Choose Excel File"}
-            <input 
-              type="file" 
-              accept=".xlsx,.xls" 
-              className="absolute hidden" 
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              className="absolute hidden"
               onChange={handleFileUpload}
               disabled={busy}
             />

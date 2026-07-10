@@ -1,0 +1,7 @@
+node_modules
+.output
+.vite
+dist
+
+.DS_Store
+prisma.config.ts

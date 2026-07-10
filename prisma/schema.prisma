@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @map("_id") // Since Lucia needs string IDs, we'll use CUIDs or string IDs instead of ObjectIds
+  email      String?   @unique
+  full_name  String?
+  avatar_url String?
+  role       String    @default("student")
+  password   String?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  sessions             Session[]
+  user_roles           UserRole[]
+  student_profile      Student?
+  advised_sections     Section[] @relation("SectionAdviser")
+  dlls                 Dll[]     @relation("TeacherDlls")
+  reviewed_dlls        Dll[]     @relation("ReviewedDlls")
+  anecdotal_entries    AnecdotalEntry[] @relation("TeacherAnecdotals")
+  attendance           Attendance[] @relation("TeacherAttendance")
+}
+
+model Session {
+  id        String   @id @map("_id")
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserRole {
+  id      String @id @default(cuid()) @map("_id")
+  userId  String
+  role    String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+}
+
+model SchoolYear {
+  id         String   @id @default(cuid()) @map("_id")
+  year       String   @unique
+  is_active  Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Section {
+  id            String   @id @default(cuid()) @map("_id")
+  name          String
+  grade_level   Int
+  adviser_id    String?
+  academic_year String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  adviser       User?     @relation("SectionAdviser", fields: [adviser_id], references: [id], onDelete: SetNull)
+  students      Student[]
+  dlls          Dll[]
+
+  @@unique([name, academic_year])
+}
+
+model Student {
+  user_id            String   @id @map("_id")
+  student_number     String   @unique
+  section_id         String?
+  status             String   @default("active")
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  face_descriptor    Float[]  
+  photo_url          String?
+  birthdate          DateTime?
+  age                Int?
+  gender             String?
+  mother_contact     String?
+  mother_name        String?
+  father_contact     String?
+  father_name        String?
+  philippine_address String?
+  uae_address        String?
+
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  section            Section? @relation(fields: [section_id], references: [id], onDelete: SetNull)
+  anecdotal_entries  AnecdotalEntry[]
+  attendance         Attendance[]
+}
+
+model Dll {
+  id           String    @id @default(cuid()) @map("_id")
+  teacher_id   String
+  section_id   String?
+  subject      String
+  lesson_date  DateTime
+  objectives   String    @default("")
+  content      String    @default("")
+  procedures   String    @default("")
+  assessment   String    @default("")
+  status       String    @default("draft")
+  submitted_at DateTime?
+  reviewed_by  String?
+  reviewed_at  DateTime?
+  feedback     String?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  teacher      User      @relation("TeacherDlls", fields: [teacher_id], references: [id], onDelete: Cascade)
+  section      Section?  @relation(fields: [section_id], references: [id], onDelete: SetNull)
+  reviewer     User?     @relation("ReviewedDlls", fields: [reviewed_by], references: [id], onDelete: SetNull)
+}
+
+model AnecdotalEntry {
+  id           String   @id @default(cuid()) @map("_id")
+  student_id   String
+  teacher_id   String
+  incident_date DateTime
+  description  String
+  action_taken String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  student      Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  teacher      User     @relation("TeacherAnecdotals", fields: [teacher_id], references: [id], onDelete: Cascade)
+}
+
+model Attendance {
+  id           String   @id @default(cuid()) @map("_id")
+  student_id   String
+  teacher_id   String
+  date         DateTime
+  status       String   // "present", "absent", "late"
+  remarks      String?
+  am_time_in   DateTime?
+  am_time_out  DateTime?
+  pm_time_in   DateTime?
+  pm_time_out  DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  student      Student  @relation(fields: [student_id], references: [user_id], onDelete: Cascade)
+  teacher      User     @relation("TeacherAttendance", fields: [teacher_id], references: [id], onDelete: Cascade)
+}
+
+model SchoolEvent {
+  id          String   @id @default(cuid()) @map("_id")
+  title       String
+  category    String   // "academic", "holiday", "exam", "sports"
+  description String?
+  start_date  DateTime
+  end_date    DateTime
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}

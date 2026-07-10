@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -24,15 +23,9 @@ function DllReviewDetail() {
   const dllQ = useQuery({
     queryKey: ["dll", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("dlls")
-        .select(
-          "*, profiles!dlls_teacher_profile_fkey(email, full_name), sections:section_id(name, grade_level)",
-        )
-        .eq("id", id)
-        .single();
-      if (error) throw error;
-      return data as typeof data & {
+      const { getDllFn } = await import("@/lib/dlls.functions");
+      const data = await getDllFn({ data: { id } });
+      return data as unknown as typeof data & {
         profiles: { email: string | null; full_name: string | null } | null;
         sections: { name: string; grade_level: number } | null;
       };

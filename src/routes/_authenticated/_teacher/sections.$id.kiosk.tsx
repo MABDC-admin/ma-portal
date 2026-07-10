@@ -232,19 +232,19 @@ function KioskPage() {
           {/* Greeting card */}
           {greeting && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md">
-              <div className="mx-4 max-w-md rounded-3xl bg-white p-10 text-center text-slate-900 shadow-2xl animate-in fade-in zoom-in duration-300">
+              <div className="mx-4 max-w-md rounded-3xl bg-surface/95 backdrop-blur-xl border border-secondary/30 p-10 text-center text-slate-100 shadow-2xl animate-in fade-in zoom-in duration-300">
                 <div
-                  className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${greeting.status === "late" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"}`}
+                  className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${greeting.status === "late" ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}`}
                 >
                   <Icon name="check_circle" filled size={48} />
                 </div>
-                <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-slate-500">
+                <p className="mt-4 text-sm font-semibold uppercase tracking-widest text-slate-400">
                   Welcome
                 </p>
                 <p className="mt-1 font-display text-3xl font-extrabold">{greeting.name}</p>
-                <p className="mt-2 text-lg text-slate-600 num">{greeting.time}</p>
+                <p className="mt-2 text-lg text-slate-300 num">{greeting.time}</p>
                 <p
-                  className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${greeting.status === "late" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+                  className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${greeting.status === "late" ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}`}
                 >
                   {greeting.status === "late" ? "Marked late" : "On time"}
                 </p>

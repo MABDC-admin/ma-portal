@@ -1,34 +1,39 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAuth } from "./auth-middleware";
 import { resolveTargetColumn } from "./kiosk-schedule";
+import { db } from "./db";
 
 type LogInput = {
   studentId: string; // students.user_id
   action: "in" | "out";
 };
 
-export const logKioskAttendanceFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: LogInput) => input)
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+function assertKioskOperator(role: string) {
+  if (role !== "admin" && role !== "kiosk") {
+    throw new Error("Only attendance kiosk operators can use the kiosk");
+  }
+}
 
-    // Admin gate — kiosk is admin-only.
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    if (!isAdmin) throw new Error("Only admins can operate the kiosk");
+export const logKioskAttendanceFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((input: LogInput) => input)
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+
+    assertKioskOperator(context.user.role);
 
     // Load student → section + profile
-    const { data: student, error: sErr } = await supabase
-      .from("students")
-      .select(
-        "user_id, section_id, photo_url, profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
-      )
-      .eq("user_id", data.studentId)
-      .single();
-    if (sErr) throw new Error(sErr.message);
+    const student = await db.student.findUnique({
+      where: { user_id: data.studentId },
+      select: {
+        user_id: true,
+        section_id: true,
+        photo_url: true,
+        user: { select: { full_name: true, email: true, avatar_url: true } },
+      },
+    });
+
+    if (!student) throw new Error("Student not found");
     if (!student.section_id) throw new Error("Learner has no assigned section");
 
     const now = new Date();
@@ -43,40 +48,47 @@ export const logKioskAttendanceFn = createServerFn({ method: "POST" })
         : "present";
 
     // Check existing row
-    const { data: existing } = await supabase
-      .from("attendance")
-      .select("id, am_time_in, am_time_out, pm_time_in, pm_time_out, status")
-      .eq("student_id", data.studentId)
-      .eq("date", today)
-      .maybeSingle();
+    const existing = await db.attendance.findFirst({
+      where: { student_id: data.studentId, date: new Date(today) },
+    });
 
-    if (existing && existing[column]) {
+    const existingTime = existing ? (existing as any)[column] : null;
+
+    if (existing && existingTime) {
       return {
         alreadyLogged: true,
         column,
-        time: existing[column] as string,
+        time: existingTime.toISOString(),
         student: {
           id: student.user_id,
-          name: student.profiles?.full_name || student.profiles?.email || "Learner",
-          photo: student.photo_url || student.profiles?.avatar_url || null,
+          name: student.user?.full_name || student.user?.email || "Learner",
+          photo: student.photo_url || student.user?.avatar_url || null,
         },
       };
     }
 
-    const payload: Record<string, unknown> = {
-      student_id: data.studentId,
-      section_id: student.section_id,
-      date: today,
+    const payload = {
       status: existing?.status ?? status,
-      recorded_by: userId,
-      [column]: now.toISOString(),
+      teacher_id: userId,
+      [column]: now,
     };
 
-    const { error: upErr } = await supabase
-      .from("attendance")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .upsert(payload as any, { onConflict: "student_id,date" });
-    if (upErr) throw new Error(upErr.message);
+    if (existing) {
+      await db.attendance.update({
+        where: { id: existing.id },
+        data: payload,
+      });
+    } else {
+      await db.attendance.create({
+        data: {
+          student_id: data.studentId,
+          date: new Date(today),
+          status: payload.status,
+          teacher_id: userId,
+          [column]: now,
+        },
+      });
+    }
 
     return {
       alreadyLogged: false,
@@ -85,63 +97,69 @@ export const logKioskAttendanceFn = createServerFn({ method: "POST" })
       status,
       student: {
         id: student.user_id,
-        name: student.profiles?.full_name || student.profiles?.email || "Learner",
-        photo: student.photo_url || student.profiles?.avatar_url || null,
+        name: student.user?.full_name || student.user?.email || "Learner",
+        photo: student.photo_url || student.user?.avatar_url || null,
       },
     };
   });
 
 // Load all enrolled learners with a face descriptor (admin only).
 export const listEnrolledLearnersFn = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    if (!isAdmin) throw new Error("Only admins can operate the kiosk");
+    assertKioskOperator(context.user.role);
 
-    const { data, error } = await supabase
-      .from("students")
-      .select(
-        "user_id, section_id, photo_url, face_descriptor, sections:section_id(name, grade_level), profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
-      )
-      .not("face_descriptor", "is", null);
-    if (error) throw new Error(error.message);
-    return (data ?? []).filter(
-      (s) => Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128,
-    );
+    const data = await db.student.findMany({
+      where: {
+        face_descriptor: { isEmpty: false }, // Prisma MongoDB syntax for arrays
+      },
+      select: {
+        user_id: true,
+        section_id: true,
+        photo_url: true,
+        face_descriptor: true,
+        section: { select: { name: true, grade_level: true } },
+        user: { select: { full_name: true, email: true, avatar_url: true } },
+      },
+    });
+
+    return data
+      .filter((s) => Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128)
+      .map((s) => ({
+        ...s,
+        sections: s.section,
+        profiles: s.user,
+      }));
   });
 
 // List every learner (admin only) for face registration.
 export const listLearnersForEnrollmentFn = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    if (!isAdmin) throw new Error("Only admins can register faces");
+    if (context.user.role !== "admin") throw new Error("Only admins can register faces");
 
-    const { data, error } = await supabase
-      .from("students")
-      .select(
-        "user_id, student_number, section_id, photo_url, face_descriptor, sections:section_id(name, grade_level), profiles:students_user_id_profiles_fkey(full_name, email, avatar_url)",
-      )
-      .order("student_number");
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((s) => ({
+    const data = await db.student.findMany({
+      select: {
+        user_id: true,
+        student_number: true,
+        section_id: true,
+        photo_url: true,
+        face_descriptor: true,
+        section: { select: { name: true, grade_level: true } },
+        user: { select: { full_name: true, email: true, avatar_url: true } },
+      },
+      orderBy: { student_number: "asc" },
+    });
+
+    return data.map((s) => ({
       user_id: s.user_id,
       student_number: s.student_number,
       photo_url: s.photo_url,
-      section_name: s.sections?.name ?? null,
-      grade_level: s.sections?.grade_level ?? null,
-      full_name: s.profiles?.full_name ?? null,
-      email: s.profiles?.email ?? null,
-      avatar_url: s.profiles?.avatar_url ?? null,
-      has_face:
-        Array.isArray(s.face_descriptor) && (s.face_descriptor as number[]).length === 128,
+      section_name: s.section?.name ?? null,
+      grade_level: s.section?.grade_level ?? null,
+      full_name: s.user?.full_name ?? null,
+      email: s.user?.email ?? null,
+      avatar_url: s.user?.avatar_url ?? null,
+      has_face: Array.isArray(s.face_descriptor) && s.face_descriptor.length === 128,
     }));
   });

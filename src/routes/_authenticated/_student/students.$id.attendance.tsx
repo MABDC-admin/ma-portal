@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/_student/students/$id/attendance")({
   head: () => ({ meta: [{ title: "Attendance — AttendCloud" }] }),
@@ -17,13 +16,8 @@ function AttendanceProfile() {
   const attendanceQ = useQuery({
     queryKey: ["student-attendance-full", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("attendance")
-        .select("date, status, notes")
-        .eq("student_id", id)
-        .order("date", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
+      const { getStudentAttendanceFn } = await import("@/lib/teacher.functions");
+      return await getStudentAttendanceFn({ data: { studentId: id } });
     },
   });
 

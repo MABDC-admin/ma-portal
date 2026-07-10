@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
 
@@ -30,13 +29,12 @@ type AnecdotalRow = {
 
 function getCategoryPill(cat: string) {
   const c = cat.toLowerCase();
-  if (c === "academic") return "bg-blue-100 text-blue-700";
-  if (c === "behavioral" || c === "discipline") return "bg-slate-100 text-slate-600";
-  if (c === "social") return "bg-slate-100 text-slate-600";
-  if (c === "emotional") return "bg-blue-100 text-blue-700";
-  return "bg-slate-100 text-slate-600";
+  if (c === "academic") return "bg-secondary/20 text-secondary";
+  if (c === "behavioral" || c === "discipline") return "bg-surface-container text-slate-300";
+  if (c === "social") return "bg-surface-container text-slate-300";
+  if (c === "emotional") return "bg-secondary/20 text-secondary";
+  return "bg-surface-container text-slate-300";
 }
-
 
 function DirectorAnecdotalPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
@@ -44,46 +42,39 @@ function DirectorAnecdotalPage() {
   const q = useQuery({
     queryKey: ["director-anecdotals"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("anecdotal_entries")
-        .select(`
-          id, category, note, occurred_on,
-          student:students!inner(
-            student_number,
-            profiles!students_user_id_profiles_fkey(full_name, email, avatar_url)
-          )
-        `)
-        .order("occurred_on", { ascending: false });
-
-      if (error) throw error;
-      return (data ?? []) as unknown as AnecdotalRow[];
+      const { getDirectorAnecdotalsFn } = await import("@/lib/director-anecdotal.functions");
+      const data = await getDirectorAnecdotalsFn();
+      return data as unknown as AnecdotalRow[];
     },
   });
 
   const rows = useMemo(() => {
     let all = q.data ?? [];
     if (categoryFilter !== "All Categories") {
-      all = all.filter(r => r.category.toLowerCase() === categoryFilter.toLowerCase());
+      all = all.filter((r) => r.category.toLowerCase() === categoryFilter.toLowerCase());
     }
     return all;
   }, [q.data, categoryFilter]);
 
   const totalEntries = q.data?.length ?? 0;
-  const behavioralCount = q.data?.filter(r => r.category.toLowerCase() === "behavioral").length ?? 0;
-  const academicCount = q.data?.filter(r => r.category.toLowerCase() === "academic").length ?? 0;
-
+  const behavioralCount =
+    q.data?.filter((r) => r.category.toLowerCase() === "behavioral").length ?? 0;
+  const academicCount = q.data?.filter((r) => r.category.toLowerCase() === "academic").length ?? 0;
 
   return (
     <AppShell>
       <div className="flex flex-col gap-6 pb-20 animate-fade-in pt-2">
-        
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
-            <h1 className="text-[22px] font-bold text-slate-800 tracking-tight">Anecdotal Entry Log</h1>
-            <p className="text-[13px] text-slate-500 mt-0.5">History of student observations and critical behavior records.</p>
+            <h1 className="text-[22px] font-bold text-slate-100 tracking-tight">
+              Anecdotal Entry Log
+            </h1>
+            <p className="text-[13px] text-slate-400 mt-0.5">
+              History of student observations and critical behavior records.
+            </p>
           </div>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-[#0e52db] text-white rounded-lg shadow-sm hover:bg-blue-700 transition">
+          <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-secondary to-blue-500 text-white rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:brightness-110 transition">
             <Icon name="print" size={18} />
             <span className="text-[13px] font-bold">Print Summary Report</span>
           </button>
@@ -91,47 +82,66 @@ function DirectorAnecdotalPage() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-          <div className="glass-panel rounded-xl p-5 flex items-center gap-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+          <div
+            className="glass-panel rounded-xl p-5 flex items-center gap-4 animate-slide-up"
+            style={{ animationDelay: "0.05s" }}
+          >
+            <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary shrink-0">
               <Icon name="trending_up" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">TOTAL ENTRIES (TERM)</p>
-              <h4 className="text-2xl font-extrabold text-slate-800">{totalEntries}</h4>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                TOTAL ENTRIES (TERM)
+              </p>
+              <h4 className="text-2xl font-extrabold text-slate-100">{totalEntries}</h4>
             </div>
           </div>
-          
-          <div className="bg-white rounded-xl p-5 flex items-center gap-4 border-l-4 border-red-500 shadow-[0_2px_8px_rgba(0,0,0,0.04)] animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0">
+
+          <div
+            className="bg-surface/80 backdrop-blur-xl rounded-xl p-5 flex items-center gap-4 border-l-4 border-red-500 shadow-[0_0_15px_rgba(0,240,255,0.1)] animate-slide-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-red-500 shrink-0">
               <Icon name="error" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">BEHAVIORAL</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                BEHAVIORAL
+              </p>
               <h4 className="text-2xl font-extrabold text-red-600">{behavioralCount}</h4>
             </div>
           </div>
 
-          <div className="glass-panel rounded-xl p-5 flex items-center gap-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+          <div
+            className="glass-panel rounded-xl p-5 flex items-center gap-4 animate-slide-up"
+            style={{ animationDelay: "0.15s" }}
+          >
             <div className="w-12 h-12 rounded-full bg-[#e8f1fc] flex items-center justify-center text-[#3575da] shrink-0">
               <Icon name="assignment_late" size={24} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">ACADEMIC</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                ACADEMIC
+              </p>
               <h4 className="text-2xl font-extrabold text-[#3575da]">{academicCount}</h4>
             </div>
           </div>
-
         </div>
 
         {/* Filters Section */}
-        <div className="glass-panel rounded-xl p-4 flex flex-wrap items-end gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <div
+          className="glass-panel rounded-xl p-4 flex flex-wrap items-end gap-4 animate-slide-up"
+          style={{ animationDelay: "0.2s" }}
+        >
           <div className="flex flex-col gap-1.5 flex-1 min-w-[150px]">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">BEHAVIOR CATEGORY</label>
+            <label className="text-[10px] font-bold text-secondary uppercase tracking-wider">
+              BEHAVIOR CATEGORY
+            </label>
             <div className="relative">
-              <select 
+              <select
                 value={categoryFilter}
-                onChange={e => setCategoryFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg px-4 py-2 outline-none focus:border-primary"
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full appearance-none bg-surface-container border border-secondary/20 text-foreground text-[13px] font-semibold rounded-lg px-4 py-2 outline-none focus:border-secondary"
               >
                 <option>All Categories</option>
                 <option value="academic">Academic</option>
@@ -139,32 +149,50 @@ function DirectorAnecdotalPage() {
                 <option value="emotional">Emotional</option>
                 <option value="discipline">Discipline</option>
               </select>
-              <Icon name="expand_more" size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <Icon
+                name="expand_more"
+                size={18}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              />
             </div>
           </div>
-          
+
           <div className="ml-auto">
             <button
-              onClick={() => { setCategoryFilter("All Categories"); }}
-              className="bg-[#e4ebfb] text-[#2c65cc] font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-blue-100 transition"
+              onClick={() => {
+                setCategoryFilter("All Categories");
+              }}
+              className="bg-secondary/20 text-secondary font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-secondary/30 transition"
             >
               Reset Filters
             </button>
           </div>
         </div>
 
-
         {/* Data Table */}
-        <div className="glass-panel rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up" style={{ animationDelay: '0.25s' }}>
+        <div
+          className="glass-panel rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] animate-slide-up"
+          style={{ animationDelay: "0.25s" }}
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">STUDENT</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">DATE</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">CATEGORY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">OBSERVATION SUMMARY</th>
-                  <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">ACTIONS</th>
+                <tr className="bg-surface-container/50">
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    STUDENT
+                  </th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    DATE
+                  </th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    CATEGORY
+                  </th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    OBSERVATION SUMMARY
+                  </th>
+                  <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -175,49 +203,66 @@ function DirectorAnecdotalPage() {
                   const displayCategory = r.category.toUpperCase();
 
                   return (
-                    <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+                    <tr
+                      key={r.id}
+                      className="border-t border-white/10 hover:bg-white/5 transition-colors"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {s?.avatar_url ? (
-                            <img src={s.avatar_url} alt={studentName} className="w-9 h-9 rounded-full object-cover" />
+                            <img
+                              src={s.avatar_url}
+                              alt={studentName}
+                              className="w-9 h-9 rounded-full object-cover"
+                            />
                           ) : (
-                            <div className="w-9 h-9 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">
+                            <div className="w-9 h-9 rounded-full bg-surface-container text-slate-300 flex items-center justify-center font-bold text-sm">
                               {initial}
                             </div>
                           )}
                           <div>
-                            <p className="text-[13px] font-bold text-slate-800">{studentName}</p>
-                            <p className="text-[11px] font-medium text-slate-400">ID: #{r.student?.student_number || "—"}</p>
+                            <p className="text-[13px] font-bold text-slate-100">{studentName}</p>
+                            <p className="text-[11px] font-medium text-slate-400">
+                              ID: #{r.student?.student_number || "—"}
+                            </p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex flex-col text-[12px] font-semibold text-slate-600">
+                        <div className="flex flex-col text-[12px] font-semibold text-slate-300">
                           <span>{format(new Date(r.occurred_on), "MMM dd,")}</span>
                           <span>{format(new Date(r.occurred_on), "yyyy")}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold tracking-wide ${getCategoryPill(displayCategory)}`}>
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold tracking-wide ${getCategoryPill(displayCategory)}`}
+                        >
                           {displayCategory}
                         </span>
                       </td>
                       <td className="px-6 py-4 max-w-[350px]">
-                        <p className="text-[12px] text-slate-500 leading-snug truncate" title={r.note}>
-                          {r.note.length > 80 ? r.note.substring(0, 80) + '...' : r.note}
+                        <p
+                          className="text-[12px] text-slate-400 leading-snug truncate"
+                          title={r.note}
+                        >
+                          {r.note.length > 80 ? r.note.substring(0, 80) + "..." : r.note}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="w-7 h-7 rounded-full bg-[#e8f1fc] text-[#3575da] flex items-center justify-center hover:bg-blue-100 transition" aria-label="View">
+                        <button
+                          className="w-7 h-7 rounded-full bg-secondary/20 text-secondary flex items-center justify-center hover:bg-secondary/30 transition"
+                          aria-label="View"
+                        >
                           <Icon name="visibility" size={16} />
                         </button>
                       </td>
                     </tr>
-                  )
+                  );
                 })}
                 {!q.isLoading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-400">
                       No anecdotal entries found.
                     </td>
                   </tr>
@@ -226,12 +271,12 @@ function DirectorAnecdotalPage() {
             </table>
           </div>
 
-          <div className="px-6 py-4 border-t border-slate-100">
-            <span className="text-[12px] text-slate-500 font-medium">{rows.length} of {totalEntries} entries</span>
+          <div className="px-6 py-4 border-t border-white/10">
+            <span className="text-[12px] text-slate-400 font-medium">
+              {rows.length} of {totalEntries} entries
+            </span>
           </div>
         </div>
-
-
       </div>
     </AppShell>
   );

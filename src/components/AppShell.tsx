@@ -1,13 +1,25 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useState } from "react";
 import { Icon } from "./Icon";
+import { GlobalSearch } from "./GlobalSearch";
 import { useAuth } from "@/hooks/use-auth";
 import type { AppRole } from "@/lib/auth.functions";
 
 type NavItem = { to: string; label: string; icon: string; roles: AppRole[] };
 
 const nav: NavItem[] = [
-  { to: "/", label: "Live Attendance", icon: "dashboard", roles: ["admin", "teacher"] },
+  {
+    to: "/",
+    label: "Dashboard",
+    icon: "dashboard",
+    roles: ["admin", "academic_director", "teacher"],
+  },
+  {
+    to: "/calendar",
+    label: "School Calendar",
+    icon: "calendar_month",
+    roles: ["admin", "academic_director", "teacher"],
+  },
   { to: "/my-dlls", label: "My Lesson Logs", icon: "history_edu", roles: ["teacher"] },
   { to: "/dll/new", label: "New DLL Entry", icon: "note_add", roles: ["admin", "teacher"] },
   { to: "/teachers", label: "Teachers", icon: "school", roles: ["admin"] },
@@ -17,7 +29,12 @@ const nav: NavItem[] = [
     icon: "badge",
     roles: ["admin", "academic_director"],
   },
-  { to: "/learners", label: "Learners List", icon: "groups", roles: ["admin", "academic_director"] },
+  {
+    to: "/learners",
+    label: "Learners List",
+    icon: "groups",
+    roles: ["admin", "academic_director"],
+  },
   { to: "/dll", label: "DLL Review", icon: "description", roles: ["admin", "academic_director"] },
   {
     to: "/anecdotal",
@@ -29,7 +46,12 @@ const nav: NavItem[] = [
   { to: "/school-years", label: "School Years", icon: "date_range", roles: ["admin"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
   { to: "/import-learners", label: "Import Learners", icon: "cloud_upload", roles: ["admin"] },
-  { to: "/kiosk", label: "Attendance Kiosk", icon: "face_retouching_natural", roles: ["admin"] },
+  {
+    to: "/kiosk",
+    label: "Attendance Kiosk",
+    icon: "face_retouching_natural",
+    roles: ["admin", "kiosk"],
+  },
   { to: "/face-registration", label: "Face Registration", icon: "face", roles: ["admin"] },
 ];
 
@@ -38,6 +60,7 @@ const roleBadge: Record<AppRole, { label: string; tone: string }> = {
   academic_director: { label: "Director", tone: "bg-status-late/15 text-status-late" },
   teacher: { label: "Teacher", tone: "bg-primary-container/40 text-primary" },
   student: { label: "Student", tone: "bg-status-present/10 text-status-present" },
+  kiosk: { label: "Kiosk", tone: "bg-secondary/10 text-secondary" },
 };
 
 const COLLAPSE_KEY = "appshell:sidebar-collapsed";
@@ -95,16 +118,18 @@ export function AppShell({
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-30 bg-background/80 backdrop-blur-md md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen ${sidebarWidth} flex-col border-r border-outline-variant bg-surface transition-[width,transform] duration-300 ease-in-out md:translate-x-0 md:flex ${mobileMenuOpen ? "translate-x-0 flex shadow-2xl w-[240px]" : "-translate-x-full hidden md:flex"}`}
+        className={`fixed left-0 top-0 z-40 h-screen ${sidebarWidth} flex-col border-r border-secondary/30 bg-surface/90 backdrop-blur-xl transition-[width,transform] duration-300 ease-in-out md:translate-x-0 md:flex shadow-[2px_0_20px_-5px_rgba(0,240,255,0.15)] ${mobileMenuOpen ? "translate-x-0 flex w-[240px]" : "-translate-x-full hidden md:flex"}`}
       >
-        <div className={`flex items-center gap-3 px-5 py-5 ${collapsed ? "md:justify-center md:px-2" : ""}`}>
+        <div
+          className={`flex items-center gap-3 px-5 py-5 ${collapsed ? "md:justify-center md:px-2" : ""}`}
+        >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Icon name="school" filled weight={600} />
           </div>
@@ -124,7 +149,7 @@ export function AppShell({
               to="/dll/new"
               onClick={() => setMobileMenuOpen(false)}
               title={collapsed ? "New DLL Entry" : undefined}
-              className={`flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110 ${collapsed ? "md:px-0" : ""}`}
+              className={`flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_0_15px_rgba(255,51,102,0.4)] transition hover:shadow-[0_0_25px_rgba(255,51,102,0.6)] ${collapsed ? "md:px-0" : ""}`}
             >
               <Icon name="add_circle" size={18} />
               {(!collapsed || mobileMenuOpen) && (
@@ -134,7 +159,9 @@ export function AppShell({
           </div>
         )}
 
-        <nav className={`mt-2 flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 ${collapsed ? "md:px-2" : ""}`}>
+        <nav
+          className={`mt-2 flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 ${collapsed ? "md:px-2" : ""}`}
+        >
           {visibleNav.map((item) => {
             const active =
               item.to === "/"
@@ -196,8 +223,10 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className={`flex-1 flex flex-col min-w-0 ${mainOffset} h-screen overflow-y-auto transition-[margin] duration-300 ease-in-out`}>
-        <header className="sticky top-0 z-20 shrink-0 flex h-16 items-center gap-2 sm:gap-4 border-b border-outline-variant bg-surface/80 px-4 md:px-6 backdrop-blur-md">
+      <div
+        className={`flex-1 flex flex-col min-w-0 ${mainOffset} h-screen overflow-y-auto transition-[margin] duration-300 ease-in-out`}
+      >
+        <header className="sticky top-0 z-20 shrink-0 flex h-16 items-center gap-2 sm:gap-4 border-b border-secondary/30 bg-surface/80 px-4 md:px-6 backdrop-blur-xl shadow-[0_2px_20px_-5px_rgba(0,240,255,0.1)]">
           <button
             className="md:hidden p-2 -ml-2 rounded-lg text-tertiary hover:bg-surface-container shrink-0 transition"
             onClick={() => setMobileMenuOpen(true)}
@@ -215,17 +244,7 @@ export function AppShell({
             <Icon name="menu" size={22} />
           </button>
 
-          <div className="relative w-full max-w-md">
-            <Icon
-              name="search"
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tertiary"
-              size={18}
-            />
-            <input
-              placeholder="Search students, teachers…"
-              className="h-10 w-full rounded-lg border border-outline-variant bg-surface pl-10 pr-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
+          <GlobalSearch />
           <div className="ml-auto flex items-center gap-2">
             <button
               className="rounded-full p-2 text-tertiary transition hover:bg-surface-container hover:text-foreground"

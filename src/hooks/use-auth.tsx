@@ -7,12 +7,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, AppRole } from "@/lib/auth.functions";
+import { getCurrentUser, loginUser, logoutUser } from "@/lib/auth.functions";
 
 export type AuthUser = {
   id: string;
   email: string | null;
+  role: AppRole;
 };
 
 export type AuthContextValue = {
@@ -37,19 +38,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadSession = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
+      const data = await getCurrentUser();
+      if (!data) {
         setUser(null);
         setProfile(null);
         return;
       }
-      setUser({ id: data.user.id, email: data.user.email ?? null });
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("id, email, full_name, avatar_url, role, created_at, updated_at")
-        .eq("id", data.user.id)
-        .single();
-      setProfile(profileData as UserProfile | null);
+      setUser({ id: data.id, email: data.email ?? null, role: data.role });
+      setProfile(data as UserProfile | null);
     } finally {
       setIsLoading(false);
     }
@@ -57,16 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void loadSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "SIGNED_OUT") {
-        void loadSession();
-      }
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
   }, [loadSession]);
 
   const hasRole = useCallback(
@@ -80,14 +66,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [profile],
   );
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
-    return {};
-  }, []);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      try {
+        await loginUser({ data: { email, password } });
+        await loadSession();
+        return {};
+      } catch (err: any) {
+        return { error: err.message || "Failed to login" };
+      }
+    },
+    [loadSession],
+  );
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.error(err);
+    }
     setUser(null);
     setProfile(null);
   }, []);

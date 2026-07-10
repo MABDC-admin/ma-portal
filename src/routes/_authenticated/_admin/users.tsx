@@ -23,9 +23,10 @@ const roleLabels: Record<AppRole, string> = {
   academic_director: "Academic Director",
   teacher: "Teacher",
   student: "Student",
+  kiosk: "Attendance Kiosk",
 };
 
-const roleOptions: AppRole[] = ["admin", "academic_director", "teacher", "student"];
+const roleOptions: AppRole[] = ["admin", "academic_director", "teacher", "student", "kiosk"];
 
 function UsersPage() {
   const queryClient = useQueryClient();

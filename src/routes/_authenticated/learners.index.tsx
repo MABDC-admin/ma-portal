@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/learners/")({
   head: () => ({
@@ -33,17 +32,16 @@ function LearnersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sectionFilter, setSectionFilter] = useState("");
 
-  const { data: learners, isLoading, error } = useQuery({
+  const {
+    data: learners,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["learners_directory"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("students")
-        .select(
-          "user_id, student_number, status, profiles!students_user_id_profiles_fkey(full_name, email), sections(name, grade_level, academic_year)",
-        )
-        .order("student_number", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as unknown as LearnerRow[];
+      const { getLearnersDirectoryFn } = await import("@/lib/teacher.functions");
+      const data = await getLearnersDirectoryFn();
+      return data as unknown as LearnerRow[];
     },
   });
 
@@ -66,11 +64,11 @@ function LearnersPage() {
   const allUniqueSections = Array.from(sectionMap.values());
 
   const uniqueSections = allUniqueSections.sort((a, b) => {
-      if (a.grade_level !== b.grade_level) {
-        return a.grade_level - b.grade_level;
-      }
-      return a.name.localeCompare(b.name);
-    });
+    if (a.grade_level !== b.grade_level) {
+      return a.grade_level - b.grade_level;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   return (
     <AppShell
@@ -112,11 +110,7 @@ function LearnersPage() {
         <div className="overflow-x-auto max-h-[70vh]">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-tertiary">
-              <Icon
-                name="progress_activity"
-                size={32}
-                className="animate-spin text-primary mb-4"
-              />
+              <Icon name="progress_activity" size={32} className="animate-spin text-primary mb-4" />
               <p>Loading learners...</p>
             </div>
           ) : error ? (

@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/_director/faculty")({
   head: () => ({
@@ -18,39 +17,16 @@ function FacultyPage() {
   const teachersQ = useQuery({
     queryKey: ["faculty-teachers"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("teachers")
-        .select(
-          "user_id, employee_id, department, subjects, status, profiles!teachers_user_id_profiles_fkey(email, full_name)",
-        )
-        .order("employee_id");
-      if (error) throw error;
-      return data ?? [];
+      const { getFacultyTeachersFn } = await import("@/lib/director-faculty.functions");
+      return await getFacultyTeachersFn();
     },
   });
 
   const dllsQ = useQuery({
     queryKey: ["faculty-dll-counts"],
     queryFn: async () => {
-      const since = new Date();
-      since.setDate(since.getDate() - 30);
-      const { data, error } = await supabase
-        .from("dlls")
-        .select("teacher_id, status")
-        .gte("lesson_date", since.toISOString().slice(0, 10));
-      if (error) throw error;
-      const map: Record<
-        string,
-        { total: number; approved: number; returned: number; submitted: number }
-      > = {};
-      for (const d of data ?? []) {
-        const t = (map[d.teacher_id] ||= { total: 0, approved: 0, returned: 0, submitted: 0 });
-        t.total++;
-        if (d.status === "approved") t.approved++;
-        else if (d.status === "returned") t.returned++;
-        else if (d.status === "submitted") t.submitted++;
-      }
-      return map;
+      const { getFacultyDllCountsFn } = await import("@/lib/director-faculty.functions");
+      return await getFacultyDllCountsFn();
     },
   });
 

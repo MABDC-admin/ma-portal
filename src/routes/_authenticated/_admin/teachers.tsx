@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card, StatusPill } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/_admin/teachers")({
@@ -43,21 +42,16 @@ function TeachersPage() {
   const teachersQ = useQuery({
     queryKey: ["teachers"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("teachers")
-        .select(
-          "user_id, employee_id, department, subjects, status, profiles!teachers_user_id_profiles_fkey(email, full_name)",
-        )
-        .order("employee_id");
-      if (error) throw error;
-      return (data ?? []) as unknown as TeacherRow[];
+      const { listTeachersFn } = await import("@/lib/admin-teachers.functions");
+      const data = await listTeachersFn();
+      return data as unknown as TeacherRow[];
     },
   });
 
   const toggleStatus = useMutation({
     mutationFn: async ({ user_id, status }: { user_id: string; status: "active" | "inactive" }) => {
-      const { error } = await supabase.from("teachers").update({ status }).eq("user_id", user_id);
-      if (error) throw error;
+      const { toggleTeacherStatusFn } = await import("@/lib/admin-teachers.functions");
+      await toggleTeacherStatusFn({ data: { user_id, status } });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["teachers"] }),
   });
@@ -197,14 +191,9 @@ function AddTeacherDialog({ onClose, onDone }: { onClose: () => void; onDone: ()
   const eligibleQ = useQuery({
     queryKey: ["profiles-eligible-teacher"],
     queryFn: async () => {
-      const { data: existing } = await supabase.from("teachers").select("user_id");
-      const takenIds = new Set((existing ?? []).map((r: { user_id: string }) => r.user_id));
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, email, full_name, role")
-        .order("email");
-      if (error) throw error;
-      return (data ?? []).filter((p) => !takenIds.has(p.id));
+      const { getEligibleTeacherProfilesFn } = await import("@/lib/admin-teachers.functions");
+      const data = await getEligibleTeacherProfilesFn();
+      return data ?? [];
     },
   });
 
@@ -216,25 +205,23 @@ function AddTeacherDialog({ onClose, onDone }: { onClose: () => void; onDone: ()
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-    const { error: insErr } = await supabase.from("teachers").insert({
-      user_id: userId,
-      employee_id: employeeId,
-      department,
-      subjects: subjectsArr,
-      status: "active",
-    });
-    if (insErr) {
-      setError(insErr.message);
+    
+    try {
+      const { addTeacherFn } = await import("@/lib/admin-teachers.functions");
+      await addTeacherFn({
+        data: {
+          user_id: userId,
+          employee_id: employeeId,
+          department,
+          subjects: subjectsArr
+        }
+      });
       setSaving(false);
-      return;
+      onDone();
+    } catch (err: any) {
+      setError(err.message || "Failed to add teacher");
+      setSaving(false);
     }
-    // Also promote profile role + user_roles to teacher
-    await supabase.from("profiles").update({ role: "teacher" }).eq("id", userId);
-    await supabase
-      .from("user_roles")
-      .upsert({ user_id: userId, role: "teacher" }, { onConflict: "user_id,role" });
-    setSaving(false);
-    onDone();
   }
 
   return (

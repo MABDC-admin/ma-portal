@@ -1,14 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Icon } from "@/components/Icon";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  listEnrolledLearnersFn,
-  logKioskAttendanceFn,
-} from "@/lib/kiosk-attendance.functions";
+import { listEnrolledLearnersFn, logKioskAttendanceFn } from "@/lib/kiosk-attendance.functions";
 import { useKioskSchedule } from "@/hooks/use-kiosk-schedule";
 import { formatCountdown } from "@/lib/kiosk-schedule";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/_admin/kiosk")({
   head: () => ({ meta: [{ title: "Attendance Kiosk — AttendCloud" }] }),
@@ -41,10 +39,15 @@ const COLUMN_LABELS: Record<string, string> = {
 
 const AWAKE_MS = 60_000;
 const GREETING_MS = 4000;
+const DETECTION_INTERVAL_MS = 350;
+const MATCH_THRESHOLD = 0.46;
+const AMBIGUOUS_MARGIN = 0.045;
+const MIN_DESCRIPTOR_LENGTH = 128;
 
 function KioskPage() {
   const listFn = useServerFn(listEnrolledLearnersFn);
   const logFn = useServerFn(logKioskAttendanceFn);
+  const { logout } = useAuth();
   const rosterQ = useQuery({
     queryKey: ["kiosk-enrolled-learners"],
     queryFn: () => listFn(),
@@ -62,6 +65,7 @@ function KioskPage() {
   const modelsReadyRef = useRef(false);
   const scanningRef = useRef(false);
   const cooldownRef = useRef(0);
+  const pendingActionRef = useRef<"in" | "out">("in");
 
   const [isAwake, setIsAwake] = useState(false);
   const [status, setStatus] = useState("Tap to scan");
@@ -70,21 +74,37 @@ function KioskPage() {
   const [pendingAction, setPendingAction] = useState<"in" | "out">("in");
   const [recent, setRecent] = useState<Greeting[]>([]);
 
+  const setAction = useCallback((action: "in" | "out") => {
+    pendingActionRef.current = action;
+    setPendingAction(action);
+  }, []);
+
   const enrolled: Enrolled[] = useMemo(() => {
     const rows = (rosterQ.data ?? []) as Array<{
       user_id: string;
       photo_url: string | null;
       face_descriptor: number[] | null;
       sections: { name: string } | null;
-      profiles: { full_name: string | null; email: string | null; avatar_url: string | null } | null;
+      profiles: {
+        full_name: string | null;
+        email: string | null;
+        avatar_url: string | null;
+      } | null;
     }>;
-    return rows.map((r) => ({
-      userId: r.user_id,
-      name: r.profiles?.full_name || r.profiles?.email || "Learner",
-      photo: r.photo_url || r.profiles?.avatar_url || null,
-      sectionName: r.sections?.name ?? null,
-      descriptor: new Float32Array(r.face_descriptor as number[]),
-    }));
+    return rows
+      .filter(
+        (r) =>
+          Array.isArray(r.face_descriptor) &&
+          r.face_descriptor.length === MIN_DESCRIPTOR_LENGTH &&
+          r.face_descriptor.every((n) => Number.isFinite(n)),
+      )
+      .map((r) => ({
+        userId: r.user_id,
+        name: r.profiles?.full_name || r.profiles?.email || "Learner",
+        photo: r.photo_url || r.profiles?.avatar_url || null,
+        sectionName: r.sections?.name ?? null,
+        descriptor: new Float32Array(r.face_descriptor as number[]),
+      }));
   }, [rosterQ.data]);
 
   const stopCamera = useCallback(() => {
@@ -117,12 +137,17 @@ function KioskPage() {
   const detectLoop = useCallback(async () => {
     if (!videoRef.current || !faceApiRef.current || !streamRef.current) return;
     if (scanningRef.current || greeting) {
-      detectTimerRef.current = window.setTimeout(detectLoop, 400);
+      detectTimerRef.current = window.setTimeout(detectLoop, DETECTION_INTERVAL_MS);
       return;
     }
     const now = Date.now();
     if (now - cooldownRef.current < 1500) {
-      detectTimerRef.current = window.setTimeout(detectLoop, 400);
+      detectTimerRef.current = window.setTimeout(detectLoop, DETECTION_INTERVAL_MS);
+      return;
+    }
+    if (enrolled.length === 0) {
+      setStatus("No learners with registered faces yet");
+      detectTimerRef.current = window.setTimeout(detectLoop, 1200);
       return;
     }
     try {
@@ -137,22 +162,38 @@ function KioskPage() {
 
       if (detection && enrolled.length > 0) {
         let best: { entry: Enrolled; dist: number } | null = null;
+        let second: number | null = null;
         for (const e of enrolled) {
           let sum = 0;
-          for (let i = 0; i < 128; i++) {
+          for (let i = 0; i < MIN_DESCRIPTOR_LENGTH; i++) {
             const d = detection.descriptor[i] - e.descriptor[i];
             sum += d * d;
           }
           const dist = Math.sqrt(sum);
-          if (!best || dist < best.dist) best = { entry: e, dist };
+          if (!best || dist < best.dist) {
+            second = best?.dist ?? null;
+            best = { entry: e, dist };
+          } else if (second === null || dist < second) {
+            second = dist;
+          }
         }
-        if (best && best.dist < 0.5) {
+        const confidence = best
+          ? Math.max(0, Math.round((1 - best.dist / MATCH_THRESHOLD) * 100))
+          : 0;
+        const ambiguous = best && second !== null && second - best.dist < AMBIGUOUS_MARGIN;
+
+        if (!best || best.dist >= MATCH_THRESHOLD) {
+          setStatus("Face not recognized. Please try again.");
+        } else if (ambiguous) {
+          setStatus("Match is too close to another learner. Re-center and scan again.");
+        } else {
+          const action = pendingActionRef.current;
           scanningRef.current = true;
           cooldownRef.current = Date.now();
-          setStatus("Recognized · logging attendance…");
+          setStatus(`Recognized with ${confidence}% confidence · logging attendance…`);
           try {
             const res = (await logFn({
-              data: { studentId: best.entry.userId, action: pendingAction },
+              data: { studentId: best.entry.userId, action },
             })) as {
               alreadyLogged: boolean;
               column: string;
@@ -166,7 +207,7 @@ function KioskPage() {
                 hour: "numeric",
                 minute: "2-digit",
               }),
-              action: pendingAction,
+              action,
               columnLabel: COLUMN_LABELS[res.column] ?? res.column,
               alreadyLogged: res.alreadyLogged,
             };
@@ -183,16 +224,19 @@ function KioskPage() {
             setStatus(e instanceof Error ? e.message : "Log failed");
           }
         }
+      } else {
+        setStatus("Looking for a centered face…");
       }
     } catch (e) {
       console.error(e);
+      setStatus("Scanner is recovering. Keep facing the camera.");
     }
-    detectTimerRef.current = window.setTimeout(detectLoop, 400);
-  }, [enrolled, greeting, logFn, pendingAction, sleep]);
+    detectTimerRef.current = window.setTimeout(detectLoop, DETECTION_INTERVAL_MS);
+  }, [enrolled, greeting, logFn, sleep]);
 
   const wake = useCallback(
     async (action?: "in" | "out") => {
-      if (action) setPendingAction(action);
+      if (action) setAction(action);
       if (isAwake) {
         armSleepTimer();
         return;
@@ -212,6 +256,9 @@ function KioskPage() {
             modelsReadyRef.current = true;
           }
         }
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error("Camera access is not available in this browser.");
+        }
         setStatus("Starting camera…");
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -219,6 +266,11 @@ function KioskPage() {
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          await new Promise<void>((resolve) => {
+            if (!videoRef.current) return resolve();
+            if (videoRef.current.readyState >= 2) return resolve();
+            videoRef.current.onloadedmetadata = () => resolve();
+          });
           await videoRef.current.play();
         }
         setIsAwake(true);
@@ -226,17 +278,20 @@ function KioskPage() {
         armSleepTimer();
         detectTimerRef.current = window.setTimeout(detectLoop, 500);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Camera unavailable");
+        const message = e instanceof Error ? e.message : "Camera unavailable";
+        setError(message);
+        setStatus(message);
+        stopCamera();
       }
     },
-    [armSleepTimer, detectLoop, isAwake],
+    [armSleepTimer, detectLoop, isAwake, setAction, stopCamera],
   );
 
   // Auto-wake when entering an active window
   useEffect(() => {
     if (inWindow && !isAwake && !greeting) {
       // Preload default action based on window intent
-      setPendingAction(schedule.currentWindow!.action);
+      setAction(schedule.currentWindow!.action);
       wake(schedule.currentWindow!.action);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -272,19 +327,26 @@ function KioskPage() {
             <Icon name="face_retouching_natural" filled className="text-white" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-display text-base sm:text-xl font-extrabold tracking-tight">Attendance Kiosk</p>
+            <p className="truncate font-display text-base sm:text-xl font-extrabold tracking-tight">
+              Attendance Kiosk
+            </p>
             <p className="truncate text-[11px] sm:text-xs text-white/60">
               {timeLabel} · {dateLabel}
             </p>
           </div>
         </div>
-        <Link
-          to="/"
+        <button
+          type="button"
           className="flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white/90 backdrop-blur-md ring-1 ring-white/20 hover:bg-white/20"
-          onClick={(e) => e.stopPropagation()}
+          onClick={async (e) => {
+            e.stopPropagation();
+            await logout();
+            window.location.assign("/auth");
+          }}
         >
-          <Icon name="close" size={18} /> <span className="hidden sm:inline">Exit kiosk</span><span className="sm:hidden">Exit</span>
-        </Link>
+          <Icon name="logout" size={18} /> <span className="hidden sm:inline">Sign out</span>
+          <span className="sm:hidden">Exit</span>
+        </button>
       </div>
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:gap-8 px-4 sm:px-8 py-6 sm:py-8 md:grid-cols-[1fr_320px]">
@@ -326,7 +388,12 @@ function KioskPage() {
             {!isAwake && !greeting && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-4 bg-black/40 px-4 text-center">
                 <div className="flex h-16 w-16 sm:h-24 sm:w-24 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-                  <Icon name="touch_app" filled size={40} className="text-white/80 sm:!text-[56px]" />
+                  <Icon
+                    name="touch_app"
+                    filled
+                    size={40}
+                    className="text-white/80 sm:!text-[56px]"
+                  />
                 </div>
                 <p className="font-display text-xl sm:text-3xl font-extrabold">Tap to scan</p>
                 <p className="text-xs sm:text-sm text-white/60">Camera sleeps between scans</p>
@@ -336,7 +403,9 @@ function KioskPage() {
             {/* Status overlay */}
             {isAwake && (
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 sm:p-6">
-                <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/60">Status</p>
+                <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/60">
+                  Status
+                </p>
                 <p className="mt-1 font-display text-lg sm:text-2xl font-bold">{error ?? status}</p>
               </div>
             )}
@@ -344,7 +413,7 @@ function KioskPage() {
             {/* Greeting card */}
             {greeting && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                <div className="flex w-full max-w-md flex-col sm:flex-row items-center gap-4 sm:gap-5 rounded-3xl bg-white p-5 sm:p-8 text-slate-900 shadow-2xl animate-in fade-in zoom-in duration-300">
+                <div className="flex w-full max-w-md flex-col sm:flex-row items-center gap-4 sm:gap-5 rounded-3xl bg-surface/95 backdrop-blur-xl border border-secondary/30 p-5 sm:p-8 text-slate-100 shadow-2xl animate-in fade-in zoom-in duration-300">
                   {greeting.photo ? (
                     <img
                       src={greeting.photo}
@@ -353,19 +422,23 @@ function KioskPage() {
                     />
                   ) : (
                     <div
-                      className={`flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-2xl ${greeting.alreadyLogged ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"}`}
+                      className={`flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-2xl ${greeting.alreadyLogged ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}`}
                     >
                       <Icon name="check_circle" filled size={48} />
                     </div>
                   )}
                   <div className="min-w-0 flex-1 text-center sm:text-left">
-                    <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-500">
-                      {greeting.alreadyLogged ? "Already logged" : greeting.action === "in" ? "Welcome" : "Goodbye"}
+                    <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-400">
+                      {greeting.alreadyLogged
+                        ? "Already logged"
+                        : greeting.action === "in"
+                          ? "Welcome"
+                          : "Goodbye"}
                     </p>
                     <p className="mt-1 font-display text-xl sm:text-2xl font-extrabold leading-tight break-words">
                       {greeting.name}
                     </p>
-                    <p className="mt-1 text-xs sm:text-sm text-slate-500 num">
+                    <p className="mt-1 text-xs sm:text-sm text-slate-400 num">
                       {greeting.columnLabel} · {greeting.time}
                     </p>
                   </div>
@@ -407,10 +480,17 @@ function KioskPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
               Enrolled learners
             </p>
-            <p className="mt-2 font-display text-4xl sm:text-5xl font-extrabold num">{enrolled.length}</p>
+            <p className="mt-2 font-display text-4xl sm:text-5xl font-extrabold num">
+              {enrolled.length}
+            </p>
             <p className="mt-1 text-sm text-white/60">
               {rosterQ.isLoading ? "Loading…" : "with face profiles"}
             </p>
+            {!rosterQ.isLoading && enrolled.length === 0 && (
+              <p className="mt-3 rounded-2xl bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-200">
+                Register learner faces before using live recognition.
+              </p>
+            )}
           </div>
           <div className="rounded-3xl bg-white/5 p-6 backdrop-blur-md ring-1 ring-white/10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">

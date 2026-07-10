@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+
 import { Icon } from "@/components/Icon";
 
 export const Route = createFileRoute("/reset-password")({
@@ -41,12 +41,14 @@ function ResetPasswordPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      const { resetPasswordFn } = await import("@/lib/auth.functions");
+      await resetPasswordFn({ data: { password } });
       setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "Failed to update password.");
+    } finally {
+      setLoading(false);
     }
   };
 

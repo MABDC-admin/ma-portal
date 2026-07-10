@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+
 import { useAuth } from "@/hooks/use-auth";
 import { Icon } from "@/components/Icon";
+import type { AppRole } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -18,11 +19,14 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const roleLanding: Record<string, string> = {
+type AuthRoutePath = "/" | "/teachers" | "/dll" | "/students/me" | "/kiosk";
+
+const roleLanding: Record<AppRole, AuthRoutePath> = {
   admin: "/teachers",
   academic_director: "/dll",
   teacher: "/",
   student: "/students/me",
+  kiosk: "/kiosk",
 };
 
 function AuthPage() {
@@ -32,7 +36,7 @@ function AuthPage() {
   useEffect(() => {
     if (isAuthenticated && profile) {
       const target = roleLanding[profile.role] ?? "/";
-      void navigate({ to: target as any, replace: true });
+      void navigate({ to: target, replace: true });
     }
   }, [isAuthenticated, profile, navigate]);
 
@@ -78,20 +82,15 @@ function AuthForm() {
         if (result.error) {
           setError(result.error);
         }
-        // AuthProvider's onAuthStateChange will refresh context and AuthPage redirects
+        // AuthProvider's loadSession will refresh context and AuthPage redirects
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name: fullName },
-            emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-          },
-        });
-        if (error) {
-          setError(error.message);
-        } else {
-          setMessage("Check your email to confirm your account.");
+        const { registerUser } = await import("@/lib/auth.functions");
+        try {
+          await registerUser({ data: { email, password, full_name: fullName } });
+          setMessage("Account created. Please log in.");
+          setMode("login");
+        } catch (err: any) {
+          setError(err.message || "Failed to register");
         }
       }
     } finally {
