@@ -48,7 +48,9 @@ describe("invitation helpers", () => {
   });
 
   it("requires a 12 character password", () => {
-    expect(() => validateInvitePassword("short")).toThrow("Password must be at least 12 characters");
+    expect(() => validateInvitePassword("short")).toThrow(
+      "Password must be at least 12 characters",
+    );
     expect(validateInvitePassword("long-enough-password")).toBe("long-enough-password");
   });
 });

@@ -1,9 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { AppShell, Card } from "@/components/AppShell";
 import { Icon } from "@/components/Icon";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { listUsers, assignRole, type AppRole, type UserProfile } from "@/lib/auth.functions";
-import { useServerFn } from "@tanstack/react-start";
+import { createInvitation } from "@/lib/invitation.functions";
 
 export const Route = createFileRoute("/_authenticated/_admin/users")({
   head: () => ({
@@ -32,6 +53,11 @@ function UsersPage() {
   const queryClient = useQueryClient();
   const fetchUsers = useServerFn(listUsers);
   const assignRoleFn = useServerFn(assignRole);
+  const createInvitationFn = useServerFn(createInvitation);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteRole, setInviteRole] = useState<AppRole>("teacher");
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users"],
@@ -46,17 +72,106 @@ function UsersPage() {
     },
   });
 
+  const inviteMutation = useMutation({
+    mutationFn: () =>
+      createInvitationFn({
+        data: {
+          email: inviteEmail,
+          fullName: inviteName,
+          role: inviteRole,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(`Invitation sent to ${result.email}`);
+      setInviteEmail("");
+      setInviteName("");
+      setInviteRole("teacher");
+      setInviteOpen(false);
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Failed to send invitation");
+    },
+  });
+
+  const submitInvite = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    inviteMutation.mutate();
+  };
+
   return (
     <AppShell
       title="User Management"
       subtitle="Assign roles and manage portal access."
       actions={
-        <button className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110">
+        <button
+          type="button"
+          onClick={() => setInviteOpen(true)}
+          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-110"
+        >
           <Icon name="person_add" size={18} />
           <span>Invite User</span>
         </button>
       }
     >
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Invite User</DialogTitle>
+            <DialogDescription>
+              Send an account setup link to the user's email address.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitInvite} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="invite-name">Full name</Label>
+              <Input
+                id="invite-name"
+                value={inviteName}
+                onChange={(event) => setInviteName(event.target.value)}
+                autoComplete="name"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="invite-email">Email</Label>
+              <Input
+                id="invite-email"
+                type="email"
+                value={inviteEmail}
+                onChange={(event) => setInviteEmail(event.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="invite-role">Role</Label>
+              <Select value={inviteRole} onValueChange={(value) => setInviteRole(value as AppRole)}>
+                <SelectTrigger id="invite-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {roleOptions
+                    .filter((role) => role !== "kiosk")
+                    .map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {roleLabels[role]}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setInviteOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={inviteMutation.isPending}>
+                {inviteMutation.isPending ? "Sending..." : "Send Invite"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

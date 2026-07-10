@@ -56,12 +56,17 @@ export const loginUser = createServerFn({ method: "POST" })
     // TODO: proper hash validation
     let validPassword = false;
     try {
-      validPassword = await verify(user.password, data.password, { memoryCost: 19456, timeCost: 2, outputLen: 32, parallelism: 1 });
+      validPassword = await verify(user.password, data.password, {
+        memoryCost: 19456,
+        timeCost: 2,
+        outputLen: 32,
+        parallelism: 1,
+      });
     } catch (e) {
       // Fallback if not a valid argon2 hash
       validPassword = user.password === data.password;
     }
-    
+
     if (!validPassword) throw new Error("Invalid email or password");
 
     const session = await lucia.createSession(user.id, {});
