@@ -13,28 +13,28 @@ export type MailInput = {
 export async function sendMabdcEmail({ to, subject, html }: MailInput): Promise<void> {
   const apiKey = process.env.MABDC_MAIL_API_KEY;
   if (!apiKey) {
-    console.warn("[mail] MABDC_MAIL_API_KEY not set; skipping email:", subject);
-    return;
+    throw new Error("Email delivery is not configured");
   }
+
   const recipients = Array.isArray(to) ? to.filter(Boolean) : [to].filter(Boolean);
-  if (recipients.length === 0) return;
+  if (recipients.length === 0) {
+    throw new Error("Email recipient is required");
+  }
 
   for (const recipient of recipients) {
-    try {
-      const res = await fetch(MAIL_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ to: recipient, from: FROM_ADDRESS, subject, html }),
-      });
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        console.error(`[mail] send failed ${res.status} to=${recipient}: ${body}`);
-      }
-    } catch (err) {
-      console.error("[mail] network error:", err);
+    const res = await fetch(MAIL_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ to: recipient, from: FROM_ADDRESS, subject, html }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(`[mail] send failed ${res.status} to=${recipient}: ${body}`);
+      throw new Error("Email delivery failed");
     }
   }
 }

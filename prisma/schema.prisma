@@ -43,6 +43,21 @@ model UserRole {
   @@unique([userId, role])
 }
 
+model Invitation {
+  id          String    @id @default(cuid()) @map("_id")
+  email       String    @unique
+  full_name   String
+  role        String
+  token_hash  String    @unique
+  expires_at  DateTime
+  accepted_at DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  created_by  String
+
+  @@index([expires_at])
+}
+
 model SchoolYear {
   id         String   @id @default(cuid()) @map("_id")
   year       String   @unique
