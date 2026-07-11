@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminTeachersRouteImport } from './routes/_authenticated/_admin/teachers'
 import { Route as AuthenticatedAdminSeedFacultyRouteImport } from './routes/_authenticated/_admin/seed-faculty'
 import { Route as AuthenticatedAdminSchoolYearsRouteImport } from './routes/_authenticated/_admin/school-years'
+import { Route as AuthenticatedAdminScheduleRouteImport } from './routes/_authenticated/_admin/schedule'
 import { Route as AuthenticatedAdminKioskRouteImport } from './routes/_authenticated/_admin/kiosk'
 import { Route as AuthenticatedAdminImportLearnersRouteImport } from './routes/_authenticated/_admin/import-learners'
 import { Route as AuthenticatedAdminFaceRegistrationRouteImport } from './routes/_authenticated/_admin/face-registration'
@@ -144,6 +145,12 @@ const AuthenticatedAdminSchoolYearsRoute =
     path: '/school-years',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminScheduleRoute =
+  AuthenticatedAdminScheduleRouteImport.update({
+    id: '/schedule',
+    path: '/schedule',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminKioskRoute = AuthenticatedAdminKioskRouteImport.update({
   id: '/kiosk',
   path: '/kiosk',
@@ -250,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/kiosk': typeof AuthenticatedAdminKioskRoute
+  '/schedule': typeof AuthenticatedAdminScheduleRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -282,6 +290,7 @@ export interface FileRoutesByTo {
   '/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/kiosk': typeof AuthenticatedAdminKioskRoute
+  '/schedule': typeof AuthenticatedAdminScheduleRoute
   '/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -320,6 +329,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/face-registration': typeof AuthenticatedAdminFaceRegistrationRoute
   '/_authenticated/_admin/import-learners': typeof AuthenticatedAdminImportLearnersRoute
   '/_authenticated/_admin/kiosk': typeof AuthenticatedAdminKioskRoute
+  '/_authenticated/_admin/schedule': typeof AuthenticatedAdminScheduleRoute
   '/_authenticated/_admin/school-years': typeof AuthenticatedAdminSchoolYearsRoute
   '/_authenticated/_admin/seed-faculty': typeof AuthenticatedAdminSeedFacultyRoute
   '/_authenticated/_admin/teachers': typeof AuthenticatedAdminTeachersRoute
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/face-registration'
     | '/import-learners'
     | '/kiosk'
+    | '/schedule'
     | '/school-years'
     | '/seed-faculty'
     | '/teachers'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/face-registration'
     | '/import-learners'
     | '/kiosk'
+    | '/schedule'
     | '/school-years'
     | '/seed-faculty'
     | '/teachers'
@@ -423,6 +435,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/face-registration'
     | '/_authenticated/_admin/import-learners'
     | '/_authenticated/_admin/kiosk'
+    | '/_authenticated/_admin/schedule'
     | '/_authenticated/_admin/school-years'
     | '/_authenticated/_admin/seed-faculty'
     | '/_authenticated/_admin/teachers'
@@ -589,6 +602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSchoolYearsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/schedule': {
+      id: '/_authenticated/_admin/schedule'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof AuthenticatedAdminScheduleRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/kiosk': {
       id: '/_authenticated/_admin/kiosk'
       path: '/kiosk'
@@ -708,6 +728,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminFaceRegistrationRoute: typeof AuthenticatedAdminFaceRegistrationRoute
   AuthenticatedAdminImportLearnersRoute: typeof AuthenticatedAdminImportLearnersRoute
   AuthenticatedAdminKioskRoute: typeof AuthenticatedAdminKioskRoute
+  AuthenticatedAdminScheduleRoute: typeof AuthenticatedAdminScheduleRoute
   AuthenticatedAdminSchoolYearsRoute: typeof AuthenticatedAdminSchoolYearsRoute
   AuthenticatedAdminSeedFacultyRoute: typeof AuthenticatedAdminSeedFacultyRoute
   AuthenticatedAdminTeachersRoute: typeof AuthenticatedAdminTeachersRoute
@@ -721,6 +742,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminImportLearnersRoute:
       AuthenticatedAdminImportLearnersRoute,
     AuthenticatedAdminKioskRoute: AuthenticatedAdminKioskRoute,
+    AuthenticatedAdminScheduleRoute: AuthenticatedAdminScheduleRoute,
     AuthenticatedAdminSchoolYearsRoute: AuthenticatedAdminSchoolYearsRoute,
     AuthenticatedAdminSeedFacultyRoute: AuthenticatedAdminSeedFacultyRoute,
     AuthenticatedAdminTeachersRoute: AuthenticatedAdminTeachersRoute,

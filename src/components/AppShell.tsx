@@ -44,6 +44,7 @@ const nav: NavItem[] = [
   },
   { to: "/students/me", label: "My Profile", icon: "group", roles: ["student"] },
   { to: "/school-years", label: "School Years", icon: "date_range", roles: ["admin"] },
+  { to: "/schedule", label: "Class Schedule", icon: "calendar_view_week", roles: ["admin"] },
   { to: "/users", label: "User Management", icon: "manage_accounts", roles: ["admin"] },
   { to: "/import-learners", label: "Import Learners", icon: "cloud_upload", roles: ["admin"] },
   {
