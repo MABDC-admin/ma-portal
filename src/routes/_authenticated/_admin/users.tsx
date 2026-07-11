@@ -150,9 +150,7 @@ function UsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {roleOptions
-                      .filter((role) => role !== "kiosk")
-                      .map((role) => (
+                    {roleOptions.map((role) => (
                         <SelectItem key={role} value={role}>
                           {roleLabels[role]}
                         </SelectItem>
